@@ -46,7 +46,7 @@ antrean **tidak diperlukan** (menambah layanan dan biaya tanpa manfaat).
 | Langkah | Isi | Bukti |
 |---|---|---|
 | F4.1a (**selesai 13 Okt 2026**: `lib/upload/*`, `app/api/upload-chunk`, `components/upload/UnggahBerkas.tsx`; 31 tes baru, total 271 lulus) | Infrastruktur: `lib/upload/*` (potongan, gabung, pembersih, penjaga berkas, pembaca sheet), rute `upload-chunk`, komponen klien unggah + progres | tes: berkas 10 MB terkirim per potongan, potongan lengkap/tidak lengkap, pembersih, berkas rusak/bukan xlsx/banyak sheet/terlalu banyak baris |
-| F4.1b | Importer Rekap: validasi (NIP tak dikenal, belum ada Nominatif, AKL ditolak, TMT, bulan tak cocok, TOTAL != JUMLAH MASUK NYATA, NIP ganda), simpan massal, re-upload mengganti, terapkan koreksi | paritas terhadap importer KDS2 asli (§4) |
+| F4.1b (**selesai 13 Okt 2026**: `lib/impor/{rekapKehadiran,phpString}.ts`, oracle `scripts/oracle/kds2-impor.php`, `tests/paritas/impor-rekap.test.ts`; 24 tes paritas + 7 tes transaksi; 2.800 pegawai disimpan 2,5 dtk lokal, mengganti 2,5 dtk) | Importer Rekap: validasi (NIP tak dikenal, belum ada Nominatif, AKL ditolak, TMT, bulan tak cocok, TOTAL != JUMLAH MASUK NYATA, NIP ganda), simpan massal, re-upload mengganti, terapkan koreksi | paritas terhadap importer KDS2 asli (§4) |
 | F4.1c | Halaman Upload Rekap (Periksa -> Simpan -> Hasil), unduh template | tes komponen + uji di browser dengan berkas sintetis |
 Lalu F4.2 Koreksi, F4.3 Nominatif, F4.4 Rekap Individual, F4.5 Standarisasi KDS1 (jalur potongan yang sama, berkas 6,7 MB).
 
@@ -74,3 +74,9 @@ Perluasan ke Nominatif (F4.3) dan Koreksi (F4.2) memakai oracle yang sama.
 | Salah bulan/berkas | tahap Periksa menampilkan jumlah data yang akan diganti dan bulan yang terdeteksi di berkas |
 | Workbook kerja besar menghabiskan memori | penjaga berkas (sheet, baris, ukuran) sebelum dibaca penuh |
 | Beda perilaku baca Excel antar pustaka (rumus, tanggal, NIP angka) | berkas sintetis lintas-pustaka di tes paritas |
+
+## 7. Catatan hasil F4.1b
+- Paritas: 12 kasus tertulis + 2 kasus acak bersemi tetap (450 baris), masing-masing dua arah (berkas ditulis exceljs dibaca PhpSpreadsheet, dan sebaliknya) = 24 perbandingan identik dengan importer KDS2 asli. Kebenaran tes dibuktikan dengan mutasi (aturan TMT dan semantik trim dirusak sengaja -> tes gagal).
+- Perilaku PHP yang ditiru: `trim` PHP (tanpa spasi tak-putus), `strcasecmp` ASCII, `Str::limit` menurut lebar tampilan + rtrim, NIP sel angka tak aman (> 2^53) ditolak, NIP berawalan petik, NIP ganda = baris terakhir menang, urutan komponen mengikuti posisi kolom.
+- Beda sengaja yang tidak teruji: sel bertipe tanggal (PHP membaca nomor seri; ditiru dengan nomor seri JavaScript, presisi desimal bisa beda) dan angka desimal ekstrem (presisi 14 digit PHP). Data asli hanya berisi bilangan bulat dan teks (diperiksa lewat agregat di KDS2).
+- **Penerapan ulang Koreksi Rekap** belum ada (F4.2): `simpanRekap` menerima `setelahTulis(tx, batchId)` untuk dipanggil di transaksi yang sama. Karena upload menimpa angka koreksi, **halaman Upload Rekap (F4.1c) baru boleh dipakai pada data asli setelah F4.2** (atau diberi penerapan koreksi).
