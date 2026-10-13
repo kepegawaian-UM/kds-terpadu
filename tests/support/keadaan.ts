@@ -27,12 +27,17 @@ export async function muatKeadaan(prisma: PrismaClient, k: KeadaanLengkap): Prom
   const nips = new Set<string>([...(k.pegawai ?? []), ...(k.nominatif ?? []).map((x) => x.nip), ...(k.rekap ?? []).map((x) => x.nip), ...(k.koreksi ?? []).map((x) => x.nip)]);
   await prisma.pegawai.createMany({ data: [...nips].map((nip) => ({ nip })) });
   for (const x of k.nominatif ?? []) {
-    await prisma.nominatifBulanan.create({
+    const baris = await prisma.nominatifBulanan.create({
       data: {
         pegawaiNip: x.nip, bulan: x.bulan, tahun: x.tahun, nama: `Pegawai ${x.nip}`, jenisKelamin: "L", jenisPegawaiKode: x.jenis,
         statusKepegawaianKode: s.kode, unitAsalKode: u.kode, tanggalMulaiKerja: new Date(`${x.tmt}T00:00:00.000Z`), uploadBatchId: batchNominatif.id,
       },
     });
+    for (const j of x.jt ?? []) {
+      await prisma.nominatifBulananJabatanTambahan.create({
+        data: { nominatifBulananId: baris.id, jabatanTambahanRoleKode: j.role, unitAsalKode: j.unit ?? null, programStudiKode: j.prodi ?? null, statusPengangkatan: j.status },
+      });
+    }
   }
   if ((k.rekap ?? []).length > 0) {
     const lama = await prisma.uploadBatch.create({ data: { jenis: "kehadiran_bulanan", namaFileAsli: "lama.xlsx", diunggahOlehNama: "t" } });

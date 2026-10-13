@@ -12,6 +12,7 @@ import { KDS2_PATH } from "./oracle";
 
 const execFileAsync = promisify(execFile);
 const SKRIP = resolve(process.cwd(), "scripts", "oracle", "kds2-impor.php");
+const SKRIP_NOMINATIF = resolve(process.cwd(), "scripts", "oracle", "kds2-nominatif.php");
 const SKRIP_KOREKSI = resolve(process.cwd(), "scripts", "oracle", "kds2-koreksi.php");
 const PHP = process.env.KDS2_PHP ?? "php";
 
@@ -19,7 +20,7 @@ export type Sel = string | number | null | { f: string; v: number };
 
 export type KeadaanImpor = {
   pegawai?: string[];
-  nominatif?: { nip: string; bulan: number; tahun: number; jenis: string; tmt: string }[];
+  nominatif?: { nip: string; bulan: number; tahun: number; jenis: string; tmt: string; jt?: { role: string; unit?: string | null; prodi?: string | null; status: string }[] }[];
   rekap?: { nip: string; bulan: number; tahun: number; komponen: Record<string, string> }[];
 };
 
@@ -57,16 +58,21 @@ export async function jalankanOracleImpor(kasus: KasusOracleImpor[]): Promise<Re
 }
 
 /** Oracle Koreksi Rekap: kasus = {id, keadaan, langkah[]} (lihat scripts/oracle/kds2-koreksi.php). */
+/** Oracle Nominatif: masukan {master?, kasus[]} (lihat scripts/oracle/kds2-nominatif.php). */
+export async function jalankanOracleNominatif(masukan: { master?: Record<string, unknown[]>; kasus: unknown[] }): Promise<Record<string, unknown>> {
+  return jalankanSkrip(SKRIP_NOMINATIF, masukan.kasus, masukan.master);
+}
+
 export async function jalankanOracleKoreksi(kasus: unknown[]): Promise<Record<string, unknown>> {
   return jalankanSkrip(SKRIP_KOREKSI, kasus);
 }
 
-async function jalankanSkrip<T>(skrip: string, kasus: unknown[]): Promise<T> {
+async function jalankanSkrip<T>(skrip: string, kasus: unknown[], master?: Record<string, unknown[]>): Promise<T> {
   const dir = mkdtempSync(join(tmpdir(), "kds-impor-oracle-"));
   const masuk = join(dir, "masuk.json");
   const keluar = join(dir, "keluar.json");
   try {
-    writeFileSync(masuk, JSON.stringify({ kasus }));
+    writeFileSync(masuk, JSON.stringify({ kasus, master }));
     await execFileAsync(PHP, [skrip, masuk, keluar], { timeout: 10 * 60_000, maxBuffer: 16 * 1024 * 1024, env: { ...process.env, KDS2_PATH } });
     return JSON.parse(readFileSync(keluar, "utf8"));
   } finally {

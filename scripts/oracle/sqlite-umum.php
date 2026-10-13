@@ -13,7 +13,10 @@ use App\Models\RekapKehadiranBulanan;
 use App\Models\UploadBatch;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Shared\Date as SpreadsheetDate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -63,7 +66,10 @@ function tulisBerkas(string $jalur, array $spec): void
                 if ($v === null) {
                     continue;
                 }
-                if (is_array($v) && isset($v['f'])) {
+                if (is_array($v) && isset($v['d'])) {
+                    $sheet->setCellValue($alamat, SpreadsheetDate::PHPToExcel(strtotime($v['d'].' 00:00:00 UTC')));
+                    $sheet->getStyle($alamat)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+                } elseif (is_array($v) && isset($v['f'])) {
                     $sheet->setCellValue($alamat, '='.$v['f']);
                 } elseif (is_string($v)) {
                     $sheet->setCellValueExplicit($alamat, $v, DataType::TYPE_STRING);
@@ -91,11 +97,17 @@ function muatKeadaan(array $k): void
     }
     foreach ($k['nominatif'] ?? [] as $s) {
         Pegawai::firstOrCreate(['nip' => (string) $s['nip']], ['dibuat_pada' => now()]);
-        NominatifBulanan::create([
+        $baris = NominatifBulanan::create([
             'nip' => (string) $s['nip'], 'bulan' => $s['bulan'], 'tahun' => $s['tahun'], 'nama' => 'Pegawai '.$s['nip'],
             'jenis_kelamin' => 'L', 'jenis_pegawai_kode' => $s['jenis'], 'status_kepegawaian_kode' => 'PNS',
             'unit_asal_kode' => $unit, 'tanggal_mulai_kerja' => $s['tmt'], 'upload_batch_id' => $batchNominatif,
         ]);
+        foreach ($s['jt'] ?? [] as $j) {
+            DB::table('nominatif_bulanan_jabatan_tambahan')->insert([
+                'nominatif_bulanan_id' => $baris->id, 'jabatan_tambahan_role_kode' => $j['role'], 'unit_asal_kode' => $j['unit'] ?? null,
+                'program_studi_kode' => $j['prodi'] ?? null, 'status_pengangkatan' => $j['status'],
+            ]);
+        }
     }
     $batchRekapLama = null;
     foreach ($k['rekap'] ?? [] as $r) {
@@ -136,4 +148,25 @@ function dumpRekap(?int $batchBaruId = null): array
     }
 
     return $rekap;
+}
+
+/** Mengganti isi tabel master di SQLite dengan baris dari TS (supaya nama->kode identik dengan database uji). */
+function muatMaster(array $master): void
+{
+    DB::statement('PRAGMA foreign_keys = OFF');
+    foreach ($master as $tabel => $baris) {
+        DB::table($tabel)->delete();
+        $kolom = Schema::getColumnListing($tabel);
+        foreach ($baris as $b) {
+            $row = [];
+            foreach ($b as $k => $v) {
+                $snake = Str::snake($k);
+                if (in_array($snake, $kolom, true)) {
+                    $row[$snake] = is_bool($v) ? (int) $v : $v;
+                }
+            }
+            DB::table($tabel)->insert($row);
+        }
+    }
+    DB::statement('PRAGMA foreign_keys = ON');
 }

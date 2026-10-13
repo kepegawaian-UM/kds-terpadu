@@ -7,12 +7,12 @@ import { batalkanUploadRekap, periksaUploadRekap, simpanUploadRekap } from "@/ap
 import type { RingkasanLayar } from "@/app/(app)/rekap-kehadiran/upload/actions";
 import type { HasilUnggah } from "@/lib/upload/klien";
 
+import { Angka, AWALAN_PERINGATAN, TabelCatatan } from "./bagian";
 import { UnggahBerkas } from "./UnggahBerkas";
 
 const NAMA_BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 const kotak = "mt-1 block w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm";
 const angka = (n: number) => n.toLocaleString("id-ID");
-const AWALAN = "[PERINGATAN] ";
 
 type Tahap = { jenis: "isi" } | { jenis: "periksa"; unggahan: HasilUnggah } | { jenis: "tinjau"; unggahan: HasilUnggah; ringkasan: RingkasanLayar };
 
@@ -120,8 +120,8 @@ export function FormUploadRekap({ bulanAwal, tahunAwal }: { bulanAwal: number; t
 
 function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: RingkasanLayar; bulan: number; tahun: number; sibuk: boolean; saatSimpan: () => void; saatBatal: () => void }) {
   const salahBulan = r.bulanDiBerkas !== null && r.bulanDiBerkas.toLowerCase() !== NAMA_BULAN[bulan].toLowerCase();
-  const kegagalan = r.catatan.filter((c) => !c.alasan.startsWith(AWALAN));
-  const peringatan = r.catatan.filter((c) => c.alasan.startsWith(AWALAN));
+  const kegagalan = r.catatan.filter((c) => !c.alasan.startsWith(AWALAN_PERINGATAN));
+  const peringatan = r.catatan.filter((c) => c.alasan.startsWith(AWALAN_PERINGATAN));
   const gagalTotal = r.gagal;
 
   return (
@@ -149,8 +149,8 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
         Koreksi Rekap yang aktif diterapkan ulang otomatis setelah disimpan.
       </p>
 
-      {kegagalan.length > 0 && <Tabel judul="Baris yang akan dilewati" baris={kegagalan} kelas="text-slate-800" />}
-      {peringatan.length > 0 && <Tabel judul="Peringatan (baris tetap diproses)" baris={peringatan} kelas="text-amber-700" potongAwalan />}
+      {kegagalan.length > 0 && <TabelCatatan judul="Baris yang akan dilewati" baris={kegagalan} kelas="text-slate-800" />}
+      {peringatan.length > 0 && <TabelCatatan judul="Peringatan (baris tetap diproses)" baris={peringatan} kelas="text-amber-700" potongAwalan />}
       {r.catatanTotal > r.catatan.length && (
         <p className="text-xs text-slate-500">Menampilkan {angka(r.catatan.length)} dari {angka(r.catatanTotal)} catatan; daftar lengkap tersedia di halaman hasil setelah disimpan.</p>
       )}
@@ -165,42 +165,5 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
         {r.berhasil === 0 && <span className="text-sm text-red-700">Tidak ada baris yang dapat diproses.</span>}
       </div>
     </section>
-  );
-}
-
-function Angka({ judul, nilai, kelas = "text-slate-900" }: { judul: string; nilai: number; kelas?: string }) {
-  return (
-    <div className="rounded-lg border border-slate-200 p-3 text-center">
-      <div className={`text-2xl font-bold ${kelas}`}>{angka(nilai)}</div>
-      <div className="text-xs text-slate-500">{judul}</div>
-    </div>
-  );
-}
-
-function Tabel({ judul, baris, kelas, potongAwalan = false }: { judul: string; baris: { nomorBaris: number; nipDimaksud: string; alasan: string }[]; kelas: string; potongAwalan?: boolean }) {
-  return (
-    <div>
-      <h3 className="mb-2 text-xs font-semibold uppercase text-slate-500">{judul}</h3>
-      <div className="max-h-72 overflow-auto rounded-lg border border-slate-200">
-        <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-slate-50 text-left text-slate-500">
-            <tr>
-              <th className="px-3 py-2">Baris ke-</th>
-              <th className="px-3 py-2">NIP</th>
-              <th className="px-3 py-2">Catatan</th>
-            </tr>
-          </thead>
-          <tbody>
-            {baris.map((c, i) => (
-              <tr key={i} className="border-t">
-                <td className="px-3 py-1.5">{c.nomorBaris}</td>
-                <td className="px-3 py-1.5">{c.nipDimaksud}</td>
-                <td className={`px-3 py-1.5 ${kelas}`}>{potongAwalan ? c.alasan.slice(AWALAN.length) : c.alasan}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
   );
 }
