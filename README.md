@@ -30,5 +30,8 @@ Siapkan database tes sekali: `DATABASE_URL=<kds_test> npx prisma migrate deploy 
 `prisma/seed-data/*.json` dihasilkan dari tabel master KDS2 (kunci jawaban), bukan ditulis tangan:
 `npx tsx scripts/ekspor-master-kds2.ts` (butuh MySQL `kds2_produksi` lokal; hanya-baca).
 
+## Migrasi data KDS2
+Salinan data asli untuk tes paritas ada di database lokal `kds_paritas`. Cara menjalankan dan hasilnya: [docs/04-migrasi-f2.md](docs/04-migrasi-f2.md).
+
 ## Aturan data
 Repo ini **tidak boleh** memuat data pegawai asli (NIP, nama). Data uji harus sintetis; rahasia hanya di `.env`.

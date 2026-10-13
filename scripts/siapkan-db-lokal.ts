@@ -1,6 +1,6 @@
 /**
- * Menyiapkan PostgreSQL lokal: membuat database kds_dev & kds_test (bila belum ada), lalu
- * menulis DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL ke .env. Membaca
+ * Menyiapkan PostgreSQL lokal: membuat database kds_dev, kds_test & kds_paritas (bila belum ada), lalu
+ * menulis DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL, PARITAS_DATABASE_URL ke .env. Membaca
  * POSTGRES_PASSWORD dari .env; kata sandi tidak pernah dicetak.
  * Jalankan: npx tsx scripts/siapkan-db-lokal.ts
  */
@@ -21,7 +21,7 @@ const url = (db: string) =>
 async function main() {
   const admin = new PrismaClient({ datasourceUrl: url("postgres") });
   try {
-    for (const db of ["kds_dev", "kds_test"]) {
+    for (const db of ["kds_dev", "kds_test", "kds_paritas"]) {
       const ada = await admin.$queryRawUnsafe<{ n: number }[]>(
         `SELECT 1 AS n FROM pg_database WHERE datname = '${db}'`
       );
@@ -40,6 +40,7 @@ async function main() {
     DATABASE_URL: url("kds_dev"),
     DATABASE_URL_UNPOOLED: url("kds_dev"),
     TEST_DATABASE_URL: url("kds_test"),
+    PARITAS_DATABASE_URL: url("kds_paritas"),
   };
   let env = readFileSync(".env", "utf8");
   for (const [k, v] of Object.entries(isi)) {
@@ -49,7 +50,7 @@ async function main() {
       : env + `\n${baris}\n`;
   }
   writeFileSync(".env", env);
-  console.log(".env diperbarui (DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL).");
+  console.log(".env diperbarui (DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL, PARITAS_DATABASE_URL).");
 }
 
 main().catch((e) => {

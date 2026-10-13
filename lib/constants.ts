@@ -2,6 +2,16 @@
 // skema tetap portable dari SQLite (dev) ke Postgres (produksi) tanpa perubahan. Union type di
 // sini adalah satu-satunya tempat nilai yang sah didefinisikan.
 
+/** Jenis upload_batch. kehadiran_manual dan nominatif/kehadiran_bulanan berasal dari data KDS2. */
+export const JENIS_UPLOAD_BATCH = [
+  "standarisasi_nominatif", // alur KDS1
+  "nominatif_bulanan",
+  "kehadiran_bulanan",
+  "kehadiran_manual",
+  "tambah_pegawai_manual",
+] as const;
+export type JenisUploadBatch = (typeof JENIS_UPLOAD_BATCH)[number];
+
 export const STATUS_UPLOAD_BATCH = [
   "Diproses",
   "MenungguReview",
