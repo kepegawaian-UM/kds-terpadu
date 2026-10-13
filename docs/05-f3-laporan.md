@@ -44,6 +44,13 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
 | `components/laporan/TabelLaporan.tsx` | tabel klien: cari, urut, halaman, Salin/CSV/Excel/Cetak |
 | `components/laporan/FormLaporan.tsx` | formulir GET periode + filter (tautan dapat dibagikan) |
 
+## Dua cara urut di KDS2 (jangan tertukar)
+- **Nominatif, Rekap Bulanan/Tahunan:** `orderBy('nama')` di MySQL -> `urutNama.ts` (kolasi `unicode_ci`).
+- **Pegawai Belum Ada Rekap:** `sortBy('nama')` di PHP (Collection) -> `urutPhp.ts` (byte UTF-8, huruf besar
+  dulu; dua string angka dibandingkan numerik). Tampilan awal di KDS2 lalu diurut DataTables menurut kolom
+  Unit Kerja (huruf kecil, kode UTF-16); halaman ini mengirim data yang sudah dalam urutan tampil itu.
+  Tombol Salin/CSV tidak memuat kolom nomor (DataTables KDS2 memuatnya).
+
 ## Perbedaan disengaja dari KDS2
 - `?keaktifan[]=semua` membuat KDS2 galat (PHP "Array to string conversion", halaman 500); di sini
   kembali ke "aktif".
@@ -59,7 +66,7 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
 
 ## Status langkah
 - [x] F3.0 Dasar (oracle, urutan nama, pembantu, tabel, ekspor, formulir)
-- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [ ] F3.2 Belum Upload · [ ] F3.3 Rekap Bulanan · [ ] F3.4 Rekap Tahunan
+- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [ ] F3.3 Rekap Bulanan · [ ] F3.4 Rekap Tahunan
 - [ ] F3.5 Statistik · [ ] F3.6 Dashboard · [ ] F3.7 Penutup (paritas penuh, performa)
 
 ## Keamanan: pelajaran dari pemeriksaan F3.1

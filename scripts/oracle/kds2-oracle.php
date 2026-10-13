@@ -141,6 +141,23 @@ $penangan = [
         ];
     },
 
+    // Laporan "Pegawai Belum Ada Rekap": data yang diberikan controller ke view (urutan = urutan controller).
+    'rekap.belumUpload' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\RekapKehadiranBelumUploadController::class)->index($minta($p))->getData();
+
+        return [
+            'bulan' => $d['bulan'], 'tahun' => $d['tahun'],
+            'totalNominatif' => $d['totalNominatif'], 'totalSudahRekap' => $d['totalSudahRekap'],
+            'jumlahBelumTmt' => $d['jumlahBelumTmt'], 'jumlahSudahTidakAktif' => $d['jumlahSudahTidakAktif'],
+            'jumlahPerluTindakLanjut' => $d['jumlahPerluTindakLanjut'],
+            'ringkasanPerUnit' => collect($d['ringkasanPerUnit'])->map(fn ($n, $unit) => [(string) $unit, $n])->values()->all(),
+            'belum' => $d['belum']->map(fn ($b) => [
+                'nip' => (string) $b['nip'], 'nama' => $b['nama'], 'jenis' => $b['jenis'], 'unit' => $b['unit'],
+                'tmt' => $b['tmt']->format('d-m-Y'), 'belumTmt' => $b['belum_tmt'], 'keterangan' => $b['keterangan'],
+            ])->values()->all(),
+        ];
+    },
+
     // Daftar id snapshot per periode (untuk menyusun sampel tes).
     'nominatif.index' => function (array $p) use ($app, $minta) {
         $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();
