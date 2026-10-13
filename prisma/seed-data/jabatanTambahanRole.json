@@ -1,0 +1,467 @@
+[
+  {
+    "kode": "JBT-01",
+    "namaRole": "Anggota SPI",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-02",
+    "namaRole": "Dekan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-03",
+    "namaRole": "Direktur",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-04",
+    "namaRole": "Direktur UPT",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-05",
+    "namaRole": "Kepala Badan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-06",
+    "namaRole": "Kepala Divisi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-07",
+    "namaRole": "Kepala Klinik",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-08",
+    "namaRole": "Kepala Laboratorium",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-09",
+    "namaRole": "Kepala Pusat",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-10",
+    "namaRole": "Kepala Seksi Akuntansi dan Pelaporan Keuangan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-11",
+    "namaRole": "Kepala Seksi Anggaran dan Perpajakan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-12",
+    "namaRole": "Kepala Seksi Data dan Informasi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-13",
+    "namaRole": "Kepala Seksi Evaluasi Hasil Belajar",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-14",
+    "namaRole": "Kepala Seksi Humas Direktorat Perencanaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-15",
+    "namaRole": "Kepala Seksi Karir dan Alumni",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-16",
+    "namaRole": "Kepala Seksi Kerjasama Direktorat Perencanaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-17",
+    "namaRole": "Kepala Seksi Kesejahteraan dan Kewirausahaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-18",
+    "namaRole": "Kepala Seksi Kinerja",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-19",
+    "namaRole": "Kepala Seksi Minat dan Bakat",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-20",
+    "namaRole": "Kepala Seksi Monitoring dan Evaluasi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-21",
+    "namaRole": "Kepala Seksi Pelaporan Aset",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-22",
+    "namaRole": "Kepala Seksi Penalaran",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-23",
+    "namaRole": "Kepala Seksi Pengelolaan Aset",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-24",
+    "namaRole": "Kepala Seksi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-25",
+    "namaRole": "Kepala Seksi Pengelolaan Gedung Serbaguna dan Prasarana Olahraga",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-26",
+    "namaRole": "Kepala Seksi Pengelolaan GKB dan Keamanan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-27",
+    "namaRole": "Kepala Seksi Perbendaharaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-28",
+    "namaRole": "Kepala Seksi Perencanaan Program",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-29",
+    "namaRole": "Kepala Seksi Registrasi dan Statistik",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-30",
+    "namaRole": "Kepala Seksi Rumah Tangga",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-31",
+    "namaRole": "Kepala Seksi Tata Usaha",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-32",
+    "namaRole": "Kepala Seksi Tenaga Dosen",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-33",
+    "namaRole": "Kepala Seksi Tenaga Kependidikan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-34",
+    "namaRole": "Kepala Sub Direktorat Hubungan Masyarakat dan Kerja Sama Direktorat Perencanaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-35",
+    "namaRole": "Kepala Sub Direktorat Kesejahteraan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-36",
+    "namaRole": "Kepala Sub Direktorat Keuangan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-37",
+    "namaRole": "Kepala Sub Direktorat Layanan Pendidikan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-38",
+    "namaRole": "Kepala Sub Direktorat Minat",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-39",
+    "namaRole": "Kepala Sub Direktorat Mobilitas dan Pangkalan Data Pendidikan Tinggi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-40",
+    "namaRole": "Kepala Sub Direktorat Pemberdayaan Aset",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-41",
+    "namaRole": "Kepala Sub Direktorat Sarana dan Prasarana",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-42",
+    "namaRole": "Kepala Sub Direktorat Sumber Daya Manusia",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-43",
+    "namaRole": "Kepala Subdit Data dan Informasi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-44",
+    "namaRole": "Kepala Subdit Pemeringkatan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-45",
+    "namaRole": "Kepala Subdit Perencanaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-46",
+    "namaRole": "Kepala Subdit Seleksi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-47",
+    "namaRole": "Kepala UPT",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-48",
+    "namaRole": "Ketua Bidang",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-49",
+    "namaRole": "Ketua Departemen",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-50",
+    "namaRole": "Ketua Program Studi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-51",
+    "namaRole": "Ketua Lembaga",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-52",
+    "namaRole": "Ketua Senat",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-53",
+    "namaRole": "Ketua Tim",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-54",
+    "namaRole": "Koordinator Tata Usaha",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-55",
+    "namaRole": "Pembina Asrama",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-56",
+    "namaRole": "Sekretaris Departemen",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-57",
+    "namaRole": "Sekretaris UPT",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-58",
+    "namaRole": "Wakil Dekan II",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-59",
+    "namaRole": "Wakil Rektor II",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-60",
+    "namaRole": "Rektor",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-61",
+    "namaRole": "Sekretaris Badan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-62",
+    "namaRole": "Sekretaris Lembaga",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-63",
+    "namaRole": "Sekretaris",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-64",
+    "namaRole": "Bendahara",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-65",
+    "namaRole": "Sekretaris Universitas",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-66",
+    "namaRole": "Sub Koordinator Akademik dan Kemahasiswaan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-67",
+    "namaRole": "Sub Koordinator Hukum dan Tatalaksana",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-68",
+    "namaRole": "Sub Koordinator Keuangan dan Kepegawaian",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-69",
+    "namaRole": "Sub Koordinator Program",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-70",
+    "namaRole": "Sub Koordinator Tata Usaha",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-71",
+    "namaRole": "Sub Koordinator Umum dan Aset",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-72",
+    "namaRole": "Sub Koordinator Umum dan Keuangan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-73",
+    "namaRole": "Sub Koordinator Umum",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-74",
+    "namaRole": "Wakil Dekan I",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-75",
+    "namaRole": "Wakil Dekan III",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-76",
+    "namaRole": "Wakil Direktur",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-77",
+    "namaRole": "Wakil Rektor I",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-78",
+    "namaRole": "Wakil Rektor III",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-79",
+    "namaRole": "Wakil Rektor IV",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-80",
+    "namaRole": "Pembina Asrama Putra: Asrama Mawar Kampus III UM",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-81",
+    "namaRole": "Sekretaris merangkap Bendahara Tim Pengelola Sertifikasi Dosen",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-82",
+    "namaRole": "Ketua Tim Pengelola Sertifikasi Dosen",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-83",
+    "namaRole": "Kepala Divisi HKI dan Kerjasama Industri Direktorat Inovasi",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-84",
+    "namaRole": "Ketua Bidang Pengawasan Pengadaan Barang dan Jasa",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-85",
+    "namaRole": "Ketua Bidang Pengawasan Tata Kelola dan Manajemen Resiko",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-86",
+    "namaRole": "Ketua Bidang Pengawasan SDM",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-87",
+    "namaRole": "Ketua Bidang Pengawasan SDM Sarpras dan Aset",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-88",
+    "namaRole": "Ketua Bidang Pengawasan Keuangan",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-89",
+    "namaRole": "Kepala Seksi Kinerja Disiplin dan Sistem Informasi Sumber Daya Manusia",
+    "berlakuUntuk": "Keduanya"
+  },
+  {
+    "kode": "JBT-90",
+    "namaRole": "Ketua Bidang Standar Mutu",
+    "berlakuUntuk": "Dosen"
+  },
+  {
+    "kode": "JBT-91",
+    "namaRole": "Ketua Bidang Peningkatan Mutu",
+    "berlakuUntuk": "Dosen"
+  },
+  {
+    "kode": "JBT-92",
+    "namaRole": "Ketua Bidang Implementasi dan Evaluasi Mutu",
+    "berlakuUntuk": "Dosen"
+  },
+  {
+    "kode": "JBT-93",
+    "namaRole": "Ketua Bidang Akreditasi",
+    "berlakuUntuk": "Dosen"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "kode": "CPNS",
+    "nama": "Calon Pegawai Negeri Sipil",
+    "kategori": "ASN"
+  },
+  {
+    "kode": "CPTNA",
+    "nama": "Calon Pegawai Tetap Non-ASN",
+    "kategori": "Non-ASN"
+  },
+  {
+    "kode": "PNS",
+    "nama": "Pegawai Negeri Sipil",
+    "kategori": "ASN"
+  },
+  {
+    "kode": "PPPK",
+    "nama": "Pegawai Pemerintah dengan Perjanjian Kerja",
+    "kategori": "ASN"
+  },
+  {
+    "kode": "PTNA",
+    "nama": "Pegawai Tetap Non-ASN",
+    "kategori": "Non-ASN"
+  },
+  {
+    "kode": "PTT",
+    "nama": "Pegawai Tidak Tetap / Kontrak",
+    "kategori": "Non-ASN"
+  }
+]

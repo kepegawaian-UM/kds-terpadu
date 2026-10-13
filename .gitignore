@@ -14,6 +14,8 @@ coverage/
 *.xlsx
 *.xls
 *.csv
+# pengecualian: berkas migrasi skema Prisma (tidak berisi data)
+!prisma/migrations/**/*.sql
 
 # lain-lain
 .vercel/
@@ -21,3 +23,4 @@ coverage/
 next-env.d.ts
 .DS_Store
 Thumbs.db
+/app/generated/prisma

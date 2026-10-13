@@ -1,0 +1,17 @@
+[
+  {
+    "kode": "AKL",
+    "nama": "Akademisi Luar UM",
+    "keterangan": "Pihak eksternal tanpa status kepegawaian tetap. Termasuk MWA (untuk keperluan akses aplikasi lain via SIMPEGA)"
+  },
+  {
+    "kode": "DSN",
+    "nama": "Dosen",
+    "keterangan": "Tenaga akademik tetap UM - punya Jabatan Fungsional (wajib) dan Jabatan Tambahan (opsional, boleh rangkap)"
+  },
+  {
+    "kode": "TDK",
+    "nama": "Tendik",
+    "keterangan": "Tenaga kependidikan - jabatan fungsional/struktural/remunerasi/tambahan masih dirancang ulang"
+  }
+]

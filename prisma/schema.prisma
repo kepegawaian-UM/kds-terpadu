@@ -1,0 +1,463 @@
+// Skema gabungan KDS Terpadu = skema KDS1 (Prisma) + tabel KDS2 (Laravel).
+//
+// Nilai "enum-like" (status, alasan, jenis, dsb) sengaja String biasa (bukan `enum` Prisma)
+// dengan union type TypeScript di lib/constants.ts - validasi nilai jadi satu tempat yang
+// mudah diaudit, dan migrasi data dari MySQL KDS2 tidak tersandung enum.
+//
+// Aturan id: tabel yang BERASAL dari data KDS2 memakai id Int autoincrement supaya id dari
+// MySQL `kds2_produksi` bisa dipertahankan saat migrasi (F2). Tabel khusus KDS1 (User,
+// BarisBermasalah, KamusKoreksi, CatatanPerubahanBatch) tetap memakai cuid.
+//
+// Kolom tanggal murni (tanpa jam) memakai @db.Date supaya tidak bergeser karena zona waktu
+// (aplikasi bekerja di Asia/Jakarta, WIB).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Koneksi tanpa pgbouncer khusus untuk migrate - migration engine Prisma pakai advisory
+  // lock & prepared statement yang tidak selalu cocok dengan pooler transaksi (mis. Neon).
+  // Untuk PostgreSQL lokal, isi sama dengan DATABASE_URL.
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// =========================================================================
+// Master data - read-only via UI, di-seed dari prisma/seed-data/*.json
+// =========================================================================
+
+model JenisPegawai {
+  kode       String  @id // DSN / TDK / AKL
+  nama       String
+  keterangan String?
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_jenis_pegawai")
+}
+
+model StatusKepegawaian {
+  kode     String @id
+  nama     String
+  kategori String // ASN / Non-ASN
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_status_kepegawaian")
+}
+
+model Golongan {
+  kode String @id // "I/a" .. "IV/e" (ASN), Romawi untuk PPPK
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_golongan")
+}
+
+model JabatanFungsionalDosen {
+  kode          String @id
+  nama          String
+  urutanJenjang Int
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_jabatan_fungsional_dosen")
+}
+
+model JabatanFungsionalTendik {
+  kode         String @id
+  jabatanPokok String
+  jenjang      String
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_jabatan_fungsional_tendik")
+}
+
+model JabatanFungsiUmumPelaksana {
+  kode String @id
+  nama String
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_jabatan_fungsi_umum_pelaksana")
+}
+
+model JabatanTambahanRole {
+  kode         String @id
+  namaRole     String
+  berlakuUntuk String // Dosen / Tendik / Keduanya
+
+  jabatanTambahan NominatifBulananJabatanTambahan[]
+
+  @@map("mst_jabatan_tambahan_role")
+}
+
+model UnitInduk {
+  kode String @id
+  nama String
+
+  unitAsal UnitAsal[]
+
+  @@map("mst_unit_induk")
+}
+
+model UnitAsal {
+  kode          String @id
+  nama          String
+  unitIndukKode String
+
+  unitInduk UnitInduk @relation(fields: [unitIndukKode], references: [kode])
+
+  programStudi        ProgramStudi[]
+  nominatif           NominatifBulanan[]
+  jabatanTambahanUnit NominatifBulananJabatanTambahan[] @relation("JabatanTambahanUnit")
+
+  @@map("mst_unit_asal")
+}
+
+model ProgramStudi {
+  kode           String @id
+  nama           String
+  jenjang        String
+  unitAsalKode   String
+  statusValidasi String // Draft / Tervalidasi
+
+  unitAsal UnitAsal @relation(fields: [unitAsalKode], references: [kode])
+
+  jabatanTambahanProdi NominatifBulananJabatanTambahan[] @relation("JabatanTambahanProdi")
+
+  @@map("mst_program_studi")
+}
+
+model KategoriAkademisiLuar {
+  kode                String  @id
+  nama                String
+  masukRekapKehadiran Boolean
+
+  nominatif NominatifBulanan[]
+
+  @@map("mst_kategori_akademisi_luar")
+}
+
+/// Komponen kolom Rekap Kehadiran (16 kode: SIGMA_HARI, I, S, SD, TD, TB, TK, CTH, CTM, CTB,
+/// CAP, CTLN, TOTAL, JUMLAH_MASUK_NYATA, JENIS_SHIFT, CUTI_ANAK_KE). Menambah komponen =
+/// tambah satu baris di sini, tanpa migrasi skema.
+model KomponenKehadiran {
+  kode      String @id // maks 20 karakter (JUMLAH_MASUK_NYATA = 18)
+  nama      String
+  tipeNilai String // integer / durasi / teks
+  kategori  String // Ketidakhadiran / Tugas / Cuti / Rekap
+
+  detail      RekapKehadiranDetail[]
+  koreksiDari KoreksiRekap[]         @relation("KoreksiDariKomponen")
+  koreksiKe   KoreksiRekap[]         @relation("KoreksiKeKomponen")
+
+  @@map("mst_komponen_kehadiran")
+}
+
+// =========================================================================
+// Identitas, akun, dan jejak upload
+// =========================================================================
+
+/// Hanya jangkar identitas. Atribut yang bisa berubah ada di NominatifBulanan (snapshot).
+model Pegawai {
+  nip        String   @id
+  dibuatPada DateTime @default(now())
+
+  nominatif NominatifBulanan[]
+  rekap     RekapKehadiranBulanan[]
+  koreksi   KoreksiRekap[]
+
+  @@map("pegawai")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  nama         String
+  dibuatPada   DateTime @default(now())
+
+  uploadBatch       UploadBatch[]
+  barisDiselesaikan BarisBermasalah[]
+  kamusKoreksi      KamusKoreksi[]
+  catatanPerubahan  CatatanPerubahanBatch[]
+
+  @@map("user")
+}
+
+/// Satu kali proses unggah/impor. `jenis`: standarisasi_nominatif (alur KDS1),
+/// nominatif_bulanan, kehadiran_bulanan, tambah_pegawai_manual (alur KDS2).
+model UploadBatch {
+  id                  Int      @id @default(autoincrement())
+  jenis               String   @default("standarisasi_nominatif")
+  bulan               Int? // wajib untuk standarisasi_nominatif; rekap menyimpan bulan di headernya
+  tahun               Int?
+  namaFileAsli        String
+  status              String   @default("Diproses") // Diproses/MenungguReview/Selesai/Dibatalkan
+  jumlahBarisTotal    Int      @default(0)
+  jumlahBerhasil      Int      @default(0)
+  jumlahGagal         Int      @default(0)
+  jumlahPerluReview   Int      @default(0)
+  petaKolomTerdeteksi Json?
+  diunggahOlehNama    String // nama apa adanya (KDS2 menyimpan teks, bukan relasi)
+  diunggahOlehId      String?
+  diunggahPada        DateTime @default(now())
+
+  diunggahOleh    User?                   @relation(fields: [diunggahOlehId], references: [id])
+  nominatif       NominatifBulanan[]
+  rekap           RekapKehadiranBulanan[]
+  barisBermasalah BarisBermasalah[]
+  barisGagal      BarisGagalUpload[]
+  catatanSebagaiA CatatanPerubahanBatch[] @relation("CatatanBatchA")
+  catatanSebagaiB CatatanPerubahanBatch[] @relation("CatatanBatchB")
+
+  @@index([jenis, tahun, bulan])
+  @@map("upload_batch")
+}
+
+/// Baris gagal / peringatan dari impor massal (padanan `upload_error_rows` KDS2). Peringatan
+/// diberi awalan "[PERINGATAN]" pada `alasan` supaya paritas dengan KDS2 mudah dibuktikan.
+model BarisGagalUpload {
+  id            Int    @id @default(autoincrement())
+  uploadBatchId Int
+  nomorBaris    Int
+  nipDimaksud   String // apa adanya dari file, BUKAN relasi ke pegawai
+  alasan        String
+
+  uploadBatch UploadBatch @relation(fields: [uploadBatchId], references: [id], onDelete: Cascade)
+
+  @@index([uploadBatchId])
+  @@map("upload_error_rows")
+}
+
+/// Antrean review alur standarisasi KDS1.
+model BarisBermasalah {
+  id                 String    @id @default(cuid())
+  uploadBatchId      Int
+  nip                String
+  dataMentah         Json
+  alasanUtama        String
+  detailAlasan       String
+  status             String    @default("Menunggu") // Menunggu/Terselesaikan/Dikecualikan
+  resolvedFields     Json?
+  diselesaikanOlehId String?
+  diselesaikanPada   DateTime?
+  dibuatPada         DateTime  @default(now())
+
+  uploadBatch      UploadBatch @relation(fields: [uploadBatchId], references: [id], onDelete: Cascade)
+  diselesaikanOleh User?       @relation(fields: [diselesaikanOlehId], references: [id])
+
+  @@map("baris_bermasalah")
+}
+
+model KamusKoreksi {
+  id            String   @id @default(cuid())
+  jenisField    String
+  kunciMentah   String
+  nilaiResolusi String
+  catatan       String?
+  dibuatOlehId  String
+  dibuatPada    DateTime @default(now())
+
+  dibuatOleh User @relation(fields: [dibuatOlehId], references: [id])
+
+  @@unique([jenisField, kunciMentah])
+  @@map("kamus_koreksi")
+}
+
+/// Catatan admin kenapa seorang pegawai muncul sbg "baru"/"hilang"/"anomali" di fitur
+/// Bandingkan Batch. Murni dokumentasi; dikunci ke (kategori, nipUtama), bukan ke pasangan
+/// batch yang sedang dibandingkan. Detail lengkap: lihat KDS1.
+model CatatanPerubahanBatch {
+  id             String   @id @default(cuid())
+  uploadBatchAId Int?
+  uploadBatchBId Int?
+  kategori       String // Baru/Hilang/Anomali
+  nipUtama       String
+  nipTerkait     Json?
+  nama           String
+  alasan         String
+  dibuatOlehId   String
+  dibuatPada     DateTime @default(now())
+  diperbaruiPada DateTime @updatedAt
+
+  uploadBatchA UploadBatch? @relation("CatatanBatchA", fields: [uploadBatchAId], references: [id], onDelete: SetNull)
+  uploadBatchB UploadBatch? @relation("CatatanBatchB", fields: [uploadBatchBId], references: [id], onDelete: SetNull)
+  dibuatOleh   User         @relation(fields: [dibuatOlehId], references: [id])
+
+  @@unique([kategori, nipUtama])
+  @@map("catatan_perubahan_batch")
+}
+
+/// Audit perubahan MANUAL saja (tambah pegawai, koreksi rekap). Bentuk mengikuti `audit_log`
+/// KDS2 supaya data lamanya bisa dimigrasikan apa adanya. Upload massal tidak diaudit per-field.
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  namaTabel   String
+  idRecord    String // referensi polimorfik, sengaja bukan foreign key
+  fieldDiubah String
+  nilaiLama   String?
+  nilaiBaru   String?
+  diubahOleh  String
+  diubahPada  DateTime
+  aksi        String // INSERT / UPDATE / DELETE
+
+  @@index([namaTabel, idRecord])
+  @@map("audit_log")
+}
+
+/// Potongan sementara file upload mentah (batas body Vercel ~4,5 MB). Dihapus begitu file
+/// selesai digabung dan diproses.
+model UploadChunk {
+  uploadId   String
+  chunkIndex Int
+  data       Bytes
+  dibuatPada DateTime @default(now())
+
+  @@id([uploadId, chunkIndex])
+  @@map("upload_chunk")
+}
+
+// =========================================================================
+// Nominatif - arsip snapshot bulanan
+// =========================================================================
+
+model NominatifBulanan {
+  id                          Int       @id @default(autoincrement())
+  pegawaiNip                  String
+  bulan                       Int
+  tahun                       Int
+  nama                        String
+  jenisKelamin                String // L / P
+  tanggalLahir                DateTime? @db.Date // opsional: format tarikan SIMPEGA Okt 2026 tidak menyertakannya
+  pendidikanTerakhir          String?
+  agama                       String? // data pribadi spesifik (UU PDP) - jangan masuk ekspor luas
+  jenisPegawaiKode            String
+  statusKepegawaianKode       String
+  golonganKode                String? // ASN wajib; Non-ASN (PTNA/CPTNA) opsional; PTT/AKL kosong
+  jabatanFungsionalDosenKode  String?
+  jabatanFungsionalTendikKode String?
+  jabatanFungsiUmumKode       String?
+  kategoriAkademisiLuarKode   String?
+  unitAsalKode                String
+  tanggalMulaiKerja           DateTime  @db.Date // TMT - dasar validasi rekap
+  uploadBatchId               Int
+  dibuatPada                  DateTime  @default(now())
+
+  pegawai                 Pegawai                           @relation(fields: [pegawaiNip], references: [nip])
+  jenisPegawai            JenisPegawai                      @relation(fields: [jenisPegawaiKode], references: [kode])
+  statusKepegawaian       StatusKepegawaian                 @relation(fields: [statusKepegawaianKode], references: [kode])
+  golongan                Golongan?                         @relation(fields: [golonganKode], references: [kode])
+  jabatanFungsionalDosen  JabatanFungsionalDosen?           @relation(fields: [jabatanFungsionalDosenKode], references: [kode])
+  jabatanFungsionalTendik JabatanFungsionalTendik?          @relation(fields: [jabatanFungsionalTendikKode], references: [kode])
+  jabatanFungsiUmum       JabatanFungsiUmumPelaksana?       @relation(fields: [jabatanFungsiUmumKode], references: [kode])
+  kategoriAkademisiLuar   KategoriAkademisiLuar?            @relation(fields: [kategoriAkademisiLuarKode], references: [kode])
+  unitAsal                UnitAsal                          @relation(fields: [unitAsalKode], references: [kode])
+  uploadBatch             UploadBatch                       @relation(fields: [uploadBatchId], references: [id])
+  jabatanTambahan         NominatifBulananJabatanTambahan[]
+
+  @@unique([pegawaiNip, bulan, tahun])
+  @@index([tahun, bulan])
+  @@map("nominatif_bulanan")
+}
+
+/// Maks 3 slot per snapshot (urutan id = urutan slot). Dasar Remunerasi memakai slot pertama.
+model NominatifBulananJabatanTambahan {
+  id                      Int     @id @default(autoincrement())
+  nominatifBulananId      Int
+  jabatanTambahanRoleKode String
+  unitAsalKode            String?
+  programStudiKode        String?
+  statusPengangkatan      String // Definitif / Plt / Pjs
+
+  nominatifBulanan    NominatifBulanan    @relation(fields: [nominatifBulananId], references: [id], onDelete: Cascade)
+  jabatanTambahanRole JabatanTambahanRole @relation(fields: [jabatanTambahanRoleKode], references: [kode])
+  unitAsal            UnitAsal?           @relation("JabatanTambahanUnit", fields: [unitAsalKode], references: [kode])
+  programStudi        ProgramStudi?       @relation("JabatanTambahanProdi", fields: [programStudiKode], references: [kode])
+
+  @@index([nominatifBulananId])
+  @@map("nominatif_bulanan_jabatan_tambahan")
+}
+
+// =========================================================================
+// Rekap Kehadiran
+// =========================================================================
+
+/// Header rekap per NIP per bulan. Rekap Tahunan TIDAK punya tabel: SUM() on-the-fly dari
+/// RekapKehadiranDetail. Bentuk baris-per-komponen dipertahankan dulu; ukur performa di F3
+/// sebelum memutuskan mengubahnya.
+model RekapKehadiranBulanan {
+  id            Int    @id @default(autoincrement())
+  nip           String
+  bulan         Int
+  tahun         Int
+  uploadBatchId Int
+
+  pegawai     Pegawai                @relation(fields: [nip], references: [nip])
+  uploadBatch UploadBatch            @relation(fields: [uploadBatchId], references: [id])
+  detail      RekapKehadiranDetail[]
+
+  @@unique([nip, bulan, tahun])
+  @@index([tahun, bulan])
+  @@map("rekap_kehadiran_bulanan")
+}
+
+model RekapKehadiranDetail {
+  id                      Int    @id @default(autoincrement())
+  rekapKehadiranBulananId Int
+  komponenKode            String
+  nilai                   String // angka ("3"), durasi ("08:00:00"), atau teks, sesuai tipeNilai
+
+  rekap    RekapKehadiranBulanan @relation(fields: [rekapKehadiranBulananId], references: [id], onDelete: Cascade)
+  komponen KomponenKehadiran     @relation(fields: [komponenKode], references: [kode])
+
+  // Indeks "covering" yang sama dengan KDS2 (2026_09_29_135156) untuk SUM tahunan.
+  @@index([rekapKehadiranBulananId, komponenKode, nilai])
+  @@map("rekap_kehadiran_detail")
+}
+
+/// Koreksi manual atas rekap. jenis "periode": pindahkan komponen untuk rentang tanggal
+/// (bulan yang SELURUHNYA masuk rentang). jenis "angka": pindahkan N hari pada satu bulan
+/// (bulan/tahun/jumlahHari). Angka mengalahkan periode di bulan yang sama.
+model KoreksiRekap {
+  id                Int       @id @default(autoincrement())
+  nip               String
+  jenis             String    @default("periode") // periode / angka
+  dariKomponen      String
+  keKomponen        String? // null = tidak dihitung (pensiun/resign/meninggal)
+  tanggalMulai      DateTime  @db.Date
+  tanggalSelesai    DateTime? @db.Date // null = tanpa batas akhir
+  bulan             Int?
+  tahun             Int?
+  jumlahHari        Int?
+  diterapkanBatchId Int?
+  alasan            String
+  sumber            String?
+  dibuatOleh        String
+  dibuatPada        DateTime
+  dibatalkanPada    DateTime?
+
+  pegawai Pegawai            @relation(fields: [nip], references: [nip])
+  dari    KomponenKehadiran  @relation("KoreksiDariKomponen", fields: [dariKomponen], references: [kode])
+  ke      KomponenKehadiran? @relation("KoreksiKeKomponen", fields: [keKomponen], references: [kode])
+
+  @@index([nip])
+  @@map("koreksi_rekap")
+}
+
+/// Alasan seorang pegawai tidak aktif (Pensiun, Resign, Meninggal dunia, Habis kontrak, batal
+/// masuk). Tidak bertanggal, jadi hanya berlaku untuk tahun terbaru. NIP sengaja bukan
+/// foreign key (catatan bisa dibuat untuk NIP yang belum/tidak ada di snapshot).
+model CatatanStatusPegawai {
+  id          Int      @id @default(autoincrement())
+  nip         String   @unique
+  alasan      String
+  sumber      String?
+  dicatatPada DateTime
+
+  @@map("catatan_status_pegawai")
+}

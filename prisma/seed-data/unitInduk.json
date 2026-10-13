@@ -1,0 +1,154 @@
+[
+  {
+    "kode": "UI-01",
+    "nama": "BPUDA"
+  },
+  {
+    "kode": "UI-02",
+    "nama": "Badan Pengawasan Internal"
+  },
+  {
+    "kode": "UI-03",
+    "nama": "Badan Penjaminan Mutu"
+  },
+  {
+    "kode": "UI-04",
+    "nama": "Direktorat Inovasi"
+  },
+  {
+    "kode": "UI-05",
+    "nama": "Direktorat Kemahasiswaan dan Alumni"
+  },
+  {
+    "kode": "UI-06",
+    "nama": "Direktorat Pendidikan"
+  },
+  {
+    "kode": "UI-07",
+    "nama": "Direktorat Perencanaan, Data dan Informasi, Pemeringkatan, Hubungan Masyarakat, dan Kerja Sama"
+  },
+  {
+    "kode": "UI-08",
+    "nama": "Direktorat Sarana, Prasarana, dan Aset"
+  },
+  {
+    "kode": "UI-09",
+    "nama": "Direktorat Sumber Daya Manusia dan Keuangan"
+  },
+  {
+    "kode": "UI-10",
+    "nama": "Fakultas Ekonomi dan Bisnis"
+  },
+  {
+    "kode": "UI-11",
+    "nama": "Fakultas Ilmu Keolahragaan"
+  },
+  {
+    "kode": "UI-12",
+    "nama": "Fakultas Ilmu Pendidikan"
+  },
+  {
+    "kode": "UI-13",
+    "nama": "Fakultas Ilmu Sosial"
+  },
+  {
+    "kode": "UI-14",
+    "nama": "Fakultas Kedokteran"
+  },
+  {
+    "kode": "UI-15",
+    "nama": "Fakultas Matematika dan Ilmu Pengetahuan Alam"
+  },
+  {
+    "kode": "UI-16",
+    "nama": "Fakultas Psikologi"
+  },
+  {
+    "kode": "UI-17",
+    "nama": "Fakultas Sastra"
+  },
+  {
+    "kode": "UI-18",
+    "nama": "Fakultas Teknik"
+  },
+  {
+    "kode": "UI-19",
+    "nama": "Fakultas Vokasi"
+  },
+  {
+    "kode": "UI-20",
+    "nama": "Lembaga Penelitian dan Pengabdian Kepada Masyarakat"
+  },
+  {
+    "kode": "UI-21",
+    "nama": "Lembaga Pengembangan Pendidikan dan Pembelajaran"
+  },
+  {
+    "kode": "UI-22",
+    "nama": "Sekolah Pascasarjana"
+  },
+  {
+    "kode": "UI-23",
+    "nama": "Sekretariat Universitas"
+  },
+  {
+    "kode": "UI-24",
+    "nama": "UPT Balai Bahasa"
+  },
+  {
+    "kode": "UI-25",
+    "nama": "UPT Kantor Urusan Internasional"
+  },
+  {
+    "kode": "UI-26",
+    "nama": "UPT Laboratorium Pancasila"
+  },
+  {
+    "kode": "UI-27",
+    "nama": "UPT Laboratorium Pendidikan Agama"
+  },
+  {
+    "kode": "UI-28",
+    "nama": "UPT Laboratorium Terpadu"
+  },
+  {
+    "kode": "UI-29",
+    "nama": "UPT Layanan Kesehatan"
+  },
+  {
+    "kode": "UI-30",
+    "nama": "UPT Layanan Pengadaan"
+  },
+  {
+    "kode": "UI-31",
+    "nama": "UPT Lembaga Sertifikasi Profesi"
+  },
+  {
+    "kode": "UI-32",
+    "nama": "UPT Pelaksana Akademik di Kampus Blitar"
+  },
+  {
+    "kode": "UI-33",
+    "nama": "UPT Pengelola Sekolah Laboratorium"
+  },
+  {
+    "kode": "UI-34",
+    "nama": "UPT Perpustakaan"
+  },
+  {
+    "kode": "UI-35",
+    "nama": "UPT Publikasi Ilmiah"
+  },
+  {
+    "kode": "UI-36",
+    "nama": "UPT Pusat Studi Bahasa dan Budaya Indonesia"
+  },
+  {
+    "kode": "UI-37",
+    "nama": "UPT Pusat Teknologi Informasi dan Komunikasi"
+  },
+  {
+    "kode": "UI-38",
+    "nama": "Universitas"
+  }
+]

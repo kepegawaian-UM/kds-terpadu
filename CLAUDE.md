@@ -57,8 +57,9 @@ pegawai (NIP, nama) ke repo ini.** Yang boleh masuk repo hanya data master (unit
 - Perubahan data produksi (KDS2 lokal maupun nanti) selalu: dry-run → backup → eksekusi dalam transaksi → verifikasi → catat.
 
 ## 6. Status (perbarui terus)
-- [ ] F0 Persiapan: nama final, akun (GitHub/Vercel/DB), repo
-- [ ] F1 Fondasi: proyek Next.js, skema Prisma gabungan, auth, layout
+- [ ] F0 Persiapan: nama final ✅ (KDS Terpadu, diputuskan 13 Okt 2026), repo GitHub privat `kds-terpadu` di akun `kepegawaian@um.ac.id` (dibuat pengguna), PostgreSQL 17 lokal (`kds_dev`, `kds_test`). Vercel/Neon DITUNDA sampai sebelum F4.
+- Keputusan 13 Okt 2026: kode KDS1 boleh disalin (tanpa riwayat git); basis Next 16 / React 19 / Prisma 6 seperti KDS1; akses MySQL `kds2_produksi` hanya SELECT (hanya agregat, tanpa menyalin NIP/nama ke repo); data uji sintetis.
+- [ ] F1 Fondasi: proyek Next.js, skema Prisma gabungan, auth, layout. **Sudah (13 Okt 2026, belum di-commit):** kerangka Next 16 + auth/login/layout, `prisma/schema.prisma` gabungan (id Int untuk tabel asal KDS2 agar id bisa dipertahankan di F2; cuid untuk tabel khusus KDS1), seed master dihasilkan dari `kds2_produksi` lewat `scripts/ekspor-master-kds2.ts` (seed KDS1 ternyata beda dari KDS2: unit asal 220 vs 212, prodi 125 vs 132), tes unit + kerangka paritas master (`tests/paritas/master.test.ts`), lint/typecheck/build bersih. **Belum:** migrasi pertama + seed di PostgreSQL (menunggu PostgreSQL lokal terpasang), tes paritas master dijalankan sungguhan, tes login di browser. `lib/services/*`, `lib/excel/exportNominatif.ts`, `exportBandingkan.ts` SENGAJA belum disalin dari KDS1 (terikat id string; dipindah saat F4).
 - [ ] F2 Data: migrasi MySQL KDS2 → PostgreSQL + verifikasi jumlah baris
 - [ ] F3 Modul baca: Nominatif, Rekap Bulanan/Tahunan, Statistik, Dashboard
 - [ ] F4 Modul tulis: Upload Nominatif (+standarisasi KDS1), Upload Rekap, Koreksi, Rekap Individual

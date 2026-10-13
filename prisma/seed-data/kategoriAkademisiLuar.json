@@ -1,0 +1,62 @@
+[
+  {
+    "kode": "AKL-01",
+    "nama": "Praktisi Mengajar",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-02",
+    "nama": "Dosen Akademisi",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-03",
+    "nama": "DPTUM (Dosen Purna Tugas UM)",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-04",
+    "nama": "Masyarakat Ahli",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-05",
+    "nama": "MWA (Majelis Wali Amanat)",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-06",
+    "nama": "Pembicara Tamu",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-07",
+    "nama": "Pembimbing",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-08",
+    "nama": "Peneliti",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-09",
+    "nama": "Pengajar (Team Teaching)",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-10",
+    "nama": "Penguji",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-11",
+    "nama": "AF - Adjunct Faculty",
+    "masukRekapKehadiran": false
+  },
+  {
+    "kode": "AKL-12",
+    "nama": "AP - Adjunct Professor",
+    "masukRekapKehadiran": false
+  }
+]

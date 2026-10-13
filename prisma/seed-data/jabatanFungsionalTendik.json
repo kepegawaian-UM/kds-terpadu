@@ -1,0 +1,97 @@
+[
+  {
+    "kode": "TDK-01",
+    "jabatanPokok": "Analis Kepegawaian",
+    "jenjang": "Penyelia"
+  },
+  {
+    "kode": "TDK-02",
+    "jabatanPokok": "Analis Pengelolaan Keuangan APBN",
+    "jenjang": "Ahli Madya"
+  },
+  {
+    "kode": "TDK-03",
+    "jabatanPokok": "Analis Pengelolaan Keuangan APBN",
+    "jenjang": "Ahli Muda"
+  },
+  {
+    "kode": "TDK-04",
+    "jabatanPokok": "Analis Sumber Daya Manusia Aparatur",
+    "jenjang": "Ahli Muda"
+  },
+  {
+    "kode": "TDK-05",
+    "jabatanPokok": "Arsiparis",
+    "jenjang": "Madya"
+  },
+  {
+    "kode": "TDK-06",
+    "jabatanPokok": "Arsiparis",
+    "jenjang": "Muda"
+  },
+  {
+    "kode": "TDK-07",
+    "jabatanPokok": "Laboran",
+    "jenjang": "-"
+  },
+  {
+    "kode": "TDK-08",
+    "jabatanPokok": "Pelaksana",
+    "jenjang": "-"
+  },
+  {
+    "kode": "TDK-09",
+    "jabatanPokok": "PLP",
+    "jenjang": "Madya"
+  },
+  {
+    "kode": "TDK-10",
+    "jabatanPokok": "PLP",
+    "jenjang": "Muda"
+  },
+  {
+    "kode": "TDK-11",
+    "jabatanPokok": "PLP",
+    "jenjang": "Pelaksana"
+  },
+  {
+    "kode": "TDK-12",
+    "jabatanPokok": "PLP",
+    "jenjang": "Pelaksana lanjutan"
+  },
+  {
+    "kode": "TDK-13",
+    "jabatanPokok": "PLP",
+    "jenjang": "Penyelia"
+  },
+  {
+    "kode": "TDK-14",
+    "jabatanPokok": "Pranata Humas",
+    "jenjang": "Muda"
+  },
+  {
+    "kode": "TDK-15",
+    "jabatanPokok": "Pranata Komputer",
+    "jenjang": "Ahli Muda"
+  },
+  {
+    "kode": "TDK-16",
+    "jabatanPokok": "Pustakawan",
+    "jenjang": "Ahli Madya"
+  },
+  {
+    "kode": "TDK-17",
+    "jabatanPokok": "Pustakawan",
+    "jenjang": "Ahli Muda"
+  },
+  {
+    "kode": "TDK-18",
+    "jabatanPokok": "Pustakawan",
+    "jenjang": "Ahli Pertama"
+  },
+  {
+    "kode": "TDK-19",
+    "jabatanPokok": "Pustakawan",
+    "jenjang": "Mahir"
+  }
+]

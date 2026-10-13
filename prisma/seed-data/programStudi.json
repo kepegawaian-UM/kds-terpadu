@@ -1,0 +1,926 @@
+[
+  {
+    "kode": "PRD-001",
+    "nama": "Bimbingan Konseling Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-002",
+    "nama": "Biologi Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-003",
+    "nama": "D4 Akuntansi",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-004",
+    "nama": "D4 Animasi",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-005",
+    "nama": "D4 Desain Mode",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-006",
+    "nama": "D4 Manajemen Pemasaran",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-007",
+    "nama": "D4 Perpustakaan Digital",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-008",
+    "nama": "D4 Tata Boga",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-009",
+    "nama": "D4 Teknologi Rekayasa Manufaktur",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-010",
+    "nama": "D4 Teknologi Rekayasa Otomotif",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-011",
+    "nama": "D4 Teknologi Rekayasa Pembangkit Energi",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-012",
+    "nama": "D4 Teknologi Rekayasa Sistem Elektronika",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-013",
+    "nama": "D4 Teknologi Rekayasa dan Pemeliharaan Bangunan Sipil",
+    "jenjang": "D4",
+    "unitAsalKode": "UA-028",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-014",
+    "nama": "Fisika Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-015",
+    "nama": "Ilmu Akuntansi Program Doktor",
+    "jenjang": "Program Doktor",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-016",
+    "nama": "Kimia Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-017",
+    "nama": "Manajemen Pendidikan Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-018",
+    "nama": "Manajemen Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-019",
+    "nama": "Matematika Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-020",
+    "nama": "Pendidikan Anak Usia Dini Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-021",
+    "nama": "Pendidikan Bahasa Indonesia Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-022",
+    "nama": "Pendidikan Bahasa Inggris Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-023",
+    "nama": "Pendidikan Biologi Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-024",
+    "nama": "Pendidikan Dasar Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-025",
+    "nama": "Pendidikan Ekonomi Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-026",
+    "nama": "Pendidikan Fisika Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-027",
+    "nama": "Pendidikan Geografi Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-028",
+    "nama": "Pendidikan Khusus Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-029",
+    "nama": "Pendidikan Kimia Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-030",
+    "nama": "Pendidikan Matematika Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-031",
+    "nama": "Pendidikan Olahraga Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-020",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-032",
+    "nama": "Pendidikan Pancasila dan Kewarganegaraan Program Magister",
+    "jenjang": "Program Magister",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-033",
+    "nama": "Pendidikan Profesi Dokter",
+    "jenjang": "Profesi",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-034",
+    "nama": "Pendidikan Profesi Guru",
+    "jenjang": "Profesi",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-035",
+    "nama": "Pendidikan Profesi Psikolog",
+    "jenjang": "Profesi",
+    "unitAsalKode": "UA-025",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-036",
+    "nama": "Pendidikan Sejarah Program Doktor",
+    "jenjang": "Program Doktor",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-037",
+    "nama": "Program Profesi Insinyur",
+    "jenjang": "Program Profesi, Profesi",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-038",
+    "nama": "S1 Akuntansi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-039",
+    "nama": "S1 Arsitektur",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-040",
+    "nama": "S1 Bahasa dan Sastra Indonesia",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-041",
+    "nama": "S1 Bahasa dan Sastra Inggris",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-042",
+    "nama": "S1 Biologi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-043",
+    "nama": "S1 Bioteknologi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-044",
+    "nama": "S1 Desain Komunikasi Visual",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-045",
+    "nama": "S1 Ekonomi Pembangunan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-046",
+    "nama": "S1 Fisika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-047",
+    "nama": "S1 Geografi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-048",
+    "nama": "S1 Gizi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-049",
+    "nama": "S1 Hukum",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-050",
+    "nama": "S1 Ilmu Komunikasi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-051",
+    "nama": "S1 Kebidanan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-052",
+    "nama": "S1 Kedokteran",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-053",
+    "nama": "S1 Keperawatan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-054",
+    "nama": "S1 Kimia",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-055",
+    "nama": "S1 Manajemen",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-056",
+    "nama": "S1 Pariwisata",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-057",
+    "nama": "S1 Pendidikan Administrasi Perkantoran",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-058",
+    "nama": "S1 Pendidikan Akuntansi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-059",
+    "nama": "S1 Pendidikan Bahasa Arab",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-060",
+    "nama": "S1 Pendidikan Bahasa Inggris",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-061",
+    "nama": "S1 Pendidikan Bahasa Jerman",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-062",
+    "nama": "S1 Pendidikan Bahasa, Sastra Indonesia, dan Daerah",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-063",
+    "nama": "S1 Pendidikan Biologi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-064",
+    "nama": "S1 Pendidikan Ekonomi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-065",
+    "nama": "S1 Pendidikan Geografi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-066",
+    "nama": "S1 Pendidikan Ilmu Pengetahuan Alam",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-067",
+    "nama": "S1 Pendidikan Ilmu Pengetahuan Sosial",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-068",
+    "nama": "S1 Pendidikan Kepelatihan Olahraga",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-020",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-069",
+    "nama": "S1 Pendidikan Matematika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-070",
+    "nama": "S1 Pendidikan Sejarah",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-071",
+    "nama": "S1 Pendidikan Seni Pertunjukan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-072",
+    "nama": "S1 Pendidikan Seni Rupa",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-073",
+    "nama": "S1 Pendidikan Tata Boga",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-074",
+    "nama": "S1 Pendidikan Tata Niaga",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-075",
+    "nama": "S1 Pendidikan Teknik Bangunan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-076",
+    "nama": "S1 Pendidikan Teknik Elektro",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-077",
+    "nama": "S1 Pendidikan Teknik Informatika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-078",
+    "nama": "S1 Pendidikan Teknik Mesin",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-079",
+    "nama": "S1 Pendidikan Teknik Otomotif",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-080",
+    "nama": "S1 Psikologi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-025",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-081",
+    "nama": "S1 Sains Aktuaria",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-082",
+    "nama": "S1 Teknik Elektro",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-083",
+    "nama": "S1 Teknik Industri",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-084",
+    "nama": "S1 Teknik Informatika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-085",
+    "nama": "S1 Teknik Lingkungan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-086",
+    "nama": "S1 Teknik Mesin",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-087",
+    "nama": "S1 Teknik Sipil",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-088",
+    "nama": "S2 Ilmu Ekonomi",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-089",
+    "nama": "S2 PJJ Pendidikan Bahasa Inggris",
+    "jenjang": "PJJ, S2",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-090",
+    "nama": "S2 PJJ Pendidikan Dasar",
+    "jenjang": "PJJ, S2",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-091",
+    "nama": "S2 PJJ Pendidikan Matematika",
+    "jenjang": "PJJ, S2",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-092",
+    "nama": "S2 PJJ Pendidikan Nonformal",
+    "jenjang": "PJJ, S2",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-093",
+    "nama": "S2 PJJ Teknologi Pendidikan",
+    "jenjang": "PJJ, S2",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-094",
+    "nama": "S2 Pendidikan Bahasa Indonesia Bagi Penutur Asing",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-095",
+    "nama": "S2 Pendidikan Bahasa Jerman",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-096",
+    "nama": "S2 Pendidikan Bisnis dan Manajemen",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-097",
+    "nama": "S2 Pendidikan Ilmu Pengetahuan Alam",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-098",
+    "nama": "S2 Pendidikan Kejuruan",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-099",
+    "nama": "S2 Pendidikan Non Formal dan Program Studi S3 Pendidikan Non Formal",
+    "jenjang": "S2, S3",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-100",
+    "nama": "S2 Pendidikan Seni",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-101",
+    "nama": "S2 Pendidikan Teknik Elektro dan Informatika",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-102",
+    "nama": "S2 Sains Data dan Kecerdasan Buatan",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-103",
+    "nama": "S2 Teknik Elektro",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-104",
+    "nama": "S2 Teknik Mesin",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-105",
+    "nama": "S2 Teknik Sipil",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-106",
+    "nama": "S3 Pendidikan Bahasa Arab",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-107",
+    "nama": "S3 Pendidikan Kejuruan",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-042",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-108",
+    "nama": "S3 Psikologi Pendidikan",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-025",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-109",
+    "nama": "S3 Teknik Elektro dan Informatika",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-110",
+    "nama": "S3 Teknik Mesin",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-111",
+    "nama": "Teknologi Pembelajaran Program Magister dan Program Doktor",
+    "jenjang": "Program Magister, Program Doktor",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-112",
+    "nama": "S3 Ilmu Ekonomi",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-113",
+    "nama": "Psikologi Program Magister",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-025",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-114",
+    "nama": "S1 Pendidikan Tata Busana",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-027",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-115",
+    "nama": "S1 Pendidikan Kimia",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-116",
+    "nama": "S1 Pendidikan Fisika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-117",
+    "nama": "S1 Pendidikan Bahasa Mandarin",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-118",
+    "nama": "S2 Keguruan Bahasa Arab",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-119",
+    "nama": "Akuntansi Program Magister",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-120",
+    "nama": "Pendidikan Sejarah Program Magister",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-121",
+    "nama": "S1 Matematika",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-024",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-122",
+    "nama": "S3 Ekonomi Pembangunan",
+    "jenjang": "S3",
+    "unitAsalKode": "UA-019",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-123",
+    "nama": "S1 Pendidikan Agama Islam",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-021",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-124",
+    "nama": "S2 PJJ Pendidikan Bahasa Indonesia",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-125",
+    "nama": "S1 Ilmu Sejarah",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-126",
+    "nama": "S1 Pendidikan Sosiologi",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-127",
+    "nama": "S1 Pendidikan Pancasila dan Kewarganegaraan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-128",
+    "nama": "Pendidikan Ilmu Pengetahuan Sosial",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-022",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-129",
+    "nama": "S1 Ilmu Perpustakaan",
+    "jenjang": "S1",
+    "unitAsalKode": "UA-026",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-130",
+    "nama": "S2 Psikologi",
+    "jenjang": "S2",
+    "unitAsalKode": "UA-025",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-131",
+    "nama": "Pendidikan Profesi Bidan",
+    "jenjang": "Profesi",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  },
+  {
+    "kode": "PRD-132",
+    "nama": "Profesi Ners",
+    "jenjang": "Profesi",
+    "unitAsalKode": "UA-023",
+    "statusValidasi": "Draft"
+  }
+]

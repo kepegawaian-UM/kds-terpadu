@@ -1,0 +1,98 @@
+[
+  {
+    "kode": "CAP",
+    "nama": "Cuti Alasan Penting",
+    "tipeNilai": "integer",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "CTB",
+    "nama": "Cuti Besar",
+    "tipeNilai": "integer",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "CTH",
+    "nama": "Cuti Tahunan",
+    "tipeNilai": "integer",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "CTLN",
+    "nama": "Cuti di Luar Tanggungan Negara",
+    "tipeNilai": "integer",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "CTM",
+    "nama": "Cuti Melahirkan",
+    "tipeNilai": "integer",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "CUTI_ANAK_KE",
+    "nama": "Cuti Anak Ke-",
+    "tipeNilai": "teks",
+    "kategori": "Cuti"
+  },
+  {
+    "kode": "I",
+    "nama": "Izin",
+    "tipeNilai": "integer",
+    "kategori": "Ketidakhadiran"
+  },
+  {
+    "kode": "JENIS_SHIFT",
+    "nama": "Jenis Shift",
+    "tipeNilai": "teks",
+    "kategori": "Rekap"
+  },
+  {
+    "kode": "JUMLAH_MASUK_NYATA",
+    "nama": "Jumlah Masuk Nyata",
+    "tipeNilai": "integer",
+    "kategori": "Rekap"
+  },
+  {
+    "kode": "S",
+    "nama": "Sakit",
+    "tipeNilai": "integer",
+    "kategori": "Ketidakhadiran"
+  },
+  {
+    "kode": "SD",
+    "nama": "Sakit + Surat Dokter",
+    "tipeNilai": "integer",
+    "kategori": "Ketidakhadiran"
+  },
+  {
+    "kode": "SIGMA_HARI",
+    "nama": "Σ Hari",
+    "tipeNilai": "integer",
+    "kategori": "Rekap"
+  },
+  {
+    "kode": "TB",
+    "nama": "Tugas Belajar",
+    "tipeNilai": "integer",
+    "kategori": "Tugas"
+  },
+  {
+    "kode": "TD",
+    "nama": "Tugas Dinas",
+    "tipeNilai": "integer",
+    "kategori": "Tugas"
+  },
+  {
+    "kode": "TK",
+    "nama": "Tanpa Keterangan",
+    "tipeNilai": "integer",
+    "kategori": "Ketidakhadiran"
+  },
+  {
+    "kode": "TOTAL",
+    "nama": "Total",
+    "tipeNilai": "integer",
+    "kategori": "Rekap"
+  }
+]

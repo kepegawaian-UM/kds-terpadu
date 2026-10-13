@@ -1,11 +1,34 @@
 # KDS Terpadu
 
-Aplikasi tunggal untuk Seksi Kinerja, Disiplin, dan Sistem Informasi (KDS), Subdirektorat SDM, Universitas Negeri Malang:
-standarisasi nominatif (KDS1) + arsip nominatif dan rekap kehadiran (KDS2). Status: **tahap perencanaan** (belum ada kode aplikasi).
+Aplikasi tunggal Seksi Kinerja, Disiplin, dan Sistem Informasi (KDS), Subdirektorat SDM, Universitas
+Negeri Malang: menyatukan KDS1 (standarisasi nominatif) dan KDS2 (arsip nominatif dan rekap kehadiran).
+Brief, keputusan, dan status proyek ada di [CLAUDE.md](CLAUDE.md); rancangan di [docs/](docs/).
 
-Mulai dari sini:
-- [`CLAUDE.md`](CLAUDE.md) brief proyek dan status
-- [`docs/01-rancangan.md`](docs/01-rancangan.md) rancangan, tahapan, risiko
-- [`docs/02-peta-fitur-kds2.md`](docs/02-peta-fitur-kds2.md) fitur yang harus dipindahkan
-- [`docs/03-akun-dan-hosting.md`](docs/03-akun-dan-hosting.md) akun dan hosting untuk pemula
-- [`PROMPT-PEMBUKA.md`](PROMPT-PEMBUKA.md) prompt pertama untuk sesi Claude Code
+**Stack:** Next.js 16 (App Router) · TypeScript · Prisma 6 · PostgreSQL · NextAuth (satu admin) · Tailwind 4 · exceljs · Vitest.
+
+## Menjalankan di komputer lokal
+Prasyarat: Node.js 22, PostgreSQL 17 (dua database kosong: `kds_dev` dan `kds_test`).
+
+```bash
+npm install
+cp .env.example .env          # lalu isi DATABASE_URL, AUTH_SECRET, SEED_ADMIN_*
+npx prisma migrate dev        # membuat tabel
+npx prisma db seed            # master data (dari KDS2) + akun admin
+npm run dev                   # http://localhost:3000
+```
+
+## Tes
+```bash
+npm test            # unit + paritas (paritas dilewati bila TEST_DATABASE_URL / MySQL KDS2 tidak ada)
+npm run typecheck
+npm run lint
+```
+Siapkan database tes sekali: `DATABASE_URL=<kds_test> npx prisma migrate deploy && npx prisma db seed`
+(atau `npm run db:reset` dengan `DATABASE_URL` menunjuk `kds_test`).
+
+## Master data
+`prisma/seed-data/*.json` dihasilkan dari tabel master KDS2 (kunci jawaban), bukan ditulis tangan:
+`npx tsx scripts/ekspor-master-kds2.ts` (butuh MySQL `kds2_produksi` lokal; hanya-baca).
+
+## Aturan data
+Repo ini **tidak boleh** memuat data pegawai asli (NIP, nama). Data uji harus sintetis; rahasia hanya di `.env`.

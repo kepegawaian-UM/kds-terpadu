@@ -1,0 +1,50 @@
+[
+  {
+    "kode": "UMM-01",
+    "nama": "Bendahara Penerimaan"
+  },
+  {
+    "kode": "UMM-02",
+    "nama": "Bendahara Pengeluaran"
+  },
+  {
+    "kode": "UMM-03",
+    "nama": "Dokter Pertama"
+  },
+  {
+    "kode": "UMM-04",
+    "nama": "Operator Layanan Operasional"
+  },
+  {
+    "kode": "UMM-05",
+    "nama": "Penelaah Teknis Kebijakan"
+  },
+  {
+    "kode": "UMM-06",
+    "nama": "Pengadministrasi Perkantoran"
+  },
+  {
+    "kode": "UMM-07",
+    "nama": "Pengelola Layanan Operasional"
+  },
+  {
+    "kode": "UMM-08",
+    "nama": "Pengelola Sistem dan Teknologi Informasi"
+  },
+  {
+    "kode": "UMM-09",
+    "nama": "Pengolah Data dan Informasi"
+  },
+  {
+    "kode": "UMM-10",
+    "nama": "Teknisi Laboratorium"
+  },
+  {
+    "kode": "UMM-11",
+    "nama": "Belum Diketahui (Perlu Verifikasi Manual)"
+  },
+  {
+    "kode": "UMM-12",
+    "nama": "Pelaksana"
+  }
+]

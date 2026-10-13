@@ -1,0 +1,1062 @@
+[
+  {
+    "kode": "UA-001",
+    "nama": "Akademik dan Kemahasiswaan FEB",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-002",
+    "nama": "Akademik dan Kemahasiswaan FIK",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-003",
+    "nama": "Akademik dan Kemahasiswaan FIP",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-004",
+    "nama": "Akademik dan Kemahasiswaan FIS",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-005",
+    "nama": "Akademik dan Kemahasiswaan FMIPA",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-006",
+    "nama": "Akademik dan Kemahasiswaan FPsi",
+    "unitIndukKode": "UI-16"
+  },
+  {
+    "kode": "UA-007",
+    "nama": "Akademik dan Kemahasiswaan FS",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-008",
+    "nama": "Akademik dan Kemahasiswaan FT",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-009",
+    "nama": "Akademik dan Kemahasiswaan FV",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-010",
+    "nama": "Badan Pengawasan Internal",
+    "unitIndukKode": "UI-02"
+  },
+  {
+    "kode": "UA-011",
+    "nama": "Badan Penjaminan Mutu",
+    "unitIndukKode": "UI-03"
+  },
+  {
+    "kode": "UA-012",
+    "nama": "BPUDA",
+    "unitIndukKode": "UI-01"
+  },
+  {
+    "kode": "UA-013",
+    "nama": "Direktorat Inovasi",
+    "unitIndukKode": "UI-04"
+  },
+  {
+    "kode": "UA-014",
+    "nama": "Direktorat Kemahasiswaan dan Alumni",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-015",
+    "nama": "Direktorat Pendidikan",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-016",
+    "nama": "Direktorat Perencanaan, Data dan Informasi, Pemeringkatan, Hubungan Masyarakat, dan Kerja Sama",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-017",
+    "nama": "Direktorat Sarana, Prasarana, dan Aset",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-018",
+    "nama": "Direktorat Sumber Daya Manusia dan Keuangan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-019",
+    "nama": "Fakultas Ekonomi dan Bisnis",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-020",
+    "nama": "Fakultas Ilmu Keolahragaan",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-021",
+    "nama": "Fakultas Ilmu Pendidikan",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-022",
+    "nama": "Fakultas Ilmu Sosial",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-023",
+    "nama": "Fakultas Kedokteran",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-024",
+    "nama": "Fakultas Matematika dan Ilmu Pengetahuan Alam",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-025",
+    "nama": "Fakultas Psikologi",
+    "unitIndukKode": "UI-16"
+  },
+  {
+    "kode": "UA-026",
+    "nama": "Fakultas Sastra",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-027",
+    "nama": "Fakultas Teknik",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-028",
+    "nama": "Fakultas Vokasi",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-029",
+    "nama": "Hukum dan Tata Laksana",
+    "unitIndukKode": "UI-23"
+  },
+  {
+    "kode": "UA-030",
+    "nama": "Keuangan dan Kepegawaian FEB",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-031",
+    "nama": "Keuangan dan Kepegawaian FIP",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-032",
+    "nama": "Keuangan dan Kepegawaian FMIPA",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-033",
+    "nama": "Keuangan dan Kepegawaian FS",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-034",
+    "nama": "Keuangan dan Kepegawaian FT",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-035",
+    "nama": "Klinik Pratama UPT Layanan Kesehatan",
+    "unitIndukKode": "UI-29"
+  },
+  {
+    "kode": "UA-036",
+    "nama": "Lembaga Penelitian dan Pengabdian Kepada Masyarakat",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-037",
+    "nama": "Lembaga Pengembangan Pendidikan dan Pembelajaran",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-038",
+    "nama": "Program Lembaga Penelitian dan Pengabdian Kepada Masyarakat",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-039",
+    "nama": "Program Lembaga Pengembangan Pendidikan dan Pembelajaran",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-040",
+    "nama": "Pusat Bisnis BPUDA",
+    "unitIndukKode": "UI-01"
+  },
+  {
+    "kode": "UA-041",
+    "nama": "Pustakawan UPT Perpustakaan",
+    "unitIndukKode": "UI-34"
+  },
+  {
+    "kode": "UA-042",
+    "nama": "Sekolah Pascasarjana",
+    "unitIndukKode": "UI-22"
+  },
+  {
+    "kode": "UA-043",
+    "nama": "Sekretariat Universitas",
+    "unitIndukKode": "UI-23"
+  },
+  {
+    "kode": "UA-044",
+    "nama": "Seksi Akuntansi dan Pelaporan Keuangan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-045",
+    "nama": "Seksi Anggaran dan Perpajakan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-046",
+    "nama": "Seksi Data",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-047",
+    "nama": "Seksi Evaluasi Hasil Belajar",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-048",
+    "nama": "Seksi Humas",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-049",
+    "nama": "Seksi Informasi",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-050",
+    "nama": "Seksi Karir dan Alumni",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-051",
+    "nama": "Seksi Kerjasama",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-052",
+    "nama": "Seksi Kesejahteraan dan Kewirausahaan",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-053",
+    "nama": "Seksi Minat dan Bakat",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-054",
+    "nama": "Seksi Monitoring dan Evaluasi",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-055",
+    "nama": "Seksi Pelaporan Aset",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-056",
+    "nama": "Seksi Penalaran",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-057",
+    "nama": "Seksi Pengelolaan Aset",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-058",
+    "nama": "Seksi Pengelolaan Asrama",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-059",
+    "nama": "Seksi Pengelolaan Gedung Serbaguna dan Prasarana Olahraga",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-060",
+    "nama": "Seksi Pengelolaan GKB dan Keamanan",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-061",
+    "nama": "Seksi Perbendaharaan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-062",
+    "nama": "Seksi Perencanaan Program",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-063",
+    "nama": "Seksi Registrasi dan Statistik",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-064",
+    "nama": "Seksi Rumah Tangga",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-065",
+    "nama": "Seksi Tata Usaha, Direktorat Inovasi",
+    "unitIndukKode": "UI-04"
+  },
+  {
+    "kode": "UA-066",
+    "nama": "Seksi Tenaga Dosen",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-067",
+    "nama": "Seksi Tenaga Kependidikan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-068",
+    "nama": "Sub Direktorat Hubungan Masyarakat dan Kerja Sama",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-069",
+    "nama": "Sub Direktorat Kesejahteraan, Kewirausahaan, Karir dan Alumni",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-070",
+    "nama": "Sub Direktorat Keuangan",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-071",
+    "nama": "Sub Direktorat Layanan Pendidikan",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-072",
+    "nama": "Sub Direktorat Minat, Bakat, dan Penalaran",
+    "unitIndukKode": "UI-05"
+  },
+  {
+    "kode": "UA-073",
+    "nama": "Sub Direktorat Mobilitas dan Pangkalan Data Pendidikan Tinggi",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-074",
+    "nama": "Sub Direktorat Pemberdayaan Aset",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-075",
+    "nama": "Sub Direktorat Pemeringkatan",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-076",
+    "nama": "Sub Direktorat Sarana dan Prasarana",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-077",
+    "nama": "Sub Direktorat Seleksi",
+    "unitIndukKode": "UI-06"
+  },
+  {
+    "kode": "UA-078",
+    "nama": "Sub Direktorat Sumber Daya Manusia",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-079",
+    "nama": "Tata Usaha Badan Pengawasan Internal",
+    "unitIndukKode": "UI-02"
+  },
+  {
+    "kode": "UA-080",
+    "nama": "Tata Usaha Badan Penjaminan Mutu",
+    "unitIndukKode": "UI-03"
+  },
+  {
+    "kode": "UA-081",
+    "nama": "Tata Usaha Fakultas Ekonomi dan Bisnis",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-082",
+    "nama": "Tata Usaha Fakultas Ilmu Pendidikan",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-083",
+    "nama": "Tata Usaha Fakultas Ilmu Sosial",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-084",
+    "nama": "Tata Usaha Fakultas Kedokteran",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-085",
+    "nama": "Tata Usaha Fakultas Matematika dan Ilmu Pengetahuan Alam",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-086",
+    "nama": "Tata Usaha Fakultas Sastra",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-087",
+    "nama": "Tata Usaha Fakultas Teknik",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-088",
+    "nama": "Tata Usaha Sekolah Pascasarjana",
+    "unitIndukKode": "UI-22"
+  },
+  {
+    "kode": "UA-089",
+    "nama": "Tata Usaha Sekretariat Universitas",
+    "unitIndukKode": "UI-23"
+  },
+  {
+    "kode": "UA-090",
+    "nama": "Tata Usaha UPT Kantor Urusan Internasional",
+    "unitIndukKode": "UI-25"
+  },
+  {
+    "kode": "UA-091",
+    "nama": "Tata Usaha UPT Laboratorium Pancasila",
+    "unitIndukKode": "UI-26"
+  },
+  {
+    "kode": "UA-092",
+    "nama": "Tata Usaha UPT Laboratorium Pendidikan Agama",
+    "unitIndukKode": "UI-27"
+  },
+  {
+    "kode": "UA-093",
+    "nama": "Tata Usaha UPT Layanan Pengadaan",
+    "unitIndukKode": "UI-30"
+  },
+  {
+    "kode": "UA-094",
+    "nama": "Tata Usaha UPT Pelaksana Akademik di Kampus Blitar",
+    "unitIndukKode": "UI-32"
+  },
+  {
+    "kode": "UA-095",
+    "nama": "Tata Usaha UPT Pengelola Sekolah Laboratorium",
+    "unitIndukKode": "UI-33"
+  },
+  {
+    "kode": "UA-096",
+    "nama": "Tata Usaha UPT Perpustakaan",
+    "unitIndukKode": "UI-34"
+  },
+  {
+    "kode": "UA-097",
+    "nama": "Tata Usaha UPT Pusat Studi Bahasa dan Budaya Indonesia",
+    "unitIndukKode": "UI-36"
+  },
+  {
+    "kode": "UA-098",
+    "nama": "Tata Usaha UPT Pusat Teknologi Informasi dan Komunikasi",
+    "unitIndukKode": "UI-37"
+  },
+  {
+    "kode": "UA-099",
+    "nama": "Umum dan Aset FEB",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-100",
+    "nama": "Umum dan Aset FIP",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-101",
+    "nama": "Umum dan Aset FMIPA",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-102",
+    "nama": "Umum dan Aset FS",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-103",
+    "nama": "Umum dan Aset FT",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-104",
+    "nama": "Umum dan Keuangan Lembaga Penelitian dan Pengabdian Kepada Masyarakat",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-105",
+    "nama": "Umum dan Keuangan Lembaga Pengembangan Pendidikan dan Pembelajaran",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-106",
+    "nama": "Umum FIK",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-107",
+    "nama": "Umum FIS",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-108",
+    "nama": "Umum FPsi",
+    "unitIndukKode": "UI-16"
+  },
+  {
+    "kode": "UA-109",
+    "nama": "Umum FV",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-110",
+    "nama": "UPT Balai Bahasa",
+    "unitIndukKode": "UI-24"
+  },
+  {
+    "kode": "UA-111",
+    "nama": "UPT Kantor Urusan Internasional",
+    "unitIndukKode": "UI-25"
+  },
+  {
+    "kode": "UA-112",
+    "nama": "UPT Laboratorium Pancasila",
+    "unitIndukKode": "UI-26"
+  },
+  {
+    "kode": "UA-113",
+    "nama": "UPT Laboratorium Pendidikan Agama",
+    "unitIndukKode": "UI-27"
+  },
+  {
+    "kode": "UA-114",
+    "nama": "UPT Laboratorium Terpadu",
+    "unitIndukKode": "UI-28"
+  },
+  {
+    "kode": "UA-115",
+    "nama": "UPT Layanan Kesehatan",
+    "unitIndukKode": "UI-29"
+  },
+  {
+    "kode": "UA-116",
+    "nama": "UPT Layanan Pengadaan",
+    "unitIndukKode": "UI-30"
+  },
+  {
+    "kode": "UA-117",
+    "nama": "UPT Lembaga Sertifikasi Profesi",
+    "unitIndukKode": "UI-31"
+  },
+  {
+    "kode": "UA-118",
+    "nama": "UPT Pelaksana Akademik di Kampus Blitar",
+    "unitIndukKode": "UI-32"
+  },
+  {
+    "kode": "UA-119",
+    "nama": "UPT Pengelola Sekolah Laboratorium",
+    "unitIndukKode": "UI-33"
+  },
+  {
+    "kode": "UA-120",
+    "nama": "UPT Perpustakaan",
+    "unitIndukKode": "UI-34"
+  },
+  {
+    "kode": "UA-121",
+    "nama": "UPT Publikasi Ilmiah",
+    "unitIndukKode": "UI-35"
+  },
+  {
+    "kode": "UA-122",
+    "nama": "UPT Pusat Studi Bahasa dan Budaya Indonesia",
+    "unitIndukKode": "UI-36"
+  },
+  {
+    "kode": "UA-123",
+    "nama": "UPT Pusat Teknologi Informasi dan Komunikasi",
+    "unitIndukKode": "UI-37"
+  },
+  {
+    "kode": "UA-124",
+    "nama": "Departemen Administrasi Pendidikan",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-125",
+    "nama": "Departemen Akuntansi",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-126",
+    "nama": "Departemen Bimbingan Konseling",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-127",
+    "nama": "Departemen Biologi",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-128",
+    "nama": "Departemen Bisnis Terapan",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-129",
+    "nama": "Departemen Ekonomi Pembangunan",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-130",
+    "nama": "Departemen Fisika",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-131",
+    "nama": "Departemen Geografi",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-132",
+    "nama": "Departemen Hukum dan Kewarganegaraan",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-133",
+    "nama": "Departemen Ilmu Keolahragaan",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-134",
+    "nama": "Departemen Ilmu Kesehatan Masyarakat",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-135",
+    "nama": "Departemen Industri Kreatif",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-136",
+    "nama": "Departemen Kebidanan",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-137",
+    "nama": "Departemen Kedokteran",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-138",
+    "nama": "Departemen Kependidikan Sekolah Dasar dan Prasekolah",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-139",
+    "nama": "Departemen Keperawatan",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-140",
+    "nama": "Departemen Kimia",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-141",
+    "nama": "Departemen Manajemen",
+    "unitIndukKode": "UI-10"
+  },
+  {
+    "kode": "UA-142",
+    "nama": "Departemen Matematika",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-143",
+    "nama": "Departemen Pendidikan Anak Usia Dini",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-144",
+    "nama": "Departemen Pendidikan IPA",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-145",
+    "nama": "Departemen Pendidikan Jasmani, Kesehatan, dan Rekreasi",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-146",
+    "nama": "Departemen Pendidikan Kepelatihan Olahraga",
+    "unitIndukKode": "UI-11"
+  },
+  {
+    "kode": "UA-147",
+    "nama": "Departemen Pendidikan Luar Biasa",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-148",
+    "nama": "Departemen Pendidikan Luar Sekolah",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-149",
+    "nama": "Departemen Pendidikan Tata Boga dan Busana",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-150",
+    "nama": "Departemen Psikologi",
+    "unitIndukKode": "UI-16"
+  },
+  {
+    "kode": "UA-151",
+    "nama": "Departemen Sains Terapan",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-152",
+    "nama": "Departemen Sastra Arab",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-153",
+    "nama": "Departemen Sastra Indonesia",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-154",
+    "nama": "Departemen Sastra Inggris",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-155",
+    "nama": "Departemen Sastra Jerman",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-156",
+    "nama": "Departemen Sejarah",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-157",
+    "nama": "Departemen Seni dan Desain",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-158",
+    "nama": "Departemen Sosiologi",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-159",
+    "nama": "Departemen Teknik Elektro dan Informatika",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-160",
+    "nama": "Departemen Teknik Mesin dan Industri",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-161",
+    "nama": "Departemen Teknik Sipil dan Perencanaan",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-162",
+    "nama": "Departemen Teknologi Pendidikan",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-163",
+    "nama": "Departemen Teknologi Rekayasa",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-164",
+    "nama": "Program Studi Diploma IV Animasi",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-165",
+    "nama": "Program Studi Diploma IV Teknologi Rekayasa dan Pemeliharaan Bangunan Sipil",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-166",
+    "nama": "Program Studi Diploma IV Teknologi Rekayasa Pembangkit Energi",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-167",
+    "nama": "Program Studi Diploma IV Teknologi Rekayasa Sistem Elektronika",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-168",
+    "nama": "Program Studi Ilmu Komunikasi",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-169",
+    "nama": "Program Studi Pendidikan Dasar",
+    "unitIndukKode": "UI-22"
+  },
+  {
+    "kode": "UA-170",
+    "nama": "Program Studi Pendidikan Ilmu Pengetahuan Sosial",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-171",
+    "nama": "Program Studi S1 - Ilmu Komunikasi",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-172",
+    "nama": "Program Studi S1 Pariwisata",
+    "unitIndukKode": "UI-19"
+  },
+  {
+    "kode": "UA-173",
+    "nama": "Program Studi S2 - Pendidikan Kejuruan",
+    "unitIndukKode": "UI-22"
+  },
+  {
+    "kode": "UA-174",
+    "nama": "Seksi Data dan Informasi",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-175",
+    "nama": "Seksi Kinerja, Disiplin, dan Sistem Informasi SDM",
+    "unitIndukKode": "UI-09"
+  },
+  {
+    "kode": "UA-176",
+    "nama": "Sub Direktorat Data dan Informasi",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-177",
+    "nama": "Sub Direktorat Perencanaan, Monitoring, dan Evaluasi",
+    "unitIndukKode": "UI-07"
+  },
+  {
+    "kode": "UA-178",
+    "nama": "Universitas",
+    "unitIndukKode": "UI-38"
+  },
+  {
+    "kode": "UA-179",
+    "nama": "Unit Kerja Belum Diketahui (Perlu Verifikasi Manual)",
+    "unitIndukKode": "UI-38"
+  },
+  {
+    "kode": "UA-180",
+    "nama": "Pusat Evaluasi Pendidikan",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-181",
+    "nama": "Pusat Layanan Penyandang Berkebutuhan Khusus",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-182",
+    "nama": "Pusat Praktik Kerja dan Pengalaman Lapangan",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-183",
+    "nama": "Pusat Bimbingan Konseling Karier dan Kewirausahaan",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-184",
+    "nama": "Pusat Media dan Sumber Belajar",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-185",
+    "nama": "Pusat Kurikulum dan Pembelajaran",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-186",
+    "nama": "Pusat Mata Kuliah Universiter",
+    "unitIndukKode": "UI-21"
+  },
+  {
+    "kode": "UA-187",
+    "nama": "Pusat Kesehatan dan Pangan",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-188",
+    "nama": "Pusat Gender dan Kependudukan",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-189",
+    "nama": "Pusat Sumber Daya Wilayah",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-190",
+    "nama": "Pusat Sains dan Rekayasa",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-191",
+    "nama": "Pusat Pendidikan",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-192",
+    "nama": "Pusat Ekonomi Humaniora dan Pariwisata",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-193",
+    "nama": "Pusat Etik Ilmiah",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-194",
+    "nama": "Pusat Lingkungan Mitigasi dan Kebencanaan",
+    "unitIndukKode": "UI-20"
+  },
+  {
+    "kode": "UA-195",
+    "nama": "Laboratorium Mineral dan Material Maju",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-196",
+    "nama": "Laboratorium Pendidikan Tata Busana",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-197",
+    "nama": "Laboratorium Pendidikan Tata Boga",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-198",
+    "nama": "Laboratorium Drama dan Inovasi Perpustakaan",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-199",
+    "nama": "Laboratorium Pembelajaran Bahasa",
+    "unitIndukKode": "UI-17"
+  },
+  {
+    "kode": "UA-200",
+    "nama": "Laboratorium Kedokteran",
+    "unitIndukKode": "UI-14"
+  },
+  {
+    "kode": "UA-201",
+    "nama": "Laboratorium Psikologi",
+    "unitIndukKode": "UI-16"
+  },
+  {
+    "kode": "UA-202",
+    "nama": "Laboratorium Pendidikan IPA",
+    "unitIndukKode": "UI-15"
+  },
+  {
+    "kode": "UA-203",
+    "nama": "Laboratorium Ilmu Komunikasi",
+    "unitIndukKode": "UI-13"
+  },
+  {
+    "kode": "UA-204",
+    "nama": "Laboratorium Pendidikan Luar Sekolah",
+    "unitIndukKode": "UI-12"
+  },
+  {
+    "kode": "UA-205",
+    "nama": "Asrama Matahari (Kampus II)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-206",
+    "nama": "Asrama Mawar (Kampus III)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-207",
+    "nama": "Asrama Aster dan Edelweis (Kampus Induk)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-208",
+    "nama": "Asrama Dahlia (Kampus Induk)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-209",
+    "nama": "Asrama Tulip (Kampus Induk)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-210",
+    "nama": "Asrama Soka dan Lily (Kampus Induk)",
+    "unitIndukKode": "UI-08"
+  },
+  {
+    "kode": "UA-211",
+    "nama": "Bistrovia",
+    "unitIndukKode": "UI-18"
+  },
+  {
+    "kode": "UA-212",
+    "nama": "Pusat Unggulan IPTEKS Disruptive Learning Innovation (DLI)",
+    "unitIndukKode": "UI-04"
+  }
+]
