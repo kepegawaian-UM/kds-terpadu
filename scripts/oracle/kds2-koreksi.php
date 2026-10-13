@@ -17,14 +17,17 @@ declare(strict_types=1);
 
 require __DIR__.'/sqlite-umum.php';
 
+use App\Http\Requests\KoreksiRekapRequest;
 use App\Models\KoreksiRekap;
 use App\Models\User;
+use App\Services\KoreksiRekapImporter;
 use App\Services\KoreksiRekapService;
 use App\Services\RekapKehadiranImporter;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /** Salinan KoreksiRekapController::buatDariRequest (data sudah tervalidasi). */
 function buatDariData(array $data, string $pengguna): KoreksiRekap
@@ -102,6 +105,31 @@ foreach ($masuk['kasus'] as $kasus) {
                         $service->koreksiBerlakuUntukNip($langkah['nip'], (int) $langkah['tahun'])
                     ),
                     'komponenTersedia' => $service->komponenTersedia()->all(),
+                    'imporKoreksi' => (function () use ($langkah) {
+                        if (isset($langkah['tulisBerkas'])) {
+                            tulisBerkas($langkah['berkas'], $langkah['tulisBerkas']);
+                        }
+                        $berkas = new UploadedFile($langkah['berkas'], 'koreksi.xlsx', null, null, true);
+                        $importer = app(KoreksiRekapImporter::class);
+                        $hasil = $importer->parse($berkas);
+                        $keluar = ['parse' => $hasil, 'simpan' => null];
+                        if (! empty($langkah['simpan']) && ! isset($hasil['galat'])) {
+                            $keluar['simpan'] = $importer->simpan($hasil['baris'], $langkah['pengguna'] ?? 'system');
+                        }
+
+                        return $keluar;
+                    })(),
+                    'validasi' => (function () use ($langkah) {
+                        $request = KoreksiRekapRequest::create('/koreksi-rekap', 'POST', $langkah['input']);
+                        $request->setContainer(app())->setRedirector(app('redirect'));
+                        try {
+                            $request->validateResolved();
+
+                            return ['galat' => null];
+                        } catch (ValidationException $e) {
+                            return ['galat' => $e->errors()];
+                        }
+                    })(),
                 };
                 $hasilLangkah[] = ['hasil' => $hasil, 'galat' => null];
             } catch (Throwable $e) {
