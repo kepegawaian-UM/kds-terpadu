@@ -1,0 +1,23 @@
+# dependensi dan hasil build
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# rahasia dan data lokal
+.env
+.env.*
+!.env.example
+*.pem
+*.sql
+*.xlsx
+*.xls
+*.csv
+
+# lain-lain
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+Thumbs.db
