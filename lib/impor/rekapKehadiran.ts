@@ -15,34 +15,13 @@ import { Prisma, type PrismaClient } from "@prisma/client";
 import { type BarisSheet, bacaSheet, type NilaiSel } from "@/lib/upload/bacaSheet";
 import { periksaBerkas } from "@/lib/upload/penjagaBerkas";
 
+import { terapkanUntukBulan, type HasilTerapan } from "@/lib/koreksi/layanan";
+
 import { phpLtrim, phpSamaTanpaHuruf, phpTrim, strLimit } from "./phpString";
 
-/** config/rekap_kehadiran.php (KDS2); kesamaannya dibuktikan tes paritas. Posisi kolom 1-based. */
-export const CONFIG_REKAP = {
-  kolomHeaderRows: 1,
-  kolomBulan: 5,
-  kolomNip: 21,
-  kolomKomponen: [
-    [6, "SIGMA_HARI"],
-    [7, "I"],
-    [8, "S"],
-    [9, "SD"],
-    [10, "TD"],
-    [11, "TB"],
-    [12, "TK"],
-    [13, "CTH"],
-    [14, "CTM"],
-    [15, "CTB"],
-    [16, "CAP"],
-    [17, "CTLN"],
-    [18, "TOTAL"],
-    [19, "JUMLAH_MASUK_NYATA"],
-    [20, "JENIS_SHIFT"],
-    [22, "CUTI_ANAK_KE"],
-  ] as readonly (readonly [number, string])[],
-  namaBulan: ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
-} as const;
+import { CONFIG_REKAP } from "./konfigRekap";
 
+export { CONFIG_REKAP };
 export const JUMLAH_KOLOM_REKAP = Math.max(...CONFIG_REKAP.kolomKomponen.map(([p]) => p));
 const JENIS_PEGAWAI_DIIZINKAN = ["DSN", "TDK"];
 const AWALAN_PERINGATAN = "[PERINGATAN] ";
@@ -249,8 +228,9 @@ export type PenggunaUpload = { id: string | null; nama: string };
 
 /**
  * Tahap SIMPAN: membaca ulang dan memvalidasi di dalam transaksi (agar sama dengan keadaan saat menulis),
- * lalu menulis massal. Semua atau tidak sama sekali. `setelahTulis` dipanggil di transaksi yang sama
- * (dipakai F4.2 untuk menerapkan ulang Koreksi Rekap).
+ * lalu menulis massal. Semua atau tidak sama sekali. Koreksi Rekap aktif untuk bulan itu diterapkan ulang di
+ * transaksi yang SAMA (upload menimpa angka mentah; koreksi manual tidak boleh hilang), seperti controller KDS2.
+ * `sesudahTulis` (opsional) dipanggil di transaksi yang sama sebelum selesai (dipakai tes untuk membuktikan atomisitas).
  */
 export async function simpanRekap(
   prisma: PrismaClient,
@@ -258,8 +238,8 @@ export async function simpanRekap(
   namaFileAsli: string,
   opsi: OpsiRekap,
   pengguna: PenggunaUpload,
-  setelahTulis?: (tx: Prisma.TransactionClient, batchId: number) => Promise<void>,
-): Promise<{ batchId: number; ringkasan: RingkasanRekap }> {
+  sesudahTulis?: (tx: Prisma.TransactionClient, batchId: number) => Promise<void>,
+): Promise<{ batchId: number; ringkasan: RingkasanRekap; koreksi: HasilTerapan }> {
   const namaSheet = await periksaBerkas(berkas, opsi.namaSheet);
   const baris = await bacaBarisRekap(berkas, namaSheet);
   const { bulan, tahun } = opsi;
@@ -318,8 +298,9 @@ export async function simpanRekap(
         });
       }
 
-      await setelahTulis?.(tx, batch.id);
-      return { batchId: batch.id, ringkasan: ringkas(h, ctx, baris) };
+      const koreksi = await terapkanUntukBulan(tx, bulan, tahun, pengguna.nama);
+      await sesudahTulis?.(tx, batch.id);
+      return { batchId: batch.id, ringkasan: ringkas(h, ctx, baris), koreksi };
     },
     { timeout: 120_000, maxWait: 20_000 },
   );

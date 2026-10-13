@@ -1,0 +1,25 @@
+/** config/rekap_kehadiran.php (KDS2); kesamaannya dibuktikan tes paritas. Posisi kolom 1-based. */
+export const CONFIG_REKAP = {
+  kolomHeaderRows: 1,
+  kolomBulan: 5,
+  kolomNip: 21,
+  kolomKomponen: [
+    [6, "SIGMA_HARI"],
+    [7, "I"],
+    [8, "S"],
+    [9, "SD"],
+    [10, "TD"],
+    [11, "TB"],
+    [12, "TK"],
+    [13, "CTH"],
+    [14, "CTM"],
+    [15, "CTB"],
+    [16, "CAP"],
+    [17, "CTLN"],
+    [18, "TOTAL"],
+    [19, "JUMLAH_MASUK_NYATA"],
+    [20, "JENIS_SHIFT"],
+    [22, "CUTI_ANAK_KE"],
+  ] as readonly (readonly [number, string])[],
+  namaBulan: ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+} as const;

@@ -80,3 +80,15 @@ Perluasan ke Nominatif (F4.3) dan Koreksi (F4.2) memakai oracle yang sama.
 - Perilaku PHP yang ditiru: `trim` PHP (tanpa spasi tak-putus), `strcasecmp` ASCII, `Str::limit` menurut lebar tampilan + rtrim, NIP sel angka tak aman (> 2^53) ditolak, NIP berawalan petik, NIP ganda = baris terakhir menang, urutan komponen mengikuti posisi kolom.
 - Beda sengaja yang tidak teruji: sel bertipe tanggal (PHP membaca nomor seri; ditiru dengan nomor seri JavaScript, presisi desimal bisa beda) dan angka desimal ekstrem (presisi 14 digit PHP). Data asli hanya berisi bilangan bulat dan teks (diperiksa lewat agregat di KDS2).
 - **Penerapan ulang Koreksi Rekap** belum ada (F4.2): `simpanRekap` menerima `setelahTulis(tx, batchId)` untuk dipanggil di transaksi yang sama. Karena upload menimpa angka koreksi, **halaman Upload Rekap (F4.1c) baru boleh dipakai pada data asli setelah F4.2** (atau diberi penerapan koreksi).
+
+## 8. F4.2 Koreksi Rekap (dipecah tiga)
+| Langkah | Isi | Status |
+|---|---|---|
+| F4.2a | Layanan inti `lib/koreksi/layanan.ts` (simpan + terapkan, batalkan, terapkan ulang per bulan, pratinjau, koreksi berlaku per NIP, komponen tersedia), jejak audit, dan penerapan otomatis setelah `simpanRekap` (satu transaksi) | **selesai 13 Okt 2026** |
+| F4.2b | Halaman Koreksi Rekap: formulir (periode/angka) + pratinjau, daftar, batalkan, terapkan ulang; validasi sama dengan KoreksiRekapRequest | belum |
+| F4.2c | Impor Excel koreksi (pratinjau per baris lalu konfirmasi, duplikat, template) | belum |
+Paritas F4.2a: oracle `scripts/oracle/kds2-koreksi.php` (service KDS2 asli di SQLite memori; bagian umum di `sqlite-umum.php`),
+`tests/paritas/koreksi-rekap.test.ts`: 11 kasus tertulis + 3 kasus acak (60 langkah) membandingkan hasil tiap langkah, rekap + detail ber-id,
+tabel koreksi, dan audit_log baris demi baris. Terbukti peka lewat 5 mutasi aturan (idempotensi angka, angka mengalahkan periode, format
+pengubah audit, laporan "kurang", batas jumlah angka). Beda sengaja: membatalkan koreksi yang sudah batal tidak mengubah apa pun (KDS2 menimpa
+waktu batal); koreksi baru disimpan dan diterapkan dalam SATU transaksi (KDS2 dua langkah terpisah).
