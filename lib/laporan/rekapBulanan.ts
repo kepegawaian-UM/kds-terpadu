@@ -104,14 +104,14 @@ export async function koreksiBerlaku(db: Pick<PrismaClient, "koreksiRekap">, bul
   return hasil;
 }
 
-async function komponenTerurut(db: Pick<PrismaClient, "komponenKehadiran">) {
+export async function komponenTerurut(db: Pick<PrismaClient, "komponenKehadiran">) {
   const master = await db.komponenKehadiran.findMany({ where: { kode: { in: [...KOLOM_KOMPONEN] } } });
   const peta = new Map(master.map((k) => [k.kode, k]));
   return KOLOM_KOMPONEN.map((kode) => peta.get(kode)).filter((k) => k !== undefined);
 }
 
 /** Filter Keaktifan + Jenis/Status pada query snapshot nominatif (nonaktif = hasil nipNonaktif). */
-function kondisiNominatif(f: FilterRekap, nonaktif: string[]) {
+export function kondisiNominatif(f: FilterRekap, nonaktif: string[]) {
   return {
     ...(f.jenis.length ? { jenisPegawaiKode: { in: f.jenis } } : {}),
     ...(f.status.length ? { statusKepegawaianKode: { in: f.status } } : {}),

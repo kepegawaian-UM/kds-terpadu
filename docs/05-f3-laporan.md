@@ -66,6 +66,25 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
 - Data nyata (2026): 1.956 baris bertanda koreksi, 690 lencana catatan, 122 "Belum ada keterangan"; kasus
   koreksi "dihapus" belum ada di data nyata, dijaga tes sintetis (`tests/integration/rekap-bulanan.test.ts`).
 
+## Rekap Tahunan: keputusan performa dan paritas
+**Keputusan: model detail baris-per-komponen DIPERTAHANKAN; tidak perlu tabel ringkasan.** Ukur (13 Okt 2026,
+komputer pengembangan, data nyata 2026: 19.185 rekap bulanan, 306.960 baris detail, 2.871 pegawai):
+- `totalPerNip` (SUM setahun, 13 komponen angka) ±0,47 dtk, dengan ±0,13 dtk di dalam PostgreSQL
+  (rencana: Seq Scan 76 ribu baris detail + Hash Join + HashAggregate; indeks `(tahun,bulan)` dan covering
+  index detail sudah ada). Sisanya: mengirim daftar NIP dan membaca ±36 ribu baris hasil.
+- `laporanRekapTahunan` utuh ±0,6 dtk; halaman 2.788 baris ±0,85 dtk (dev server) dengan muatan 1,1 MB;
+  ekspor Excel ±3 dtk (sebagian besar menulis xlsx 2.788x20 sel). Target F3.4: <= 2 dtk -> terpenuhi.
+- Ambang untuk memutuskan ulang: bila SUM tahunan > 2 dtk (mis. data bertahun-tahun dan filter tanpa
+  batasan tahun), pertimbangkan ringkasan per (nip, tahun, komponen) yang diisi saat upload. Belum perlu.
+- Memakai `CAST` awalan angka seperti MySQL (`'3abc'` -> 3, `'abc'` -> 0); komponen teks tidak dijumlahkan.
+
+Paritas: baris = snapshot terakhir tiap NIP lewat `MAX(id)`; urutan TK setahun + seri (id naik; untuk filter
+Non-aktif NIP naik, seperti Rekap Bulanan); sel angka kosong "0" dan teks kosong "-" di halaman, tetapi
+SEMUA yang kosong "0" di ekspor Excel (kebiasaan KDS2). **Ekspor Excel diurut `nama` oleh MySQL, dan urutan
+antar-nama kembar (huruf besar/kecil/aksen berbeda) TIDAK stabil di KDS2** (pada 2.871 baris tidak mengikuti
+id/NIP naik maupun turun) - tes paritas membandingkan kelompok nama kembar sebagai himpunan, isi baris
+tetap harus identik per NIP. Di sini urutan seri deterministik (byte nama, lalu id).
+
 ## Perbedaan disengaja dari KDS2
 - `?keaktifan[]=semua` membuat KDS2 galat (PHP "Array to string conversion", halaman 500); di sini
   kembali ke "aktif".
@@ -81,7 +100,7 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
 
 ## Status langkah
 - [x] F3.0 Dasar (oracle, urutan nama, pembantu, tabel, ekspor, formulir)
-- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [x] F3.3 Rekap Bulanan (paritas + browser) · [ ] F3.4 Rekap Tahunan
+- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [x] F3.3 Rekap Bulanan (paritas + browser) · [x] F3.4 Rekap Tahunan (paritas + browser + keputusan performa)
 - [ ] F3.5 Statistik · [ ] F3.6 Dashboard · [ ] F3.7 Penutup (paritas penuh, performa)
 
 ## Keamanan: pelajaran dari pemeriksaan F3.1

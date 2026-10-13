@@ -212,6 +212,44 @@ $penangan = [
         return ['headings' => $e->headings(), 'rows' => $e->collection()->values()->all()];
     },
 
+    // Rekap Kehadiran Tahunan: data view + nilai sel yang dirender view tahunan.blade.php.
+    'rekap.tahunan' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\RekapKehadiranReportController::class)->tahunan($minta($p))->getData();
+        $baris = [];
+        foreach ($d['nominatif'] as $item) {
+            $total = $d['totalPerNip'][$item->nip] ?? [];
+            $badge = null;
+            if ($d['catatanStatus']->has($item->nip)) {
+                $badge = ['catatan', $d['catatanStatus'][$item->nip]];
+            } elseif (isset($d['nipNonaktif'][(string) $item->nip])) {
+                $badge = ['belum', 'Belum ada keterangan'];
+            }
+            $baris[] = [
+                'id' => $item->id, 'nip' => (string) $item->nip, 'nama' => $item->nama, 'badge' => $badge,
+                // nilai persis seperti sel view: $total[kode] ?? (teks ? '-' : '0')
+                'sel' => $d['komponenList']->map(fn ($k) => (string) ($total[$k->kode] ?? ($k->tipe_nilai === 'teks' ? '-' : '0')))->values()->all(),
+            ];
+        }
+
+        return [
+            'tahun' => $d['tahun'], 'jenis' => $d['jenis'], 'status' => $d['status'], 'keaktifan' => $d['keaktifan'],
+            'namaFile' => $d['namaFile'],
+            'komponen' => $d['komponenList']->map(fn ($k) => ['kode' => $k->kode, 'nama' => $k->nama, 'tipe' => $k->tipe_nilai])->values()->all(),
+            'baris' => $baris,
+        ];
+    },
+
+    'rekap.tahunan.export' => function (array $p) use ($minta) {
+        $req = $minta($p);
+        [$jenis, $status] = App\Support\FilterJenisStatus::dariRequest($req);
+        $e = new App\Exports\RekapKehadiranTahunanExport(
+            (int) $req->input('tahun', now()->year), $req->input('jenis_pegawai_kode'), $req->input('unit_asal_kode'),
+            $jenis, $status, App\Support\FilterKeaktifan::dariRequest($req)
+        );
+
+        return ['headings' => $e->headings(), 'rows' => $e->collection()->values()->all()];
+    },
+
     // Daftar id snapshot per periode (untuk menyusun sampel tes).
     'nominatif.index' => function (array $p) use ($app, $minta) {
         $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();

@@ -16,7 +16,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
       { href: "/", label: "Ringkasan", exact: true },
       { href: "/nominatif", label: "Nominatif" },
       { href: "/rekap-kehadiran/bulanan", label: "Rekap Bulanan" },
-      { href: "/rekap-kehadiran/tahunan", label: "Rekap Tahunan", tahap: "F3.4" },
+      { href: "/rekap-kehadiran/tahunan", label: "Rekap Tahunan" },
       { href: "/rekap-kehadiran/belum-upload", label: "Belum Ada Rekap" },
       { href: "/statistik/dosen", label: "Statistik Dosen", tahap: "F3.5" },
       { href: "/statistik/tendik", label: "Statistik Tendik", tahap: "F3.5" },
