@@ -207,5 +207,5 @@ dan `tests/integration/kueri-rencana.test.ts`. **Aturan: kueri agregat mentah ya
 4. Pengurutan nama dilakukan di aplikasi (`urutNama.ts`/`urutPhp.ts`) karena kolasi PostgreSQL tidak bisa persis;
    bila daftar menjadi jauh lebih besar (>±20 ribu baris per laporan), pertimbangkan penomoran halaman sisi server.
 5. Ekspor Excel ±1 dtk untuk 2.800 baris (penulisan xlsx dominan); cukup untuk sekarang.
-6. `npm audit`: Next 16.3.5 -> 16.4.0 (celah di next/og yang tidak dipakai + cache poisoning SSG/ISR yang tidak
-   berlaku untuk halaman dinamis); `exceljs`->`uuid` dan `prisma`->`deepmerge-ts` tidak berdampak langsung.
+6. `npm audit`: Next sudah dinaikkan ke 16.4.0 (13 Okt 2026) sehingga celah kritis di next/og tertutup; tersisa 5 non-kritis
+   (`prisma` CLI -> `deepmerge-ts`, `exceljs` -> `uuid`) yang tidak berdampak langsung (alat pengembangan / pemakaian tanpa buffer).
