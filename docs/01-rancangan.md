@@ -78,7 +78,7 @@ modul baca, paritas terhadap kode KDS2 asli). Ringkasan hasil dan temuan: `docs/
 **Perkiraan F4 (modul tulis), urut yang disarankan** - tingkat kerumitan relatif terhadap F3 (F3 = 1,0):
 | Langkah | Isi | Bobot | Catatan |
 |---|---|---|---|
-| F4.0 | Keputusan hosting dan rancangan pemrosesan upload (batas Vercel / server UM) | rancangan | HARUS lebih dulu: menentukan apakah impor berjalan sinkron, bertahap per potongan, atau di pekerja latar |
+| F4.0 | Keputusan hosting (A-gratis, 13 Okt 2026) dan rancangan pemrosesan upload: **selesai**, lihat `docs/08-rancangan-upload-f4.md` | rancangan | Hasil: server, potongan 3 MB, dua tahap Periksa/Simpan, satu transaksi, tanpa pekerja latar |
 | F4.1 | Upload Rekap Kehadiran (importer, validasi TMT, AKL ditolak, peringatan, re-upload, NIP ganda, "nama sheet", penjaga file) | 1,2 | Paritas: file sintetis yang sama diproses KDS2 (artisan, di salinan DB) dan KDS Terpadu |
 | F4.2 | Koreksi Rekap (jenis periode dan angka, pratinjau, terapkan ulang otomatis setelah upload, impor Excel, batalkan) | 1,0 | `cakupanKoreksi` dan `koreksiBerlaku` sudah ada dari F3 |
 | F4.3 | Upload Nominatif + Tambah Pegawai manual + audit log (cocokkan master by NAMA, kontrak header, 3 slot jabatan, golongan Non-ASN) | 1,2 | 2.788 baris dalam batas durasi |
