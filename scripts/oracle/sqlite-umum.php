@@ -98,7 +98,7 @@ function muatKeadaan(array $k): void
     foreach ($k['nominatif'] ?? [] as $s) {
         Pegawai::firstOrCreate(['nip' => (string) $s['nip']], ['dibuat_pada' => now()]);
         $baris = NominatifBulanan::create([
-            'nip' => (string) $s['nip'], 'bulan' => $s['bulan'], 'tahun' => $s['tahun'], 'nama' => 'Pegawai '.$s['nip'],
+            'nip' => (string) $s['nip'], 'bulan' => $s['bulan'], 'tahun' => $s['tahun'], 'nama' => $s['nama'] ?? 'Pegawai '.$s['nip'],
             'jenis_kelamin' => 'L', 'jenis_pegawai_kode' => $s['jenis'], 'status_kepegawaian_kode' => 'PNS',
             'unit_asal_kode' => $unit, 'tanggal_mulai_kerja' => $s['tmt'], 'upload_batch_id' => $batchNominatif,
         ]);

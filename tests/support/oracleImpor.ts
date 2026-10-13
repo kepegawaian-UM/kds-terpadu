@@ -21,7 +21,7 @@ export type Sel = string | number | null | { f: string; v: number };
 
 export type KeadaanImpor = {
   pegawai?: string[];
-  nominatif?: { nip: string; bulan: number; tahun: number; jenis: string; tmt: string; jt?: { role: string; unit?: string | null; prodi?: string | null; status: string }[] }[];
+  nominatif?: { nama?: string; nip: string; bulan: number; tahun: number; jenis: string; tmt: string; jt?: { role: string; unit?: string | null; prodi?: string | null; status: string }[] }[];
   rekap?: { nip: string; bulan: number; tahun: number; komponen: Record<string, string> }[];
 };
 

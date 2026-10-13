@@ -78,6 +78,40 @@ $penangan = [
         $p['tab'], $p['jenis'] ?? [], $p['status'] ?? [], $p['periode'], $p['urutanStatus'] ?? [], $p['keaktifan'] ?? null
     ),
 
+    // Rekap Individual (F4.4): data dokumen satu pegawai, pencarian, kandidat massal, dan isi ekspor Excel.
+    'rekapIndividual.bangun' => fn (array $p) => $app->make(App\Services\RekapIndividualService::class)->bangun((string) $p['nip'], (int) $p['tahun']),
+
+    'rekapIndividual.cari' => function (array $p) use ($app) {
+        $ctl = $app->make(App\Http\Controllers\RekapIndividualController::class);
+        $m = new ReflectionMethod($ctl, 'cariPegawai');
+        $m->setAccessible(true);
+
+        return $m->invoke($ctl, (string) $p['cari'], (int) $p['tahun'])->map(fn ($n) => ['nip' => $n->nip, 'nama' => $n->nama])->values()->all();
+    },
+
+    'rekapIndividual.kandidat' => function (array $p) use ($app) {
+        $ctl = $app->make(App\Http\Controllers\RekapIndividualMassalController::class);
+        $m = new ReflectionMethod($ctl, 'kandidat');
+        $m->setAccessible(true);
+
+        return $m->invoke($ctl, (int) $p['tahun'], $p['jenis'] ?? [], $p['status'] ?? [], (int) $p['minTk'], $p['keaktifan'] ?? App\Support\FilterKeaktifan::SEMUA)
+            ->map(fn ($o) => (array) $o)->values()->all();
+    },
+
+    'rekapIndividual.ekspor' => function (array $p) use ($app) {
+        $laporan = $app->make(App\Services\RekapIndividualService::class)->bangun((string) $p['nip'], (int) $p['tahun']);
+        $e = new App\Exports\RekapIndividualExport($laporan);
+
+        return ['judul' => $e->title(), 'baris' => $e->array()];
+    },
+
+    'rekapIndividual.eksporMassal' => function (array $p) use ($app) {
+        $svc = $app->make(App\Services\RekapIndividualService::class);
+        $list = collect($p['nips'])->unique()->values()->map(fn ($nip) => $svc->bangun((string) $nip, (int) $p['tahun']))->filter()->values()->all();
+
+        return array_map(fn ($s) => ['judul' => $s->title(), 'baris' => $s->array()], (new App\Exports\RekapIndividualMassalExport($list))->sheets());
+    },
+
     // Urutan kode status seperti dropdown KDS2 (orderBy nama) dan daftar kode sah.
     'master.urutanStatus' => fn (array $p) => App\Models\MasterData\MstStatusKepegawaian::orderBy('nama')->pluck('kode')->all(),
 

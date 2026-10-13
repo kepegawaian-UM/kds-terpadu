@@ -26,3 +26,16 @@ export async function responXlsx(namaTanpaEkstensi: string, judul: string[], bar
     },
   });
 }
+
+/** Satu workbook dengan beberapa sheet; baris ditulis apa adanya (tanpa baris judul kolom), seperti ekspor WithMultipleSheets/FromArray KDS2. */
+export async function responXlsxBanyakSheet(namaTanpaEkstensi: string, sheets: { judul: string; baris: Sel[][] }[]): Promise<Response> {
+  const wb = new ExcelJS.Workbook();
+  for (const s of sheets) {
+    const ws = wb.addWorksheet(s.judul.slice(0, 31));
+    for (const b of s.baris) ws.addRow(b.map((v) => (v === undefined ? null : v)));
+  }
+  const isi = Buffer.from(await wb.xlsx.writeBuffer());
+  return new Response(new Uint8Array(isi), {
+    headers: { "Content-Type": MIME_XLSX, "Content-Disposition": headerUnduhan(namaTanpaEkstensi, "xlsx"), "Cache-Control": "no-store" },
+  });
+}

@@ -105,6 +105,14 @@ foreach ($masuk['kasus'] as $kasus) {
                         $service->koreksiBerlakuUntukNip($langkah['nip'], (int) $langkah['tahun'])
                     ),
                     'komponenTersedia' => $service->komponenTersedia()->all(),
+                    'individual' => app(\App\Services\RekapIndividualService::class)->bangun((string) $langkah['nip'], (int) $langkah['tahun']),
+                    'individualCari' => (function () use ($langkah) {
+                        $ctl = app(\App\Http\Controllers\RekapIndividualController::class);
+                        $m = new ReflectionMethod($ctl, 'cariPegawai');
+                        $m->setAccessible(true);
+
+                        return $m->invoke($ctl, (string) $langkah['cari'], (int) $langkah['tahun'])->map(fn ($n) => ['nip' => $n->nip, 'nama' => $n->nama])->values()->all();
+                    })(),
                     'imporKoreksi' => (function () use ($langkah) {
                         if (isset($langkah['tulisBerkas'])) {
                             tulisBerkas($langkah['berkas'], $langkah['tulisBerkas']);

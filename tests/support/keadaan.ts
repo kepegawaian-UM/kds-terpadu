@@ -29,7 +29,7 @@ export async function muatKeadaan(prisma: PrismaClient, k: KeadaanLengkap): Prom
   for (const x of k.nominatif ?? []) {
     const baris = await prisma.nominatifBulanan.create({
       data: {
-        pegawaiNip: x.nip, bulan: x.bulan, tahun: x.tahun, nama: `Pegawai ${x.nip}`, jenisKelamin: "L", jenisPegawaiKode: x.jenis,
+        pegawaiNip: x.nip, bulan: x.bulan, tahun: x.tahun, nama: x.nama ?? `Pegawai ${x.nip}`, jenisKelamin: "L", jenisPegawaiKode: x.jenis,
         statusKepegawaianKode: s.kode, unitAsalKode: u.kode, tanggalMulaiKerja: new Date(`${x.tmt}T00:00:00.000Z`), uploadBatchId: batchNominatif.id,
       },
     });
