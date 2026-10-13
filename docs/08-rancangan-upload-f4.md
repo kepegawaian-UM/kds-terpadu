@@ -45,7 +45,7 @@ antrean **tidak diperlukan** (menambah layanan dan biaya tanpa manfaat).
 ## 3. Urutan pengerjaan (disesuaikan)
 | Langkah | Isi | Bukti |
 |---|---|---|
-| F4.1a | Infrastruktur: `lib/upload/*` (potongan, gabung, pembersih, penjaga berkas, pembaca sheet), rute `upload-chunk`, komponen klien unggah + progres | tes: berkas 10 MB terkirim per potongan, potongan lengkap/tidak lengkap, pembersih, berkas rusak/bukan xlsx/banyak sheet/terlalu banyak baris |
+| F4.1a (**selesai 13 Okt 2026**: `lib/upload/*`, `app/api/upload-chunk`, `components/upload/UnggahBerkas.tsx`; 31 tes baru, total 271 lulus) | Infrastruktur: `lib/upload/*` (potongan, gabung, pembersih, penjaga berkas, pembaca sheet), rute `upload-chunk`, komponen klien unggah + progres | tes: berkas 10 MB terkirim per potongan, potongan lengkap/tidak lengkap, pembersih, berkas rusak/bukan xlsx/banyak sheet/terlalu banyak baris |
 | F4.1b | Importer Rekap: validasi (NIP tak dikenal, belum ada Nominatif, AKL ditolak, TMT, bulan tak cocok, TOTAL != JUMLAH MASUK NYATA, NIP ganda), simpan massal, re-upload mengganti, terapkan koreksi | paritas terhadap importer KDS2 asli (§4) |
 | F4.1c | Halaman Upload Rekap (Periksa -> Simpan -> Hasil), unduh template | tes komponen + uji di browser dengan berkas sintetis |
 Lalu F4.2 Koreksi, F4.3 Nominatif, F4.4 Rekap Individual, F4.5 Standarisasi KDS1 (jalur potongan yang sama, berkas 6,7 MB).
