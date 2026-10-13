@@ -61,3 +61,27 @@ Alasan urutan: modul baca lebih dulu karena risikonya rendah dan memberi bukti p
 | Batas layanan gratis (Vercel, DB) menghambat produksi | Putuskan paket sebelum F4; desain agar bisa pindah ke server UM |
 | Data pegawai berada di server luar negeri | Putuskan dengan atasan sebelum data asli masuk; selama pengembangan pakai data sintetis |
 | Orang tunggal sebagai pemelihara | Dokumentasi di repo, tes otomatis, pola kode seragam dengan KDS1 |
+
+## 7. Status dan perkiraan yang diperbarui (13 Okt 2026)
+
+**Selesai dan terbukti:** F0 (persiapan), F1 (fondasi), F2 (migrasi data: 10 tabel identik baris demi baris), F3 (semua
+modul baca, paritas terhadap kode KDS2 asli). Ringkasan hasil dan temuan: `docs/04-migrasi-f2.md`, `docs/05-f3-laporan.md`.
+
+**Yang berubah dari rencana awal:**
+- Strategi paritas naik kelas: bukan membandingkan dengan SQL terjemahan, melainkan menjalankan kode KDS2 asli (oracle PHP
+  read-only). Dipakai ulang di F4 untuk importer dan koreksi (membandingkan hasil impor file yang sama).
+- Urutan nama dan kebiasaan MySQL (urutan seri tanpa ORDER BY, kolasi) ternyata menjadi sumber perbedaan terbesar, bukan
+  pembulatan atau zona waktu seperti diperkirakan.
+- Kinerja: model baris-per-komponen cukup (SUM setahun ±0,6 dtk); jebakan sebenarnya adalah rencana generik PostgreSQL
+  (lihat `kueriRencanaKustom`).
+
+**Perkiraan F4 (modul tulis), urut yang disarankan** - tingkat kerumitan relatif terhadap F3 (F3 = 1,0):
+| Langkah | Isi | Bobot | Catatan |
+|---|---|---|---|
+| F4.0 | Keputusan hosting dan rancangan pemrosesan upload (batas Vercel / server UM) | rancangan | HARUS lebih dulu: menentukan apakah impor berjalan sinkron, bertahap per potongan, atau di pekerja latar |
+| F4.1 | Upload Rekap Kehadiran (importer, validasi TMT, AKL ditolak, peringatan, re-upload, NIP ganda, "nama sheet", penjaga file) | 1,2 | Paritas: file sintetis yang sama diproses KDS2 (artisan, di salinan DB) dan KDS Terpadu |
+| F4.2 | Koreksi Rekap (jenis periode dan angka, pratinjau, terapkan ulang otomatis setelah upload, impor Excel, batalkan) | 1,0 | `cakupanKoreksi` dan `koreksiBerlaku` sudah ada dari F3 |
+| F4.3 | Upload Nominatif + Tambah Pegawai manual + audit log (cocokkan master by NAMA, kontrak header, 3 slot jabatan, golongan Non-ASN) | 1,2 | 2.788 baris dalam batas durasi |
+| F4.4 | Rekap Individual (dokumen A4, cetak/PDF, Excel) + Massal | 0,6 | Sebagian besar tampilan; angka dari data yang sudah ada |
+| F4.5 | Standarisasi KDS1 (upload mentah, klasifikasi, antrean review, kamus, bandingkan batch) + migrasi data KDS1 dari Neon | 1,4 | Terbesar; id KDS1 berbeda (cuid), `lib/services` ditunda dari F1 |
+Total ≈ 5,4 x F3 relatif; perkiraan kalender di tabel §4 (4-6 minggu) tetap wajar dan akan dikoreksi setelah F4.1.

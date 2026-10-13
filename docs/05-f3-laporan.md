@@ -133,7 +133,7 @@ Yang menentukan angka:
 ## Status langkah
 - [x] F3.0 Dasar (oracle, urutan nama, pembantu, tabel, ekspor, formulir)
 - [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [x] F3.3 Rekap Bulanan (paritas + browser) · [x] F3.4 Rekap Tahunan (paritas + browser + keputusan performa)
-- [ ] F3.5 Statistik · [x] F3.6 Dashboard (paritas + browser) · [ ] F3.7 Penutup (paritas penuh, performa)
+- [ ] F3.5 Statistik · [x] F3.6 Dashboard (paritas + browser) · [x] F3.7 Penutup (paritas penuh, kinerja stabil, dokumentasi)
 
 ## Keamanan: pelajaran dari pemeriksaan F3.1
 Perlindungan halaman semula hanya dari `app/(app)/layout.tsx`; `proxy.ts` TIDAK memaksa login karena
@@ -145,3 +145,67 @@ rute baru yang sengaja publik harus dikecualikan di matcher `proxy.ts` dengan al
 
 ## Pemeriksaan visual dengan data asli
 `npm run dev:paritas` (atau konfigurasi `kds-terpadu-paritas` di `.claude/launch.json`) menjalankan server di port 3001 dengan database `kds_paritas`. Login dengan akun admin lokal (`SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` di `.env`).
+
+## Penutup F3 (13 Okt 2026)
+
+### Inventaris: apa yang sudah dibuktikan sama dengan KDS2
+| Modul | Halaman | Dibandingkan terhadap kode KDS2 asli (oracle) | Cakupan data nyata |
+|---|---|---|---|
+| Nominatif | `/nominatif`, `/nominatif/[id]`, ekspor | daftar + urutan + nama file (10 bulan), detail SEMUA 2.788 snapshot bulan terbaru + sampel, ekspor 15 kasus | 25.705 snapshot |
+| Belum Ada Rekap | `/rekap-kehadiran/belum-upload` | angka, ringkasan per unit berurutan, tiap baris (10 bulan) | 4 tidak aktif (Sep), 2.188 belum (Okt) |
+| Rekap Bulanan | `/rekap-kehadiran/bulanan`, ekspor | urutan TK + seri, nilai, lencana, sel koreksi, koreksi berlaku, ekspor | 102.190 baris x 108 kombinasi filter |
+| Rekap Tahunan | `/rekap-kehadiran/tahunan`, ekspor | MAX(id), urutan TK setahun, total semua komponen, lencana, ekspor | 20.512 baris x 63 kombinasi |
+| Statistik | `/statistik/dosen`, `/statistik/tendik` | setiap sel, kolom dinamis, fakultas/jurusan, total (10 bulan) | UA-179 di 3 bulan, golongan PPPK |
+| Dashboard | `/` | kartu, status upload, KPI + grafik x 3 jenis x 10 bulan, kinerja 3 tahun | 29 persen desimal, 13 seri |
+| Ekspor Excel | semua | 66.730 baris x 48 berkas pada rangkaian penuh | — |
+
+Dua lapis tes: (1) per-modul, selalu ikut `npm test`; (2) rangkaian PENUH semua kombinasi filter
+(`npm run test:paritas-penuh`, ±3 menit, opsional karena lambat). Kasus yang tidak ada di data nyata dijaga tes
+sintetis di `kds_test` (koreksi "dihapus", dosen tanpa jabatan fungsional, `MAX(id)`, `CAST` awalan angka, "Lainnya").
+
+### Perintah
+| Perintah | Fungsi |
+|---|---|
+| `npm test` | seluruh tes (paritas dilewati dengan pesan bila prasyarat tidak ada) |
+| `npm run test:paritas-penuh` | semua kombinasi filter terhadap oracle (opsional, lambat) |
+| `npm run ukur-kinerja` | waktu hitung semua laporan terhadap `kds_paritas` |
+| `npm run dev:paritas` | server di port 3001 dengan data asli lokal, untuk pemeriksaan visual |
+
+### Kinerja akhir (komputer pengembangan, data nyata 2026; terbaik dari 5 kali jalan, lapisan data)
+| Laporan | ms | Baris |
+|---|---:|---:|
+| Nominatif daftar Okt | 70 | 2.788 |
+| Nominatif detail satu pegawai | 4 | - |
+| Nominatif data ekspor | 185 | 2.788 |
+| Belum Ada Rekap Okt | 55 | 2.188 |
+| Rekap Bulanan Sep (aktif / semua) | 357 / 350 | 2.786 / 2.790 |
+| Rekap Bulanan data ekspor | 429 | 2.786 |
+| Rekap Tahunan 2026 (aktif / semua) | 587 / 591 | 2.788 / 2.871 |
+| Rekap Tahunan data ekspor | 687 | 2.788 |
+| Statistik Dosen / Tendik | 43 / 22 | 11 / 37 |
+| Dashboard bawaan | 893 | - |
+| Ekspor + tulis xlsx: Tahunan / Bulanan | 1.014 / 762 | 2.788 / 2.786 |
+Semua di bawah target 2 dtk. Waktu render halaman ditambah ±0,2–0,4 dtk (dev server).
+
+### Temuan kinerja terpenting: rencana generik PostgreSQL
+Pengukuran satu kali jalan tidak menangkapnya: setelah ±5 eksekusi, PostgreSQL mengganti rencana prepared
+statement yang sama dengan rencana GENERIK. Untuk kueri SUM (join detail rekap + `nip = ANY($n)`) rencana itu
+±3x lebih lambat (Rekap Tahunan 600 -> 1.600 ms, Dashboard 930 -> 2.600 ms) sehingga laporan terasa normal
+lalu melambat setelah beberapa kali dibuka. Perbaikan: `lib/laporan/kueri.ts` (`kueriRencanaKustom`) menjalankan
+kueri berat dengan `SET LOCAL plan_cache_mode = force_custom_plan` di dalam transaksi (tidak bocor, aman dengan
+pooler transaksi seperti Neon). Dijaga `tests/paritas/kinerja-stabil.test.ts` (eksekusi terlambat < 2x tercepat)
+dan `tests/integration/kueri-rencana.test.ts`. **Aturan: kueri agregat mentah yang berat WAJIB lewat pembantu itu**
+(ingat juga untuk modul tulis F4 bila ada agregat sejenis). Alternatif tingkat konfigurasi:
+`statement_cache_size=0` pada `DATABASE_URL` (tidak dipilih karena mudah terlupa di lingkungan baru).
+
+### Utang teknis dan UX yang dicatat (bukan paritas)
+1. Sidebar tetap 16 rem: konten tak terlihat di jendela <±500 px. Perlu sidebar yang bisa menciut (ponsel/tablet).
+2. Kartu "Akademisi Luar" di Ringkasan (600) berbeda dari dashboard AKL (169, tanpa UA-179): perilaku KDS2 yang
+   dipertahankan; mungkin perlu penjelasan di layar.
+3. Default periode berbeda antar halaman (Rekap Bulanan = bulan berjalan, lainnya = snapshot terbaru): dipertahankan
+   demi paritas; kandidat perbaikan UX setelah cutover.
+4. Pengurutan nama dilakukan di aplikasi (`urutNama.ts`/`urutPhp.ts`) karena kolasi PostgreSQL tidak bisa persis;
+   bila daftar menjadi jauh lebih besar (>±20 ribu baris per laporan), pertimbangkan penomoran halaman sisi server.
+5. Ekspor Excel ±1 dtk untuk 2.800 baris (penulisan xlsx dominan); cukup untuk sekarang.
+6. `npm audit`: Next 16.3.5 -> 16.4.0 (celah di next/og yang tidak dipakai + cache poisoning SSG/ISR yang tidak
+   berlaku untuk halaman dinamis); `exceljs`->`uuid` dan `prisma`->`deepmerge-ts` tidak berdampak langsung.

@@ -8,40 +8,19 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaClient } from "@prisma/client";
 
 import type { Keaktifan } from "@/lib/laporan/filter";
-import { kunciNama } from "@/lib/laporan/urutNama";
 import { eksporRekapTahunan, laporanRekapTahunan, periodeTahunBerjalan } from "@/lib/laporan/rekapTahunan";
 
+import {
+  bandingkanEkspor,
+  bandingkanRekapTahunan,
+  type FilterUji as Filter,
+  type OracleTahunan as Oracle,
+} from "../support/bandingkanRekap";
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
 const url = process.env.PARITAS_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
-type Oracle = {
-  tahun: number;
-  jenis: string[];
-  status: string[];
-  keaktifan: string;
-  namaFile: string;
-  komponen: { kode: string; nama: string; tipe: string }[];
-  baris: { id: number; nip: string; nama: string; badge: [string, string] | null; sel: string[] }[];
-};
-/**
- * Baris berurutan yang namanya sama menurut kolasi (huruf besar/kecil, aksen) dianggap satu kelompok seri dan
- * diurut menurut NIP: urutan di dalam kelompok itu TIDAK ditentukan di KDS2 (filesort MySQL tidak stabil,
- * terbukti: pada 2.871 baris tidak mengikuti id/NIP naik maupun turun), jadi dibandingkan sebagai himpunan.
- */
-function normalisasiSeri(rows: unknown[][]): unknown[][] {
-  const hasil: unknown[][] = [];
-  for (let i = 0; i < rows.length; ) {
-    let j = i + 1;
-    while (j < rows.length && kunciNama(String(rows[j][1])) === kunciNama(String(rows[i][1]))) j++;
-    hasil.push(...rows.slice(i, j).sort((a, b) => (String(a[0]) < String(b[0]) ? -1 : 1)));
-    i = j;
-  }
-  return hasil;
-}
-
-type Filter = { jenis: string[]; status: string[]; keaktifan: Keaktifan };
 
 describe.skipIf(!jalan)("paritas Rekap Kehadiran Tahunan KDS2 <-> KDS Terpadu", () => {
   let db: PrismaClient;
@@ -52,31 +31,7 @@ describe.skipIf(!jalan)("paritas Rekap Kehadiran Tahunan KDS2 <-> KDS Terpadu", 
     await db?.$disconnect();
   });
 
-  async function bandingkan(id: string, o: Oracle, filter: Filter, tahun: number) {
-    const s = await laporanRekapTahunan(db, tahun, filter);
-    expect(s.namaFile, `namaFile ${id}`).toBe(o.namaFile);
-    expect({ jenis: s.jenis, status: s.status, keaktifan: s.keaktifan }, `filter ${id}`).toEqual({
-      jenis: o.jenis,
-      status: o.status,
-      keaktifan: o.keaktifan,
-    });
-    expect(s.komponen.map((k) => [k.kode, k.nama, k.tipeNilai]), `komponen ${id}`).toEqual(o.komponen.map((k) => [k.kode, k.nama, k.tipe]));
-    expect(s.baris.length, `jumlah baris ${id}`).toBe(o.baris.length);
-    const beda: { posisi: number; bagian: string[] }[] = [];
-    o.baris.forEach((b, i) => {
-      const x = s.baris[i];
-      const sel = s.komponen.map((k) => x.sel[k.kode]);
-      const bagian = [
-        x.id !== b.id && "id/urutan",
-        x.nip !== b.nip && "nip",
-        x.nama !== b.nama && "nama",
-        JSON.stringify(x.badge) !== JSON.stringify(b.badge) && "badge",
-        JSON.stringify(sel) !== JSON.stringify(b.sel) && "total",
-      ].filter(Boolean) as string[];
-      if (bagian.length) beda.push({ posisi: i, bagian });
-    });
-    expect(beda.slice(0, 5), `baris berbeda ${id}: ${beda.length}`).toEqual([]);
-  }
+  const bandingkan = (id: string, o: Oracle, filter: Filter, tahun: number) => bandingkanRekapTahunan(db, id, o, filter, tahun);
 
   it("tahun 2026 dengan filter bawaan: baris, urutan, total semua komponen, lencana, nama file", async () => {
     const h = await tanyaOracle([{ id: "t", laporan: "rekap.tahunan", params: { tahun: 2026 } }]);
@@ -138,12 +93,7 @@ describe.skipIf(!jalan)("paritas Rekap Kehadiran Tahunan KDS2 <-> KDS Terpadu", 
     for (const k of kasus) {
       const o = hasil<{ headings: string[]; rows: unknown[][] }>(h, k.id);
       const s = await eksporRekapTahunan(db, 2026, k.filter, k.ekstra);
-      expect(s.headings, `judul ${k.id}`).toEqual(o.headings);
-      expect(s.rows.length, `jumlah baris ${k.id}`).toBe(o.rows.length);
-      const no = normalisasiSeri(o.rows);
-      const ns = normalisasiSeri(s.rows);
-      const beda = no.reduce<number>((n, r, i) => n + (JSON.stringify(r) === JSON.stringify(ns[i]) ? 0 : 1), 0);
-      expect(beda, `baris ekspor berbeda ${k.id}`).toBe(0);
+      bandingkanEkspor(k.id, o, s);
     }
   }, 300_000);
 

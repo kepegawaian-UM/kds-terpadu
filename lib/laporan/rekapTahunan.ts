@@ -9,6 +9,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { labelFileKeaktifan, nipNonaktif, urutanKodeStatus } from "./filter";
+import { kueriRencanaKustom } from "./kueri";
 import { KOLOM_KOMPONEN } from "./komponen";
 import { buatNamaFile } from "./namaFile";
 import { keInt } from "./periode";
@@ -27,7 +28,7 @@ type Db = Pick<
   | "catatanStatusPegawai"
   | "komponenKehadiran"
   | "statusKepegawaian"
-  | "$queryRawUnsafe"
+  | "$transaction"
 >;
 
 export type BarisRekapTahunan = {
@@ -77,14 +78,15 @@ async function idSnapshotTerakhir(db: Pick<PrismaClient, "nominatifBulanan">, ta
  * (seperti CAST MySQL); nilai yang bukan angka dihitung 0.
  */
 export async function totalPerNip(
-  db: Pick<PrismaClient, "$queryRawUnsafe">,
+  db: Pick<PrismaClient, "$transaction">,
   tahun: number,
   nips: string[],
   kodeAngka: string[]
 ): Promise<Map<string, Record<string, string>>> {
   const hasil = new Map<string, Record<string, string>>();
   if (nips.length === 0 || kodeAngka.length === 0) return hasil;
-  const rows = await db.$queryRawUnsafe<{ nip: string; kode: string; total: string }[]>(
+  const rows = await kueriRencanaKustom<{ nip: string; kode: string; total: string }[]>(
+    db,
     `SELECT r."nip" AS nip, d."komponenKode" AS kode,
             SUM(COALESCE(NULLIF(substring(d."nilai" from '^[ ]*[-+]?[0-9]+'), '')::bigint, 0))::text AS total
        FROM "rekap_kehadiran_detail" d

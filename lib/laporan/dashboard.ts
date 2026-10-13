@@ -12,6 +12,7 @@
  */
 import type { PrismaClient } from "@prisma/client";
 
+import { kueriRencanaKustom } from "./kueri";
 import { bandingkanNama } from "./urutNama";
 import { bulanTahunSekarang, keInt, type Param, parameterTerisi } from "./periode";
 import { NAMA_BULAN } from "./periode";
@@ -184,7 +185,7 @@ type Db = Pick<
   | "statusKepegawaian"
   | "kategoriAkademisiLuar"
   | "komponenKehadiran"
-  | "$queryRawUnsafe"
+  | "$transaction"
 >;
 
 async function barisUntukJenis(db: Db, jenis: string, bulan: number, tahun: number): Promise<RowUmum[]> {
@@ -286,7 +287,8 @@ async function dashboardKinerja(db: Db, tahun: number) {
   const nips = [...unitPerNip.keys()];
 
   const angka = (alias: string) => `COALESCE(NULLIF(substring(${alias} from '^[ ]*[-+]?[0-9]+'), '')::bigint, 0)`;
-  const [ringkasan] = await db.$queryRawUnsafe<{ tercover: bigint; bulan_upload: bigint; sigma: bigint | null; masuk: bigint | null; tk: bigint | null }[]>(
+  const [ringkasan] = await kueriRencanaKustom<{ tercover: bigint; bulan_upload: bigint; sigma: bigint | null; masuk: bigint | null; tk: bigint | null }[]>(
+    db,
     `SELECT COUNT(DISTINCT r."nip") AS tercover, COUNT(DISTINCT r."bulan") AS bulan_upload,
             SUM(CASE WHEN d."komponenKode" = 'SIGMA_HARI' THEN ${angka('d."nilai"')} ELSE 0 END) AS sigma,
             SUM(CASE WHEN d."komponenKode" = 'JUMLAH_MASUK_NYATA' THEN ${angka('d."nilai"')} ELSE 0 END) AS masuk,
@@ -306,7 +308,8 @@ async function dashboardKinerja(db: Db, tahun: number) {
   const kodeIzin = komponen.map((k) => k.kode);
   const namaIzin = new Map(komponen.map((k) => [k.kode, k.nama]));
 
-  const perNipKomponen = await db.$queryRawUnsafe<{ nip: string; kode: string; total: bigint }[]>(
+  const perNipKomponen = await kueriRencanaKustom<{ nip: string; kode: string; total: bigint }[]>(
+    db,
     `SELECT r."nip" AS nip, d."komponenKode" AS kode, SUM(${angka('d."nilai"')}) AS total
        FROM "rekap_kehadiran_detail" d JOIN "rekap_kehadiran_bulanan" r ON r."id" = d."rekapKehadiranBulananId"
       WHERE r."tahun" = $1 AND r."nip" = ANY($2::text[]) AND d."komponenKode" = ANY($3::text[])
@@ -331,7 +334,8 @@ async function dashboardKinerja(db: Db, tahun: number) {
   }
   const unitTk = urutMenurun(perUnit).slice(0, 6);
 
-  const tren = await db.$queryRawUnsafe<{ bulan: number; kode: string; total: bigint }[]>(
+  const tren = await kueriRencanaKustom<{ bulan: number; kode: string; total: bigint }[]>(
+    db,
     `SELECT r."bulan" AS bulan, d."komponenKode" AS kode, SUM(${angka('d."nilai"')}) AS total
        FROM "rekap_kehadiran_detail" d JOIN "rekap_kehadiran_bulanan" r ON r."id" = d."rekapKehadiranBulananId"
       WHERE r."tahun" = $1 AND r."nip" = ANY($2::text[]) AND d."komponenKode" = ANY($3::text[])

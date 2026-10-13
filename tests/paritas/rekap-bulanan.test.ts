@@ -6,32 +6,14 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaClient } from "@prisma/client";
 
-import { eksporRekapBulanan, koreksiBerlaku, laporanRekapBulanan, periodeBulanBerjalan } from "@/lib/laporan/rekapBulanan";
+import { eksporRekapBulanan, koreksiBerlaku, periodeBulanBerjalan } from "@/lib/laporan/rekapBulanan";
 import type { Keaktifan } from "@/lib/laporan/filter";
 
+import { bandingkanRekapBulanan, type FilterUji, type OracleBulanan as Oracle } from "../support/bandingkanRekap";
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
 const url = process.env.PARITAS_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
-
-type BarisOracle = {
-  id: number;
-  nip: string;
-  nama: string;
-  nilai: Record<string, string> | null;
-  badge: [string, string] | null;
-  tandai: Record<string, string>;
-};
-type Oracle = {
-  bulan: number;
-  tahun: number;
-  jenis: string[];
-  status: string[];
-  keaktifan: string;
-  namaFile: string;
-  komponen: { kode: string; nama: string }[];
-  baris: BarisOracle[];
-};
 
 const periodeKasus = (bulan: number, filter: { jenis?: string[]; status?: string[]; keaktifan?: Keaktifan } = {}) => ({
   bulan,
@@ -48,32 +30,8 @@ describe.skipIf(!jalan)("paritas Rekap Kehadiran Bulanan KDS2 <-> KDS Terpadu", 
     await db?.$disconnect();
   });
 
-  async function bandingkan(id: string, o: Oracle, filter: { jenis: string[]; status: string[]; keaktifan: Keaktifan }, bulan: number, tahun: number) {
-    const s = await laporanRekapBulanan(db, bulan, tahun, filter);
-    expect(s.namaFile, `namaFile ${id}`).toBe(o.namaFile);
-    expect({ jenis: s.jenis, status: s.status, keaktifan: s.keaktifan }, `filter ${id}`).toEqual({
-      jenis: o.jenis,
-      status: o.status,
-      keaktifan: o.keaktifan,
-    });
-    expect(s.komponen, `komponen ${id}`).toEqual(o.komponen);
-    expect(s.baris.length, `jumlah baris ${id}`).toBe(o.baris.length);
-    const beda: { posisi: number; bagian: string[] }[] = [];
-    o.baris.forEach((b, i) => {
-      const x = s.baris[i];
-      const bagian = [
-        x.id !== b.id && "id/urutan",
-        x.nip !== b.nip && "nip",
-        x.nama !== b.nama && "nama",
-        (x.nilai === null) !== (b.nilai === null) && "nilai-ada",
-        JSON.stringify(Object.entries(x.nilai ?? {}).sort()) !== JSON.stringify(Object.entries(b.nilai ?? {}).sort()) && "nilai",
-        JSON.stringify(x.badge) !== JSON.stringify(b.badge) && "badge",
-        JSON.stringify(Object.entries(x.tandai).sort()) !== JSON.stringify(Object.entries(b.tandai ?? {}).sort()) && "tandai",
-      ].filter(Boolean) as string[];
-      if (bagian.length) beda.push({ posisi: i, bagian });
-    });
-    expect(beda.slice(0, 5), `baris berbeda ${id}: ${beda.length}`).toEqual([]);
-  }
+  const bandingkan = (id: string, o: Oracle, filter: FilterUji, bulan: number, tahun: number) =>
+    bandingkanRekapBulanan(db, id, o, filter, bulan, tahun);
 
   it("semua bulan 2026 dengan filter bawaan (aktif): urutan, nilai, lencana, tanda koreksi, nama file", async () => {
     const kasus = Array.from({ length: 10 }, (_, i) => periodeKasus(i + 1));
