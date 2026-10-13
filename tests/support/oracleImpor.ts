@@ -13,6 +13,7 @@ import { KDS2_PATH } from "./oracle";
 const execFileAsync = promisify(execFile);
 const SKRIP = resolve(process.cwd(), "scripts", "oracle", "kds2-impor.php");
 const SKRIP_NOMINATIF = resolve(process.cwd(), "scripts", "oracle", "kds2-nominatif.php");
+const SKRIP_TAMBAH = resolve(process.cwd(), "scripts", "oracle", "kds2-tambah-pegawai.php");
 const SKRIP_KOREKSI = resolve(process.cwd(), "scripts", "oracle", "kds2-koreksi.php");
 const PHP = process.env.KDS2_PHP ?? "php";
 
@@ -61,6 +62,11 @@ export async function jalankanOracleImpor(kasus: KasusOracleImpor[]): Promise<Re
 /** Oracle Nominatif: masukan {master?, kasus[]} (lihat scripts/oracle/kds2-nominatif.php). */
 export async function jalankanOracleNominatif(masukan: { master?: Record<string, unknown[]>; kasus: unknown[] }): Promise<Record<string, unknown>> {
   return jalankanSkrip(SKRIP_NOMINATIF, masukan.kasus, masukan.master);
+}
+
+/** Oracle Tambah Pegawai manual (lihat scripts/oracle/kds2-tambah-pegawai.php). */
+export async function jalankanOracleTambahPegawai(masukan: { master?: Record<string, unknown[]>; kasus: unknown[] }): Promise<Record<string, unknown>> {
+  return jalankanSkrip(SKRIP_TAMBAH, masukan.kasus, masukan.master);
 }
 
 export async function jalankanOracleKoreksi(kasus: unknown[]): Promise<Record<string, unknown>> {

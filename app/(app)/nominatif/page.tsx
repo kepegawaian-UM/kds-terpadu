@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { TabelNominatif } from "@/components/laporan/TabelNominatif";
 import { BidangPeriode, FormLaporan } from "@/components/laporan/FormLaporan";
 import { prisma } from "@/lib/db";
@@ -15,8 +17,8 @@ export default async function NominatifPage({
   const [bulan, tahun] = await resolveBulanTahun(prisma, sp);
   const [baris, daftarTahun] = await Promise.all([daftarNominatif(prisma, bulan, tahun), tahunNominatif(prisma)]);
 
-  const tombolNonaktif =
-    "cursor-not-allowed rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400";
+  const tombol = "rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50";
+  const tombolUtama = "rounded-md bg-sidebar px-3 py-2 text-sm font-medium text-white hover:bg-sidebar-lighter";
 
   return (
     <div className="space-y-5">
@@ -28,12 +30,12 @@ export default async function NominatifPage({
           </p>
         </div>
         <div className="tanpa-cetak flex gap-2">
-          <span className={tombolNonaktif} title="Tersedia di tahap F4">
+          <Link href="/nominatif/upload" className={tombol}>
             Upload Nominatif Bulanan
-          </span>
-          <span className={tombolNonaktif} title="Tersedia di tahap F4">
+          </Link>
+          <Link href="/nominatif/baru" className={tombolUtama}>
             + Tambah Pegawai
-          </span>
+          </Link>
         </div>
       </div>
 
