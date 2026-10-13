@@ -4,8 +4,19 @@
     {
       "name": "kds-terpadu-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "kds-terpadu-paritas",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/dev-paritas.mjs"
+      ],
+      "port": 3001
     }
   ]
 }

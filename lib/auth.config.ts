@@ -15,6 +15,11 @@ export const authConfig: NextAuthConfig = {
   trustHost: true,
   providers: [],
   callbacks: {
+    // Dipanggil proxy.ts untuk setiap rute yang cocok dengan matcher: tanpa sesi -> diarahkan
+    // ke /login. Pertahanan berlapis; Route Handler tetap wajib memeriksa auth() sendiri.
+    authorized({ auth }) {
+      return !!auth?.user;
+    },
     jwt({ token, user }) {
       if (user) token.id = (user as { id: string }).id;
       return token;

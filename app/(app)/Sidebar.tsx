@@ -14,7 +14,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
     label: "Data",
     items: [
       { href: "/", label: "Ringkasan", exact: true },
-      { href: "/nominatif", label: "Nominatif", tahap: "F3" },
+      { href: "/nominatif", label: "Nominatif" },
       { href: "/rekap-kehadiran", label: "Rekap Kehadiran", tahap: "F3" },
       { href: "/statistik", label: "Statistik", tahap: "F3" },
     ],

@@ -32,3 +32,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Cetak/PDF dari browser: sembunyikan sidebar dan kontrol; laporan memenuhi halaman. */
+@media print {
+  aside,
+  .tanpa-cetak {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+}

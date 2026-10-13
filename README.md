@@ -33,5 +33,8 @@ Siapkan database tes sekali: `DATABASE_URL=<kds_test> npx prisma migrate deploy 
 ## Migrasi data KDS2
 Salinan data asli untuk tes paritas ada di database lokal `kds_paritas`. Cara menjalankan dan hasilnya: [docs/04-migrasi-f2.md](docs/04-migrasi-f2.md).
 
+## Laporan (F3) dan oracle paritas
+Kunci jawaban F3 adalah kode KDS2 yang dijalankan read-only lewat PHP. Lihat [docs/05-f3-laporan.md](docs/05-f3-laporan.md).
+
 ## Aturan data
 Repo ini **tidak boleh** memuat data pegawai asli (NIP, nama). Data uji harus sintetis; rahasia hanya di `.env`.

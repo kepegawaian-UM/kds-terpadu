@@ -1,0 +1,174 @@
+<?php
+/**
+ * ORACLE PARITAS: menjalankan kode KDS2 (Laravel, folder referensi, TIDAK diubah) terhadap
+ * MySQL `kds2_produksi` dan mengembalikan data yang akan dirender KDS2. Dipakai tes paritas F3+
+ * sebagai "kunci jawaban" yang sebenarnya, bukan terjemahan SQL.
+ *
+ * Pemakaian:  php kds2-oracle.php <berkas-masukan.json> <berkas-keluaran.json>
+ *   masukan : {"permintaan":[{"id":"a","laporan":"nominatif.index","params":{"bulan":10,"tahun":2026}}]}
+ *   keluaran: {"a":{...hasil...}}  (galat per permintaan: {"error":"..."})
+ *
+ * Pengaman: sesi MySQL READ ONLY (server menolak tulis), cache/session/queue memakai driver array
+ * (tidak ada tulis ke tabel cache/sessions). Keluaran berisi data pegawai asli: hanya untuk
+ * berkas sementara yang dihapus oleh pemanggil; JANGAN dicetak atau di-commit.
+ * Variabel lingkungan: KDS2_PATH, KDS2_DB (bawaan kds2_produksi).
+ */
+
+declare(strict_types=1);
+
+$kds2 = rtrim(getenv('KDS2_PATH') ?: 'D:/ANAS/Project/Sistem Kepegawaian UM', '/\\');
+$namaDb = getenv('KDS2_DB') ?: 'kds2_produksi';
+
+foreach ([
+    'DB_DATABASE' => $namaDb, 'CACHE_STORE' => 'array', 'SESSION_DRIVER' => 'array',
+    'QUEUE_CONNECTION' => 'sync', 'APP_ENV' => 'testing', 'LOG_CHANNEL' => 'null',
+] as $k => $v) {
+    putenv("$k=$v");
+    $_ENV[$k] = $v;
+    $_SERVER[$k] = $v;
+}
+
+if ($argc < 3) {
+    fwrite(STDERR, "Pemakaian: php kds2-oracle.php <masukan.json> <keluaran.json>\n");
+    exit(2);
+}
+[$berkasMasuk, $berkasKeluar] = [$argv[1], $argv[2]];
+
+require $kds2.'/vendor/autoload.php';
+$app = require $kds2.'/bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+DB::statement('SET SESSION TRANSACTION READ ONLY');
+
+$minta = fn (array $params): Request => Request::create('/', 'GET', $params);
+
+/** Daftar laporan yang bisa ditanyakan. Tambahkan per tahap F3. */
+$penangan = [
+    'ping' => fn (array $p) => [
+        'db' => DB::getDatabaseName(),
+        'tz' => date_default_timezone_get(),
+        'php' => PHP_VERSION,
+    ],
+
+    // Membuktikan sesi memang read-only: percobaan tulis HARUS ditolak server.
+    'tulisDiblokir' => function (array $p) {
+        try {
+            DB::table('pegawai')->where('nip', '__tidak_ada__')->delete();
+
+            return ['diblokir' => false];
+        } catch (Throwable $e) {
+            return ['diblokir' => true];
+        }
+    },
+
+    'filterJenisStatus.dariRequest' => function (array $p) use ($minta) {
+        [$jenis, $status] = App\Support\FilterJenisStatus::dariRequest($minta($p));
+
+        return ['jenis' => $jenis, 'status' => $status];
+    },
+
+    'filterKeaktifan.dariRequest' => fn (array $p) => App\Support\FilterKeaktifan::dariRequest($minta($p)),
+
+    'filterKeaktifan.nipNonaktif' => fn (array $p) => App\Support\FilterKeaktifan::nipNonaktif((int) $p['tahun']),
+
+    'namaFileUnduhan' => fn (array $p) => App\Support\NamaFileUnduhan::buat(
+        $p['tab'], $p['jenis'] ?? [], $p['status'] ?? [], $p['periode'], $p['urutanStatus'] ?? [], $p['keaktifan'] ?? null
+    ),
+
+    // Urutan kode status seperti dropdown KDS2 (orderBy nama) dan daftar kode sah.
+    'master.urutanStatus' => fn (array $p) => App\Models\MasterData\MstStatusKepegawaian::orderBy('nama')->pluck('kode')->all(),
+
+    // Pengambilan periode bawaan tanpa parameter (bulan/tahun terbaru snapshot, atau now()).
+    'periode.bawaan.nominatif' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();
+
+        return ['bulan' => $d['bulan'], 'tahun' => $d['tahun']];
+    },
+
+    // Detail banyak snapshot sekaligus: nilai yang ditampilkan view nominatif/show.blade.php.
+    'nominatif.showBanyak' => function (array $p) use ($app) {
+        $ctl = $app->make(App\Http\Controllers\NominatifBulananController::class);
+        $hasil = [];
+        foreach ($p['ids'] as $id) {
+            $n = $ctl->show(App\Models\NominatifBulanan::findOrFail((int) $id))->getData()['nominatif'];
+            $fmt = fn ($d) => $d?->format('d-m-Y');
+            $jabatan = match ($n->jenis_pegawai_kode) {
+                'DSN' => [['Jabatan Fungsional Dosen', $n->jabatanFungsionalDosen?->nama ?? '-']],
+                'TDK' => [
+                    ['Jabatan Fungsional Tendik', $n->jabatanFungsionalTendik ? "{$n->jabatanFungsionalTendik->jabatan_pokok} ({$n->jabatanFungsionalTendik->jenjang})" : '-'],
+                    ['Jabatan Fungsi Umum Pelaksana', $n->jabatanFungsiUmum?->nama ?? '-'],
+                ],
+                'AKL' => [['Kategori Akademisi Luar', $n->kategoriAkademisiLuar?->nama ?? '-']],
+                default => [],
+            };
+            $hasil[$id] = [
+                'id' => $n->id, 'nip' => $n->nip, 'nama' => $n->nama, 'bulan' => $n->bulan, 'tahun' => $n->tahun,
+                'periodeLabel' => \Carbon\Carbon::create($n->tahun, $n->bulan, 1)->translatedFormat('F Y'),
+                'jenisKelamin' => $n->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan',
+                'tanggalLahir' => $fmt($n->tanggal_lahir) ?? '-',
+                'pendidikan' => $n->pendidikan_terakhir ?? '-',
+                'agama' => $n->agama ?? '-',
+                'tmt' => $fmt($n->tanggal_mulai_kerja),
+                'unit' => $n->unitAsal?->nama, 'unitInduk' => $n->unitAsal?->unitInduk?->nama,
+                'jenisPegawai' => $n->jenisPegawai?->nama,
+                'status' => $n->statusKepegawaian?->nama.' ('.$n->statusKepegawaian?->kategori.')',
+                'golongan' => $n->golongan?->kode ?? '-',
+                'jabatan' => $jabatan,
+                'dasarRemunerasi' => $n->dasar_remunerasi,
+                'jabatanTambahan' => $n->jabatanTambahan->map(fn ($jt) => [
+                    'role' => $jt->role?->nama_role,
+                    'tempat' => $jt->programStudi?->nama ?? $jt->unitAsal?->nama ?? '-',
+                    'status' => $jt->status_pengangkatan,
+                ])->values()->all(),
+            ];
+        }
+
+        return $hasil;
+    },
+
+    // Ekspor Excel Nominatif: judul kolom + baris persis seperti yang ditulis maatwebsite.
+    'nominatif.export' => function (array $p) {
+        $e = new App\Exports\NominatifExport(
+            (int) $p['bulan'], (int) $p['tahun'], $p['jenis_pegawai_kode'] ?? null, $p['unit_asal_kode'] ?? null
+        );
+
+        return [
+            'headings' => $e->headings(),
+            'rows' => $e->collection()->map(fn ($r) => $e->map($r))->values()->all(),
+        ];
+    },
+
+    // Daftar id snapshot per periode (untuk menyusun sampel tes).
+    'nominatif.index' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();
+
+        return [
+            'bulan' => $d['bulan'],
+            'tahun' => $d['tahun'],
+            'namaFile' => $d['namaFile'],
+            'baris' => $d['nominatif']->map(fn ($n) => [
+                'id' => $n->id, 'nip' => $n->nip, 'nama' => $n->nama,
+                'jenis' => $n->jenisPegawai?->nama, 'unit' => $n->unitAsal?->nama,
+            ])->values()->all(),
+        ];
+    },
+];
+
+$masuk = json_decode((string) file_get_contents($berkasMasuk), true, 512, JSON_THROW_ON_ERROR);
+$hasil = [];
+foreach ($masuk['permintaan'] ?? [] as $r) {
+    try {
+        $fn = $penangan[$r['laporan']] ?? throw new InvalidArgumentException('laporan tidak dikenal: '.$r['laporan']);
+        $hasil[$r['id']] = $fn($r['params'] ?? []);
+    } catch (Throwable $e) {
+        $hasil[$r['id']] = ['error' => $e->getMessage()];
+    }
+}
+
+file_put_contents(
+    $berkasKeluar,
+    json_encode($hasil, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR)
+);
