@@ -85,6 +85,21 @@ antar-nama kembar (huruf besar/kecil/aksen berbeda) TIDAK stabil di KDS2** (pada
 id/NIP naik maupun turun) - tes paritas membandingkan kelompok nama kembar sebagai himpunan, isi baris
 tetap harus identik per NIP. Di sini urutan seri deterministik (byte nama, lalu id).
 
+## Statistik Dosen dan Tendik
+Halaman `/statistik/dosen` dan `/statistik/tendik` (server component, tanpa JavaScript klien; periode bawaan =
+snapshot terbaru). Hal yang menentukan angka dan sudah dibuktikan oracle untuk 10 bulan:
+- **Dosen memakai INNER JOIN ke jabatan fungsional**: dosen tanpa jabatan fungsional tidak dihitung sama
+  sekali (tidak juga di "Jumlah"). Data nyata 2026 tidak memuat kasus ini -> dijaga tes sintetis.
+- Unit **UA-179** dikecualikan (ada di bulan 2, 3, 8 data nyata: 2, 41, 47 baris -> tercakup paritas).
+- Kolom golongan Dosen dinamis: jabatan dari jenjang tertinggi; golongan PNS tertinggi dulu, lalu skala PPPK
+  (romawi), lalu tak dikenal menurut kemunculan; satu kolom "-" bila ada golongan kosong (ada di 3 bulan).
+- Pendidikan dicocokkan persis setelah trim PHP (huruf besar/kecil dibedakan); yang di luar daftar
+  (11 baris di Okt 2026) hanya ikut "Jumlah". Dosen memakai daftar dengan `Sp1`, Tendik dengan `Profesi`.
+- Pengelompokan fakultas/jurusan memakai `sortKeys()` PHP (urut byte, `urutPhp.ts`); jurusan dengan nama
+  sama dalam satu fakultas digabung (pengelompokan menurut nama).
+- Tabel tidak punya tombol ekspor (sama dengan KDS2); sel 0 pada baris biasa ditampilkan "-", baris total
+  menampilkan angka apa adanya.
+
 ## Perbedaan disengaja dari KDS2
 - `?keaktifan[]=semua` membuat KDS2 galat (PHP "Array to string conversion", halaman 500); di sini
   kembali ke "aktif".

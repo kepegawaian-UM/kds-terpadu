@@ -250,6 +250,29 @@ $penangan = [
         return ['headings' => $e->headings(), 'rows' => $e->collection()->values()->all()];
     },
 
+    // Statistik Tendik: data yang diberikan controller ke view statistik/tendik.blade.php.
+    'statistik.tendik' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\StatistikTendikController::class)->index($minta($p))->getData();
+
+        return [
+            'bulan' => $d['bulan'], 'tahun' => $d['tahun'],
+            'statistik' => $d['statistik']->values()->all(), 'total' => $d['total'],
+        ];
+    },
+
+    // Statistik Dosen: laporan 2 level (fakultas -> jurusan), kolom jabatan x golongan dinamis, total.
+    'statistik.dosen' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\StatistikDosenController::class)->index($minta($p))->getData();
+
+        return [
+            'bulan' => $d['bulan'], 'tahun' => $d['tahun'],
+            'laporan' => json_decode(json_encode($d['laporan']), true),
+            'total' => $d['total'],
+            'kolom' => $d['kolomJabatanGolongan']->values()->all(),
+            'jabatanGroups' => $d['jabatanGroups']->map(fn ($g) => $g->count())->all(),
+        ];
+    },
+
     // Daftar id snapshot per periode (untuk menyusun sampel tes).
     'nominatif.index' => function (array $p) use ($app, $minta) {
         $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();
