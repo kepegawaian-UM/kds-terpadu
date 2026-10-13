@@ -6,6 +6,7 @@
 import ExcelJS from "exceljs";
 
 import { KesalahanUpload } from "./konstanta";
+import { perbaikiRelasiAbsolut } from "./perbaikiXlsx";
 
 export type NilaiSel = string | number | boolean | Date | null;
 export type BarisSheet = NilaiSel[];
@@ -31,7 +32,7 @@ function normalisasi(v: ExcelJS.CellValue | undefined): NilaiSel {
 export async function bacaSheet(berkas: Buffer, namaSheet: string | null, jumlahKolom: number): Promise<BarisSheet[]> {
   const wb = new ExcelJS.Workbook();
   try {
-    await wb.xlsx.load(berkas as unknown as ArrayBuffer);
+    await wb.xlsx.load((await perbaikiRelasiAbsolut(berkas)) as unknown as ArrayBuffer);
   } catch {
     throw new KesalahanUpload("File Excel tidak bisa dibaca. Pastikan formatnya .xlsx dan tidak rusak.");
   }

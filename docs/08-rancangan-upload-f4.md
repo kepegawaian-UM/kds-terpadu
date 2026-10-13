@@ -47,7 +47,7 @@ antrean **tidak diperlukan** (menambah layanan dan biaya tanpa manfaat).
 |---|---|---|
 | F4.1a (**selesai 13 Okt 2026**: `lib/upload/*`, `app/api/upload-chunk`, `components/upload/UnggahBerkas.tsx`; 31 tes baru, total 271 lulus) | Infrastruktur: `lib/upload/*` (potongan, gabung, pembersih, penjaga berkas, pembaca sheet), rute `upload-chunk`, komponen klien unggah + progres | tes: berkas 10 MB terkirim per potongan, potongan lengkap/tidak lengkap, pembersih, berkas rusak/bukan xlsx/banyak sheet/terlalu banyak baris |
 | F4.1b (**selesai 13 Okt 2026**: `lib/impor/{rekapKehadiran,phpString}.ts`, oracle `scripts/oracle/kds2-impor.php`, `tests/paritas/impor-rekap.test.ts`; 24 tes paritas + 7 tes transaksi; 2.800 pegawai disimpan 2,5 dtk lokal, mengganti 2,5 dtk) | Importer Rekap: validasi (NIP tak dikenal, belum ada Nominatif, AKL ditolak, TMT, bulan tak cocok, TOTAL != JUMLAH MASUK NYATA, NIP ganda), simpan massal, re-upload mengganti, terapkan koreksi | paritas terhadap importer KDS2 asli (§4) |
-| F4.1c | Halaman Upload Rekap (Periksa -> Simpan -> Hasil), unduh template | tes komponen + uji di browser dengan berkas sintetis |
+| F4.1c (**selesai 13 Okt 2026**: `/rekap-kehadiran/upload`, `/upload/hasil/[id]`, `/upload/template`, `FormUploadRekap`, aksi server Periksa/Simpan/Batal; 12 tes baru + uji di browser) | Halaman Upload Rekap (Periksa -> Simpan -> Hasil), unduh template | tes komponen + uji di browser dengan berkas sintetis |
 Lalu F4.2 Koreksi, F4.3 Nominatif, F4.4 Rekap Individual, F4.5 Standarisasi KDS1 (jalur potongan yang sama, berkas 6,7 MB).
 
 ## 4. Cara membuktikan paritas importer (tanpa menyentuh data asli dan tanpa menulis ke MySQL)
@@ -92,3 +92,10 @@ Paritas F4.2a: oracle `scripts/oracle/kds2-koreksi.php` (service KDS2 asli di SQ
 tabel koreksi, dan audit_log baris demi baris. Terbukti peka lewat 5 mutasi aturan (idempotensi angka, angka mengalahkan periode, format
 pengubah audit, laporan "kurang", batas jumlah angka). Beda sengaja: membatalkan koreksi yang sudah batal tidak mengubah apa pun (KDS2 menimpa
 waktu batal); koreksi baru disimpan dan diterapkan dalam SATU transaksi (KDS2 dua langkah terpisah).
+
+## 9. Catatan hasil F4.1c
+- **Temuan penting:** template resmi Upload Rekap KDS2 (dan berkas dari beberapa pustaka .NET/lain) memakai target relasi ABSOLUT ("/xl/tables/table1.xml"). PhpSpreadsheet (KDS2) membacanya, tetapi `exceljs` gagal ("Cannot read properties of undefined") pada berkas bertabel. Padahal berkas yang diunggah admin hampir pasti turunan template itu. Perbaikan: `lib/upload/perbaikiXlsx.ts` menulis ulang target absolut menjadi relatif sebelum dibaca; terbukti dengan berkas bertabel sintetis dan dengan template resmi asli (terbaca 5 baris, header benar). Tanpa temuan ini, upload berkas resmi akan gagal di produksi.
+- Template diunduh dibangkitkan program (`lib/upload/templateRekap.ts`), bukan berkas tetap: berkas .xlsx sengaja tidak masuk repo dan template KDS2 berisi baris contoh.
+- Layar Periksa menampilkan: jumlah baris/gagal/peringatan, berapa pegawai yang akan DIGANTI vs baru, daftar baris dilewati dan peringatan (maks 300 di layar; lengkap di halaman hasil), dan **peringatan salah bulan** bila teks BULAN di berkas berbeda dari bulan yang dipilih (menangkap salah pilih sebelum menimpa data).
+- Sesi login lama yang menyimpan id pengguna yang sudah tidak ada (ditemukan di uji browser setelah database dev dibuat ulang) tidak lagi menggagalkan Simpan: pengunggah tercatat sebagai nama, relasi dikosongkan.
+- Menu: "Upload Rekap" di bagian Proses.

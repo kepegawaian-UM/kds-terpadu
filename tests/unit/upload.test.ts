@@ -3,12 +3,14 @@
  * pembaca sheet (padanan CalculatedFormulaImport) dan pengirim per potongan.
  */
 import ExcelJS from "exceljs";
+import JSZip from "jszip";
 import { describe, expect, it, vi } from "vitest";
 
 import { bacaSheet } from "@/lib/upload/bacaSheet";
 import { jumlahPotongan, unggahBerkas } from "@/lib/upload/klien";
 import { KesalahanUpload, MAKS_BARIS, UKURAN_POTONGAN } from "@/lib/upload/konstanta";
 import { periksaBerkas } from "@/lib/upload/penjagaBerkas";
+import { perbaikiRelasiAbsolut } from "@/lib/upload/perbaikiXlsx";
 
 async function buatXlsx(sheet: Record<string, (string | number | Date | null | ExcelJS.CellValue)[][]>): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
@@ -118,6 +120,42 @@ describe("pembaca sheet", () => {
 
   it("menolak berkas rusak dengan pesan Indonesia", async () => {
     expect(await tolak(bacaSheet(Buffer.from("bukan excel"), null, 1))).toMatch(/tidak bisa dibaca/);
+  });
+});
+
+describe("berkas bertabel dengan relasi absolut (template resmi KDS2)", () => {
+  async function berkasBertabel(): Promise<Buffer> {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Data");
+    ws.addTable({ name: "Tabel1", ref: "A1", headerRow: true, columns: [{ name: "NIP" }, { name: "Nama" }], rows: [["1980", "Andi"], ["1981", "Budi"]] });
+    const asli = Buffer.from(await wb.xlsx.writeBuffer());
+    // tulis ulang target relasi menjadi jalur absolut, seperti yang dilakukan sebagian pustaka
+    const zip = await JSZip.loadAsync(asli);
+    for (const n of Object.keys(zip.files).filter((x) => x.endsWith(".rels"))) {
+      const xml = await zip.file(n)!.async("string");
+      zip.file(n, xml.replace(/Target="(?:\.\.\/)?(tables\/[^"]+)"/g, 'Target="/xl/$1"'));
+    }
+    return Buffer.from(await zip.generateAsync({ type: "nodebuffer" }));
+  }
+
+  it("berkasnya benar-benar memakai target absolut (prasyarat uji) dan exceljs polos gagal membacanya", async () => {
+    const b = await berkasBertabel();
+    const zip = await JSZip.loadAsync(b);
+    const rels = await zip.file("xl/worksheets/_rels/sheet1.xml.rels")!.async("string");
+    expect(rels).toContain('Target="/xl/tables/');
+    await expect(new ExcelJS.Workbook().xlsx.load(b as unknown as ArrayBuffer)).rejects.toThrow();
+  });
+
+  it("penjaga dan pembaca sheet tetap bisa membacanya", async () => {
+    const b = await berkasBertabel();
+    expect(await periksaBerkas(b)).toBeNull();
+    expect(await bacaSheet(b, null, 2)).toEqual([["NIP", "Nama"], ["1980", "Andi"], ["1981", "Budi"]]);
+  });
+
+  it("perbaikan tidak mengubah berkas yang tidak punya target absolut", async () => {
+    const b = await buatXlsx({ Data: [["a"]] });
+    expect(await perbaikiRelasiAbsolut(b)).toBe(b);
+    expect(await perbaikiRelasiAbsolut(Buffer.from("bukan zip"))).toEqual(Buffer.from("bukan zip"));
   });
 });
 
