@@ -273,6 +273,20 @@ $penangan = [
         ];
     },
 
+    // Dashboard: seluruh data yang diberikan DashboardController ke view (kartu, status upload, grafik).
+    'dashboard' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\DashboardController::class)->index($minta($p))->getData();
+        $f = fn ($c) => $c?->format('d-m-Y H:i');
+
+        return [
+            'jumlahPerJenis' => $d['jumlahPerJenis'], 'bulanTerbaru' => $d['bulanTerbaru'], 'tahunTerbaru' => $d['tahunTerbaru'],
+            'nominatifSudahUpload' => $d['nominatifSudahUpload'], 'nominatifTerakhirDiupload' => $f($d['nominatifTerakhirDiupload']),
+            'rekapSudahUpload' => $d['rekapSudahUpload'], 'rekapTerakhirDiupload' => $f($d['rekapTerakhirDiupload']),
+            'bulanPegawai' => $d['bulanPegawai'], 'tahunPegawai' => $d['tahunPegawai'], 'dashboardPegawai' => $d['dashboardPegawai'],
+            'tahunKinerja' => $d['tahunKinerja'], 'dashboardKinerja' => $d['dashboardKinerja'],
+        ];
+    },
+
     // Daftar id snapshot per periode (untuk menyusun sampel tes).
     'nominatif.index' => function (array $p) use ($app, $minta) {
         $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();

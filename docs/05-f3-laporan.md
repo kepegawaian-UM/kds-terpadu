@@ -100,6 +100,23 @@ snapshot terbaru). Hal yang menentukan angka dan sudah dibuktikan oracle untuk 1
 - Tabel tidak punya tombol ekspor (sama dengan KDS2); sel 0 pada baris biasa ditampilkan "-", baris total
   menampilkan angka apa adanya.
 
+## Dashboard (halaman Ringkasan, `/`)
+Data dari `lib/laporan/dashboard.ts` (`dataDashboard`); grafik Chart.js di klien (`components/dashboard`).
+Terbukti sama dengan KDS2 lewat oracle: kartu jumlah pegawai, status upload bulan berjalan (cap waktu WIB
+`dd-mm-yyyy HH:mm`), KPI dan empat grafik per jenis untuk 10 bulan, serta Dashboard Kinerja untuk 2026/2025/2027.
+Yang menentukan angka:
+- **Kartu atas memakai SEMUA baris snapshot terbaru** (mis. 600 akademisi luar), sedangkan **dashboard pegawai
+  mengecualikan UA-179** (akademisi luar jadi 169 karena mayoritas ber-unit "belum diketahui"). Perilaku KDS2.
+- "Punya jabatan tambahan" = COUNT(DISTINCT snapshot dosen yang punya jabatan tambahan), kueri terpisah tanpa
+  pengecualian UA-179.
+- Dashboard Kinerja: hanya Dosen+Tendik yang ada di snapshot bulan TERBARU tahun itu; unit induk dari snapshot itu;
+  kategori izin = komponen non-Rekap bertipe angka (11 komponen, urutan kode), seri mengikuti kemunculan
+  (NIP naik, lalu kode); rata-rata kehadiran = JUMLAH_MASUK_NYATA / SIGMA_HARI.
+- Persen memakai `round(...,1)` PHP (pra-pembulatan presisi); total 0 -> 0.
+- Grafik pegawai diberi judul singkat (KDS2 tanpa judul); tab Pegawai/Kinerja dan sub-tab Dosen/Tendik/AKL tetap
+  memakai tombol seperti KDS2. Tautan upload/tambah pegawai nonaktif sampai F4.
+- Catatan tampilan: kolom sidebar 16 rem membuat konten tak terlihat bila jendela sangat sempit (<±500 px).
+
 ## Perbedaan disengaja dari KDS2
 - `?keaktifan[]=semua` membuat KDS2 galat (PHP "Array to string conversion", halaman 500); di sini
   kembali ke "aktif".
@@ -116,7 +133,7 @@ snapshot terbaru). Hal yang menentukan angka dan sudah dibuktikan oracle untuk 1
 ## Status langkah
 - [x] F3.0 Dasar (oracle, urutan nama, pembantu, tabel, ekspor, formulir)
 - [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [x] F3.3 Rekap Bulanan (paritas + browser) · [x] F3.4 Rekap Tahunan (paritas + browser + keputusan performa)
-- [ ] F3.5 Statistik · [ ] F3.6 Dashboard · [ ] F3.7 Penutup (paritas penuh, performa)
+- [ ] F3.5 Statistik · [x] F3.6 Dashboard (paritas + browser) · [ ] F3.7 Penutup (paritas penuh, performa)
 
 ## Keamanan: pelajaran dari pemeriksaan F3.1
 Perlindungan halaman semula hanya dari `app/(app)/layout.tsx`; `proxy.ts` TIDAK memaksa login karena
