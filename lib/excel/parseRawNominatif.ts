@@ -32,7 +32,7 @@ function cellDate(row: ExcelJS.Row, col: number): Date | null {
     const m = v.trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
     if (m) {
       const [, d, mo, y] = m;
-      return new Date(Number(y), Number(mo) - 1, Number(d));
+      return new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d))); // UTC (salinan KDS1 memakai zona waktu server: hasil sama di Vercel, tetapi bergeser sehari di server berzona WIB)
     }
   }
   return null;

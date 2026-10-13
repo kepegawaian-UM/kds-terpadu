@@ -306,9 +306,17 @@ const ALIAS_JABATAN_FUNGSIONAL_DOSEN: Record<string, string> = {
   "tenaga dosen": "Tenaga Pengajar",
 };
 
-/** Kode placeholder "Belum Diketahui (Perlu Verifikasi Manual)" - lihat seed-data terkait. */
-const JABATAN_DOSEN_BELUM_DIKETAHUI = "DSN-99";
-const JABATAN_FUNGSI_UMUM_BELUM_DIKETAHUI = "UMM-99";
+/**
+ * Placeholder "Belum Diketahui (Perlu Verifikasi Manual)". PERBEDAAN dari salinan KDS1: KDS1 menuliskan kodenya mati ("DSN-99",
+ * "UMM-99", sesuai seed KDS1), padahal master KDS2 yang dipakai KDS Terpadu memberi kode lain (DSN-05, UMM-11) untuk nama yang
+ * sama. Kode dicari lewat NAMA di master supaya tidak melanggar kunci asing.
+ */
+const NAMA_BELUM_DIKETAHUI = "belum diketahui (perlu verifikasi manual)";
+function kodeBelumDiketahui(daftar: readonly { kode: string; nama: string }[], untuk: string): string {
+  const ketemu = daftar.find((j) => normalize(j.nama) === NAMA_BELUM_DIKETAHUI);
+  if (!ketemu) throw new Error(`Master "Belum Diketahui (Perlu Verifikasi Manual)" untuk ${untuk} tidak ditemukan - master data rusak?`);
+  return ketemu.kode;
+}
 
 export function resolveJabatan(
   row: RawNominatifRow,
@@ -341,7 +349,7 @@ export function resolveJabatan(
       })();
     if (!dariMaster) {
       if (pegawaiBaruJabatanKosong) {
-        return { jabatanFungsionalDosenKode: JABATAN_DOSEN_BELUM_DIKETAHUI, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: null };
+        return { jabatanFungsionalDosenKode: kodeBelumDiketahui(master.jabatanFungsionalDosen, "Jabatan Fungsional Dosen"), jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: null };
       }
       if (!row.jabatanFungsionalRaw.trim()) {
         return {
@@ -370,7 +378,7 @@ export function resolveJabatan(
       return { jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: tendik.kode, jabatanFungsiUmumKode: null };
     }
     if (pegawaiBaruJabatanKosong) {
-      return { jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: JABATAN_FUNGSI_UMUM_BELUM_DIKETAHUI };
+      return { jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: kodeBelumDiketahui(master.jabatanFungsiUmumPelaksana, "Fungsi Umum Pelaksana") };
     }
 
     const diingatUmum = dariKamus(kamus, "FungsiUmumPelaksana", kunci);

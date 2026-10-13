@@ -35,12 +35,12 @@ function parseDateFlexible(s: string): Date | null {
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) {
     const [, y, mo, d] = iso;
-    return new Date(Number(y), Number(mo) - 1, Number(d));
+    return new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d))); // UTC (salinan KDS1 memakai zona waktu server: hasil sama di Vercel, tetapi bergeser sehari di server berzona WIB)
   }
   const dmy = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
   if (dmy) {
     const [, d, mo, y] = dmy;
-    return new Date(Number(y), Number(mo) - 1, Number(d));
+    return new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d))); // UTC (salinan KDS1 memakai zona waktu server: hasil sama di Vercel, tetapi bergeser sehari di server berzona WIB)
   }
   return null;
 }
