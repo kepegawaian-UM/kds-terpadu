@@ -38,11 +38,17 @@ export type KolomLaporan<T> = {
   nilai: (baris: T) => string | number | null;
   /** Tampilan sel (bawaan: nilai). */
   render?: (baris: T) => ReactNode;
-  /** Diurutkan sebagai angka dan rata kanan. */
+  /** Diurutkan sebagai angka dan rata kanan (kecuali rata = "tengah"). */
   numerik?: boolean;
+  rata?: "tengah";
   /** Tidak ikut dicari dan diekspor (mis. kolom Aksi). */
   tanpaEkspor?: boolean;
   className?: string;
+  /** Keterangan yang muncul saat kursor di judul kolom. */
+  tooltip?: string;
+  /** Kelas tambahan dan keterangan (title) per sel, mis. sel hasil koreksi berwarna. */
+  kelasSel?: (baris: T) => string;
+  judulSel?: (baris: T) => string | undefined;
 };
 
 type Props<T> = {
@@ -265,7 +271,7 @@ export function TabelLaporan<T>({
                   const k = kolom.find((x) => x.id === h.column.id);
                   const urut = h.column.getIsSorted();
                   return (
-                    <th key={h.id} className={`px-3 py-3 ${k?.numerik ? "text-right" : ""} ${k?.className ?? ""}`}>
+                    <th key={h.id} title={k?.tooltip} className={`px-3 py-3 ${k?.rata === "tengah" ? "text-center" : k?.numerik ? "text-right" : ""} ${k?.className ?? ""}`}>
                       {h.column.getCanSort() ? (
                         <button
                           type="button"
@@ -292,7 +298,11 @@ export function TabelLaporan<T>({
                 {r.getVisibleCells().map((c) => {
                   const k = kolom.find((x) => x.id === c.column.id);
                   return (
-                    <td key={c.id} className={`px-3 py-2 ${k?.numerik ? "text-right tabular-nums" : ""} ${k?.className ?? ""}`}>
+                    <td
+                      key={c.id}
+                      title={k?.judulSel?.(r.original)}
+                      className={`px-3 py-2 ${k?.rata === "tengah" ? "text-center tabular-nums" : k?.numerik ? "text-right tabular-nums" : ""} ${k?.className ?? ""} ${k?.kelasSel?.(r.original) ?? ""}`}
+                    >
                       {flexRender(c.column.columnDef.cell, c.getContext())}
                     </td>
                   );

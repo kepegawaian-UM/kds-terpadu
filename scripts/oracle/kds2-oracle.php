@@ -158,6 +158,60 @@ $penangan = [
         ];
     },
 
+    // Koreksi yang berlaku pada satu bulan (dasar sel berwarna di Rekap Bulanan).
+    'koreksi.berlaku' => fn (array $p) => $app->make(App\Services\KoreksiRekapService::class)
+        ->koreksiBerlaku((int) $p['bulan'], (int) $p['tahun']),
+
+    // Rekap Kehadiran Bulanan: data view + tanda sel/lencana yang dihitung view bulanan.blade.php.
+    'rekap.bulanan' => function (array $p) use ($app, $minta) {
+        $d = $app->make(App\Http\Controllers\RekapKehadiranReportController::class)
+            ->bulanan($minta($p), $app->make(App\Services\KoreksiRekapService::class))->getData();
+        $baris = [];
+        foreach ($d['nominatif'] as $item) {
+            $nilai = $d['nilaiPerNip']->get($item->nip);
+            $tandai = [];
+            foreach ($d['koreksiPerNip'][$item->nip] ?? [] as $k) {
+                $info = 'Dikoreksi: '.$k['alasan'].' ('.$k['dari'].' → '.($k['ke'] ?? 'dihapus').')';
+                if ($k['ke'] === null || (int) ($nilai?->get($k['dari']) ?? 0) > 0) {
+                    $tandai[$k['dari']] = $info;
+                }
+                if ($k['ke'] !== null && (int) ($nilai?->get($k['ke']) ?? 0) > 0) {
+                    $tandai[$k['ke']] = $info;
+                }
+            }
+            $badge = null;
+            if ($d['catatanStatus']->has($item->nip)) {
+                $badge = ['catatan', $d['catatanStatus'][$item->nip]];
+            } elseif (isset($d['nipNonaktif'][(string) $item->nip])) {
+                $badge = ['belum', 'Belum ada keterangan'];
+            }
+            $baris[] = [
+                'id' => $item->id, 'nip' => (string) $item->nip, 'nama' => $item->nama,
+                'nilai' => $nilai ? $nilai->all() : null, 'badge' => $badge, 'tandai' => (object) $tandai,
+            ];
+        }
+
+        return [
+            'bulan' => $d['bulan'], 'tahun' => $d['tahun'], 'jenis' => $d['jenis'], 'status' => $d['status'],
+            'keaktifan' => $d['keaktifan'], 'namaFile' => $d['namaFile'],
+            'komponen' => $d['komponenList']->map(fn ($k) => ['kode' => $k->kode, 'nama' => $k->nama])->values()->all(),
+            'baris' => $baris,
+        ];
+    },
+
+    // Ekspor Excel Rekap Bulanan: parameter diurai seperti controller exportBulanan.
+    'rekap.bulanan.export' => function (array $p) use ($minta) {
+        $req = $minta($p);
+        [$jenis, $status] = App\Support\FilterJenisStatus::dariRequest($req);
+        $e = new App\Exports\RekapKehadiranBulananExport(
+            (int) $req->input('bulan', now()->month), (int) $req->input('tahun', now()->year),
+            $req->input('jenis_pegawai_kode'), $req->input('unit_asal_kode'),
+            $jenis, $status, App\Support\FilterKeaktifan::dariRequest($req)
+        );
+
+        return ['headings' => $e->headings(), 'rows' => $e->collection()->values()->all()];
+    },
+
     // Daftar id snapshot per periode (untuk menyusun sampel tes).
     'nominatif.index' => function (array $p) use ($app, $minta) {
         $d = $app->make(App\Http\Controllers\NominatifBulananController::class)->index($minta($p))->getData();

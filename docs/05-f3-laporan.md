@@ -51,6 +51,21 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
   Unit Kerja (huruf kecil, kode UTF-16); halaman ini mengirim data yang sudah dalam urutan tampil itu.
   Tombol Salin/CSV tidak memuat kolom nomor (DataTables KDS2 memuatnya).
 
+## Rekap Bulanan: hal yang menentukan paritas
+- **Urutan default** = TK terbanyak, seri menurut urutan baris dari DB. KDS2 tidak memakai ORDER BY, sehingga
+  urutan seri bergantung rencana kueri MySQL: filter Non-aktif (`nip IN ...`) -> NIP naik; filter lain -> id
+  naik. Ditiru di `laporanRekapBulanan` dan dibuktikan oracle (data nyata: seri di semua bulan).
+- **Sel kuning:** `koreksiBerlaku` (periode yang menutup SELURUH bulan, angka mengalahkan periode, koreksi
+  dibatalkan diabaikan) + `hitungTandai` (sel asal bila dihapus atau masih > 0, sel tujuan bila > 0).
+  `cakupanKoreksi` ada di `lib/domain/koreksi.ts` (dipakai lagi di F4 untuk menerapkan koreksi).
+- **Bawaan periode** = bulan berjalan WIB (`periodeBulanBerjalan`), bukan snapshot terbaru; parameter yang ada
+  tetapi kosong menjadi 0 seperti (int) PHP. Di Okt 2026 tabel tampil dengan semua sel "-".
+- Ekspor Excel: urut nama (bukan TK), sel tanpa rekap = string kosong, judul kolom memakai nama komponen
+  (mis. "Σ Hari"); parameter `jenis`/`status` boleh berulang atau `jenis[]`.
+- Tautan "Koreksi" dan "Rincian" per baris tampil nonaktif sampai F4.
+- Data nyata (2026): 1.956 baris bertanda koreksi, 690 lencana catatan, 122 "Belum ada keterangan"; kasus
+  koreksi "dihapus" belum ada di data nyata, dijaga tes sintetis (`tests/integration/rekap-bulanan.test.ts`).
+
 ## Perbedaan disengaja dari KDS2
 - `?keaktifan[]=semua` membuat KDS2 galat (PHP "Array to string conversion", halaman 500); di sini
   kembali ke "aktif".
@@ -66,7 +81,7 @@ Pencarian nama memakai pencocokan substring tak peka huruf besar/kecil di klien,
 
 ## Status langkah
 - [x] F3.0 Dasar (oracle, urutan nama, pembantu, tabel, ekspor, formulir)
-- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [ ] F3.3 Rekap Bulanan · [ ] F3.4 Rekap Tahunan
+- [x] F3.1 Nominatif (kode + paritas + pemeriksaan di browser: cari, urut, detail, Excel, 404) · [x] F3.2 Belum Upload (paritas 10 bulan + browser) · [x] F3.3 Rekap Bulanan (paritas + browser) · [ ] F3.4 Rekap Tahunan
 - [ ] F3.5 Statistik · [ ] F3.6 Dashboard · [ ] F3.7 Penutup (paritas penuh, performa)
 
 ## Keamanan: pelajaran dari pemeriksaan F3.1

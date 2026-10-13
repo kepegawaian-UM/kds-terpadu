@@ -24,10 +24,15 @@ export function jenisStatusDari(
   };
 }
 
+/** Daftar status (kode + nama) sesuai urutan dropdown KDS2 (urut nama status). */
+export async function daftarStatusKepegawaian(db: Pick<PrismaClient, "statusKepegawaian">): Promise<{ kode: string; nama: string }[]> {
+  const semua = await db.statusKepegawaian.findMany({ select: { kode: true, nama: true } });
+  return semua.sort((a, b) => bandingkanNama(a.nama, b.nama));
+}
+
 /** Kode status sesuai urutan dropdown KDS2 (urut nama status). */
 export async function urutanKodeStatus(db: Pick<PrismaClient, "statusKepegawaian">): Promise<string[]> {
-  const semua = await db.statusKepegawaian.findMany({ select: { kode: true, nama: true } });
-  return semua.sort((a, b) => bandingkanNama(a.nama, b.nama)).map((s) => s.kode);
+  return (await daftarStatusKepegawaian(db)).map((s) => s.kode);
 }
 
 // ---- Keaktifan ------------------------------------------------------------------------------
