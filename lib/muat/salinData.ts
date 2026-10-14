@@ -40,6 +40,12 @@ const berurutOtomatis = (n: string) => {
 const kutip = (s: string) => `"${s}"`;
 
 export type LaporanTabel = { model: string; tabel: string; dibaca: number; ditulis: number };
+
+/**
+ * Hanya jejak audit yang boleh sudah berisi di tujuan (peristiwa keamanan yang sah seperti penggantian kata sandi setelah tujuan dipakai). Barisnya DIPERTAHANKAN:
+ * dicatat dulu, lalu ditaruh kembali dengan id baru SETELAH audit riwayat dimuat (id riwayat dipertahankan apa adanya).
+ */
+const BOLEH_TERISI = new Set(["AuditLog"]);
 export type OpsiMuat = {
   sumber: PrismaClient;
   tujuan: PrismaClient;
@@ -60,11 +66,12 @@ async function urutanSumber(sumber: Klien, model: string): Promise<{ nama: strin
   return { nama, nilai: Number(s.last_value), dipakai: s.is_called };
 }
 
-export async function muatData(opsi: OpsiMuat): Promise<{ dryRun: boolean; durasiMs: number; tabel: LaporanTabel[] }> {
+export async function muatData(opsi: OpsiMuat): Promise<{ dryRun: boolean; durasiMs: number; tabel: LaporanTabel[]; auditDipertahankan: number }> {
   const { sumber, tujuan, adminTujuanId, dryRun = false, lapor = () => {} } = opsi;
   const mulai = Date.now();
   const hasil: LaporanTabel[] = [];
   const urutan = new Map<string, { nama: string; nilai: number; dipakai: boolean }>();
+  let auditDipertahankan = 0;
   for (const m of URUTAN_MUAT) {
     const u = await urutanSumber(sumber, m);
     if (u) urutan.set(m, u);
@@ -77,9 +84,12 @@ export async function muatData(opsi: OpsiMuat): Promise<{ dryRun: boolean; duras
         const terisi: string[] = [];
         for (const m of URUTAN_MUAT) {
           const n = await delegate(tx, m).count();
-          if (n > 0) terisi.push(`${tabelDb(m)} (${n})`);
+          if (n > 0 && !BOLEH_TERISI.has(m)) terisi.push(`${tabelDb(m)} (${n})`);
         }
         if (terisi.length > 0) throw new Error(`Tujuan tidak kosong: ${terisi.join(", ")}. Pemuatan dihentikan; tidak ada yang diubah.`);
+        // baris audit yang sudah ada di tujuan dicatat dan dikosongkan sementara; dikembalikan setelah audit riwayat dimuat
+        const auditTujuan = await delegate(tx, "AuditLog").findMany({ orderBy: { id: "asc" } });
+        if (auditTujuan.length > 0) await (tx as unknown as { auditLog: { deleteMany(): Promise<unknown> } }).auditLog.deleteMany();
 
         for (const m of URUTAN_MUAT) {
           const pk = kunciUtama(m);
@@ -110,6 +120,13 @@ export async function muatData(opsi: OpsiMuat): Promise<{ dryRun: boolean; duras
           const total = await delegate(sumber, m).count();
           if (dibaca !== total || ditulis !== total) throw new Error(`${tabelDb(m)}: jumlah tidak cocok (sumber ${total}, dibaca ${dibaca}, ditulis ${ditulis})`);
           hasil.push({ model: m, tabel: tabelDb(m), dibaca, ditulis });
+          if (m === "AuditLog" && auditTujuan.length > 0) {
+            const [mx] = await tx.$queryRawUnsafe<{ maks: number | null }[]>(`SELECT MAX("id")::int AS maks FROM "audit_log"`);
+            const awal = (mx.maks ?? 0) + 1;
+            await delegate(tx, "AuditLog").createMany({ data: auditTujuan.map((r, i) => ({ ...r, id: awal + i })) });
+            auditDipertahankan = auditTujuan.length;
+            lapor(`  audit_log: ${auditTujuan.length} baris yang sudah ada di tujuan dipertahankan (id setelah riwayat)`);
+          }
         }
 
         // urutan id: setval TIDAK ikut dibatalkan rollback, jadi hanya diterapkan pada pemuatan sungguhan
@@ -128,7 +145,7 @@ export async function muatData(opsi: OpsiMuat): Promise<{ dryRun: boolean; duras
   } catch (e) {
     if (!(e instanceof DryRunSelesai)) throw e;
   }
-  return { dryRun, durasiMs: Date.now() - mulai, tabel: hasil };
+  return { dryRun, durasiMs: Date.now() - mulai, tabel: hasil, auditDipertahankan };
 }
 
 export type BarisVerifikasi = { tabel: string; jumlahSumber: number; jumlahTujuan: number; sama: boolean };
@@ -138,6 +155,9 @@ export type BarisVerifikasi = { tabel: string; jumlahSumber: number; jumlahTujua
  * diarahkan ke admin tujuan). Hanya angka dan nilai sidik jari yang dikembalikan; tidak ada isi baris.
  */
 export async function verifikasiSalinan(sumber: Klien, tujuan: Klien): Promise<BarisVerifikasi[]> {
+  // Jejak audit yang ditambahkan di tujuan SETELAH pemuatan (id di atas id terbesar sumber) bukan bagian salinan: tidak ikut dibandingkan.
+  const [ms] = await sumber.$queryRawUnsafe<{ maks: number | null }[]>(`SELECT MAX("id")::int AS maks FROM "audit_log"`);
+  const batasAudit = ms.maks ?? 0;
   const sidik = async (k: Klien, m: string) => {
     const pk = kunciUtama(m);
     const buang = kolomPengguna(m);
@@ -147,7 +167,7 @@ export async function verifikasiSalinan(sumber: Klien, tujuan: Klien): Promise<B
     // kunci teks diurutkan per byte (COLLATE "C") supaya urutan sama di database dengan kolasi berbeda; kunci angka tidak mendukung COLLATE
     const urut = dmmf(m).fields.find((f) => f.isId)!.type === "String" ? `t.${kutip(pk)} COLLATE "C"` : `t.${kutip(pk)}`;
     const [r] = await k.$queryRawUnsafe<{ n: number; h: string }[]>(
-      `SELECT count(*)::int AS n, coalesce(md5(string_agg(${isi}, '|' ORDER BY ${urut})), '') AS h FROM ${kutip(tabelDb(m))} t`,
+      `SELECT count(*)::int AS n, coalesce(md5(string_agg(${isi}, '|' ORDER BY ${urut})), '') AS h FROM ${kutip(tabelDb(m))} t${m === "AuditLog" ? ` WHERE t."id" <= ${batasAudit}` : ""}`,
     );
     return r;
   };

@@ -153,6 +153,26 @@ describe.skipIf(!ada)("pemuat data antar database", () => {
     expect(await hitungTujuan()).toEqual(sebelum);
   });
 
+  it("audit yang sudah ada di tujuan (mis. ganti kata sandi) dipertahankan dengan id baru setelah riwayat, dan tidak mengganggu verifikasi; data lain di tujuan tetap menolak", async () => {
+    await kosongkanTujuan();
+    await isiSumber();
+    const maksSumber = (await sumber.auditLog.aggregate({ _max: { id: true } }))._max.id!;
+    await tujuan.auditLog.create({ data: { namaTabel: "users", idRecord: "x", fieldDiubah: "password", nilaiLama: null, nilaiBaru: "(diganti)", diubahOleh: "admin", diubahPada: new Date("2026-10-14T03:00:00Z"), aksi: "UPDATE" } });
+    const lap = await muatData({ sumber, tujuan, adminTujuanId });
+    expect(lap.auditDipertahankan).toBe(1);
+    const jejak = await tujuan.auditLog.findMany({ where: { namaTabel: "users" } });
+    expect(jejak).toHaveLength(1);
+    expect(jejak[0].id).toBeGreaterThan(maksSumber);
+    expect(await tujuan.auditLog.count()).toBe((await sumber.auditLog.count()) + 1);
+    expect((await verifikasiSalinan(sumber, tujuan)).filter((x) => !x.sama)).toEqual([]);
+    // tabel lain yang terisi tetap ditolak walau audit boleh
+    await kosongkanTujuan();
+    await tujuan.auditLog.create({ data: { namaTabel: "users", idRecord: "x", fieldDiubah: "password", nilaiLama: null, nilaiBaru: "(diganti)", diubahOleh: "admin", diubahPada: new Date("2026-10-14T03:00:00Z"), aksi: "UPDATE" } });
+    await tujuan.catatanStatusPegawai.create({ data: { nip: "1", alasan: "x", sumber: "uji", dicatatPada: new Date("2026-09-30T00:00:00Z") } });
+    await expect(muatData({ sumber, tujuan, adminTujuanId })).rejects.toThrow(/Tujuan tidak kosong: catatan_status_pegawai/);
+    expect(await tujuan.auditLog.count()).toBe(1);
+  });
+
   it("kegagalan di tengah (kode master yang dipakai tidak ada di tujuan) membatalkan SELURUHNYA, termasuk tabel yang sudah terisi", async () => {
     await kosongkanTujuan();
     await isiSumber();
