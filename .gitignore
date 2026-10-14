@@ -25,3 +25,6 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 /app/generated/prisma
+
+# Keluaran pembanding F5 (berisi daftar NIP): hanya lokal
+.f5-keluaran/

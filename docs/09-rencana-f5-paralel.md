@@ -75,3 +75,14 @@ Sumber: `docs/07-operasional-hosting.md` §1. Yang saya **tidak** lakukan sendir
 1. Setuju dengan rencana ini (atau perubahan yang Anda mau).
 2. Keputusan awal soal golongan Non-ASN (cukup mulai dicek; tidak menghalangi F5.1).
 3. Lokasi berkas mentah bulan-bulan sebelumnya yang masih Anda punya (untuk uji tambahan saat F5.1 dibuat; saya hanya membaca).
+
+## 9. F5.1 dan F5.2 selesai (14 Okt 2026): pembanding bulanan dan database `kds_f5`
+- **Alat**: `npm run f5:siapkan-db` (membuat `kds_f5` sebagai salinan `kds_paritas`, hanya lokal; `--ganti` untuk membuat ulang), `scripts/f5-muat-berkas.ts` (memproses satu berkas mentah ke `kds_f5` lewat layanan Standarisasi yang sama dengan halaman), dan `npm run f5:bandingkan -- <bulan> <tahun> [--berkas]`. Pembanding membaca KDS2 hanya lewat SELECT (sesi MySQL READ ONLY) dan Terpadu dari `kds_f5`/`kds_paritas` saja; layar hanya memuat angka dan pasangan KODE master; daftar NIP selisih ditulis ke `.f5-keluaran/` (diabaikan git) hanya dengan `--berkas`. Keluar dengan kode 1 bila ada selisih baru. Logika murni di `lib/f5/bandingkan.ts` (12 tes unit; mutasi aturan diketahui dan pemakaian pasangan ganda terdeteksi).
+- **Uji pembanding sendiri**: pada `kds_paritas` (salinan KDS2) hasilnya BERSIH sempurna (2.790 baris Nominatif semua kolom sama, 366 slot jabatan tambahan, 34.992 sel Rekap): pembanding tidak menghasilkan selisih palsu.
+- **Uji nyata September 2026** (berkas `REKAP_PEGAWAI (7).xlsx` diproses ke `kds_f5`, 2,3 dtk, lalu dibandingkan dengan KDS2): Rekap 34.992 sel identik; Nominatif 2.730 baris yang berhasil identik di semua kolom kecuali yang berikut. Sisa selisih seluruhnya sudah dijelaskan:
+  1. **60 NIP hanya di KDS2**: 56 = antrean Review Terpadu yang belum diselesaikan (Akademisi Luar ber-NIP placeholder; di siklus nyata Anda menyelesaikannya dulu), 4 = tidak ada di berkas SIMPEGA sama sekali (kemungkinan ditambah manual di KDS2; Standarisasi menggantikan seluruh snapshot bulan itu, seperti KDS1).
+  2. **Golongan Non-ASN 594 baris**: diketahui, menunggu keputusan pengguna (§4).
+  3. **Jabatan tambahan**: 33 pegawai Terpadu lebih lengkap (slot "merangkap" tambahan dan/atau tujuan unit/prodi yang kosong di KDS2, termasuk unit asrama); **1** pegawai bentuk beda (KDS2 satu peran, Terpadu dua peran terpisah) perlu dilihat manusia.
+  4. **2 NIP beda tanggal mulai kerja** (Terpadu = SIMPEGA; KDS2 bulan/tahunnya lebih baru): kemungkinan koreksi manual di KDS2; perlu dicek pengguna.
+- **Cara membaca hasil tiap siklus**: "BERSIH" bila hanya ada perbedaan diketahui; selain itu setiap baris alasan di keluaran harus diberi status (§3 langkah 6). Perbedaan diketahui baru ditambahkan ke aturan bila disetujui pengguna dan dicatat di §4.
+- **Berikutnya**: F5.3 (siklus 1 dan 2 dengan data bulan nyata, oleh Anda dengan bantuan saya), F5.4. Bulan yang bisa dipakai untuk latihan lebih awal: bulan lain yang berkas mentahnya masih ada (belum ditemukan selain September).
