@@ -17,6 +17,7 @@
     "migrasi:verifikasi": "tsx scripts/verifikasi-migrasi.ts",
     "migrasi:kds1": "tsx scripts/migrasi-kds1.ts",
     "f5:bandingkan": "tsx scripts/f5-bandingkan.ts",
+    "koreksi:golongan-kds1": "tsx scripts/koreksi-golongan-kds1.ts",
     "admin:reset-sandi": "tsx scripts/admin-reset-sandi.ts",
     "f5:siapkan-db": "tsx scripts/f5-siapkan-db.ts",
     "dev:paritas": "node scripts/dev-paritas.mjs",
