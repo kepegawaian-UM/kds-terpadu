@@ -68,3 +68,6 @@ Neon kosong sebelum pemuatan, jadi mundur = mengosongkan tabel domain (`scripts/
 1. Konfirmasi tiga syarat bertanda **belum dikonfirmasi** di §3.
 2. Keputusan: audit_log dan upload_error_rows ikut dimuat? (disarankan ya).
 3. Persetujuan eksplisit untuk dry-run di Neon (§4 langkah 3) dan, terpisah, untuk muat sungguhan (langkah 5). Keduanya akan saya minta pada saatnya; persetujuan untuk satu tidak berlaku untuk yang lain.
+
+## 8. Hasil pemuatan (14 Okt 2026)
+Dry-run ke-3 lalu muat sungguhan atas persetujuan eksplisit pengguna. 374.991 baris, 35,8 detik; verifikasi jumlah dan sidik jari seluruh baris IDENTIK untuk 14 tabel; Neon 75,8 MB. Cadangan Neon pra-muat (0,1 MB) dan pasca-muat (2,8 MB) di `bak\kds-terpadu`; uji pulih lulus (28 tabel, 375.582 baris, 0 beda). Satu baris audit_log milik Neon (ganti sandi admin) dipertahankan dengan id setelah riwayat. Syarat Firewall `/login` TIDAK terpenuhi dan risikonya diterima pengguna (aturan ada, uji burst belum menghasilkan 429). Sisa verifikasi: pengguna memeriksa Ringkasan Oktober di situs; `f5:bandingkan` terhadap Neon.
