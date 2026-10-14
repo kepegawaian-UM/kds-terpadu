@@ -10,7 +10,7 @@
  * Keluar dengan kode 1 bila ada selisih baru (di luar perbedaan yang sudah diputuskan, lihat docs/09 §4).
  */
 import "dotenv/config";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -79,7 +79,15 @@ async function main() {
     }
     const nipBersama = nomKds2.map((r) => String(r.pegawaiNip)).filter((nip) => nomPg.some((p) => p.pegawaiNip === nip));
     const jt = bandingkanJabatanTambahan(slotKds2, slotPg, nipBersama);
+    // Selisih yang SUDAH dikonfirmasi pengguna per NIP (berkas lokal .f5-keluaran/dikonfirmasi.json, diabaikan git):
+    // {"jabatanTambahan": ["<nip>", ...], "nominatif": ["<nip>", ...]}. Disebut terpisah di keluaran, tidak disembunyikan.
+    const konfirmasi: { jabatanTambahan?: string[]; nominatif?: string[] } = existsSync(".f5-keluaran/dikonfirmasi.json") ? JSON.parse(readFileSync(".f5-keluaran/dikonfirmasi.json", "utf8")) : {};
+    const jtDikonfirmasi = jt.bedaBaru.filter((x) => konfirmasi.jabatanTambahan?.includes(x));
+    jt.bedaBaru = jt.bedaBaru.filter((x) => !jtDikonfirmasi.includes(x));
+    const nomDikonfirmasi = n.nipBedaBaru.filter((x) => konfirmasi.nominatif?.includes(x));
+    n.nipBedaBaru = n.nipBedaBaru.filter((x) => !nomDikonfirmasi.includes(x));
     console.log(`\n[Jabatan Tambahan] slot KDS2=${[...slotKds2.values()].flat().length} | Terpadu=${[...slotPg.values()].flat().length}`);
+    if (jtDikonfirmasi.length + nomDikonfirmasi.length > 0) console.log(`  [dikonfirmasi pengguna, tidak dihitung selisih baru] jabatan tambahan: ${jtDikonfirmasi.length} | kolom Nominatif: ${nomDikonfirmasi.length}`);
     console.log(`  NIP sama: ${jt.sama} | Terpadu lebih lengkap (slot merangkap / tujuan unit-prodi yang kosong di KDS2, diketahui): ${jt.terpaduLebihLengkapDiketahui} | selisih BARU: ${jt.bedaBaru.length}`);
 
     // ---- Rekap Kehadiran ----

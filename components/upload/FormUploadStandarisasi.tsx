@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -122,6 +123,12 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
         <Angka judul="Perlu Review" nilai={r.perluReview} kelas={r.perluReview > 0 ? "text-amber-700" : "text-slate-900"} />
         <Angka judul="Dikecualikan permanen" nilai={r.dikecualikan} />
       </div>
+
+      {r.tmtDikoreksi > 0 && (
+        <p className="text-sm text-slate-700">
+          <b>{angka(r.tmtDikoreksi)}</b> pegawai memakai tanggal mulai kerja dari <Link href="/koreksi-pegawai" className="text-blue-700 underline">Koreksi Pegawai</Link> (bukan dari berkas).
+        </p>
+      )}
 
       {r.perAlasan.length > 0 && (
         <div>

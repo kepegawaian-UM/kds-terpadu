@@ -465,3 +465,16 @@ model CatatanStatusPegawai {
 
   @@map("catatan_status_pegawai")
 }
+
+/// Koreksi tanggal mulai kerja (TMT) per pegawai yang BENAR menurut admin tetapi berbeda dari berkas SIMPEGA: dipakai setiap Standarisasi
+/// supaya koreksi manual tidak tertimpa. Sumber awal: dua pegawai yang TMT-nya dikoreksi manual di KDS2 (September 2026).
+model KoreksiTanggalMulaiKerja {
+  id                Int      @id @default(autoincrement())
+  nip               String   @unique
+  tanggalMulaiKerja DateTime @db.Date
+  alasan            String
+  dibuatOlehNama    String
+  dibuatPada        DateTime @default(now())
+
+  @@map("koreksi_tanggal_mulai_kerja")
+}

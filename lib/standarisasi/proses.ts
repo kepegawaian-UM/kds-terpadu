@@ -12,6 +12,7 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 import { classifyRow, pilihAlasanUtama } from "@/lib/domain/classify";
 import type { ResolvedNominatif } from "@/lib/domain/classify";
 import { isNipPlaceholderTidakStabil, JENIS_FIELD_IDENTITAS_EKSTERNAL, kunciIdentitasEksternal } from "@/lib/domain/identitasEksternal";
+import { petaKoreksiTmt } from "@/lib/koreksi/tanggalMulaiKerja";
 import { loadKamusMap, loadMasterCache, loadNipDikecualikanPermanen, loadNipTerdaftar } from "@/lib/domain/masterCache";
 import { parseRawNominatif } from "@/lib/excel/parseRawNominatif";
 import { ColumnMappingError, type RawNominatifRow } from "@/lib/excel/types";
@@ -35,6 +36,8 @@ export type HasilKlasifikasi = {
   jabatan: SlotJabatan[];
   bermasalah: BarisMasalah[];
   petaKolom: Record<string, number | null>;
+  /** baris yang TMT-nya diganti oleh koreksi TMT per pegawai */
+  tmtDikoreksi: number;
 };
 
 /** Hanya field mentah yang relevan ke skema Nominatif disimpan sebagai dataMentah (NIK/KK/rekening/alamat tidak pernah masuk RawNominatifRow). */
@@ -51,19 +54,25 @@ export async function klasifikasiBerkas(db: Db, berkas: Buffer, bulan: number, t
     if (e instanceof ColumnMappingError) throw new KesalahanUpload(e.message);
     throw e;
   }
-  const [master, kamus, nipTerdaftar, nipDikecualikan] = await Promise.all([
-    loadMasterCache(db), loadKamusMap(db), loadNipTerdaftar(db), loadNipDikecualikanPermanen(db),
+  const [master, kamus, nipTerdaftar, nipDikecualikan, koreksiTmt] = await Promise.all([
+    loadMasterCache(db), loadKamusMap(db), loadNipTerdaftar(db), loadNipDikecualikanPermanen(db), petaKoreksiTmt(db),
   ]);
 
   const rows = parsed.rows.filter((r) => !nipDikecualikan.has(r.nip));
   const hasil: HasilKlasifikasi = {
-    jumlahTotal: rows.length, jumlahDikecualikan: parsed.rows.length - rows.length, nominatif: [], jabatan: [], bermasalah: [], petaKolom: parsed.petaKolomTerdeteksi,
+    jumlahTotal: rows.length, jumlahDikecualikan: parsed.rows.length - rows.length, nominatif: [], jabatan: [], bermasalah: [], petaKolom: parsed.petaKolomTerdeteksi, tmtDikoreksi: 0,
   };
 
   function proses(rowAsli: RawNominatifRow, pegawaiNip: string, hasilKlasifikasi: ReturnType<typeof classifyRow>) {
     if (hasilKlasifikasi.ok) {
       const { jabatanTambahan, ...data } = hasilKlasifikasi.data;
       const indeks = hasil.nominatif.length;
+      // Koreksi TMT per pegawai (lib/koreksi/tanggalMulaiKerja.ts) menggantikan TMT dari berkas; dihitung hanya bila memang berbeda.
+      const tmt = koreksiTmt.get(pegawaiNip);
+      if (tmt && tmt.getTime() !== data.tanggalMulaiKerja.getTime()) {
+        data.tanggalMulaiKerja = tmt;
+        hasil.tmtDikoreksi++;
+      }
       hasil.nominatif.push({ pegawaiNip, ...data });
       for (const slot of jabatanTambahan) hasil.jabatan.push({ indeksNominatif: indeks, ...slot });
     } else {
@@ -108,6 +117,8 @@ export type RingkasanStandarisasi = {
   dikecualikan: number;
   /** jumlah per alasan review, urut terbanyak */
   perAlasan: { alasan: string; jumlah: number }[];
+  /** baris yang TMT-nya diganti koreksi TMT per pegawai */
+  tmtDikoreksi: number;
   /** baris Nominatif yang sudah ada pada bulan itu dan akan DIHAPUS lalu digantikan */
   akanMenimpa: number;
   /** pegawai pada snapshot sebelumnya yang tidak ada di hasil (akan tampil non-aktif) */
@@ -132,6 +143,7 @@ async function ringkas(db: Db, h: HasilKlasifikasi, bulan: number, tahun: number
   }
   return {
     totalBaris: h.jumlahTotal, berhasil: h.nominatif.length, perluReview: h.bermasalah.length, dikecualikan: h.jumlahDikecualikan,
+    tmtDikoreksi: h.tmtDikoreksi,
     perAlasan: [...hitung.entries()].map(([alasan, jumlah]) => ({ alasan, jumlah })).sort((a, b) => b.jumlah - a.jumlah),
     akanMenimpa: await db.nominatifBulanan.count({ where: { bulan, tahun } }), tidakAdaDiBerkas: hilang, pembanding,
     contohBermasalah: h.bermasalah.slice(0, 20).map((b) => ({ nip: b.nip, alasanUtama: b.alasanUtama, detailAlasan: b.detailAlasan })),

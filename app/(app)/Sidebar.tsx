@@ -32,6 +32,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
       { href: "/standarisasi", label: "Standarisasi" },
       { href: "/bandingkan", label: "Bandingkan Batch" },
       { href: "/koreksi-rekap", label: "Koreksi Rekap" },
+      { href: "/koreksi-pegawai", label: "Koreksi Pegawai" },
     ],
   },
 ];
