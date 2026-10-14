@@ -209,3 +209,10 @@ dan `tests/integration/kueri-rencana.test.ts`. **Aturan: kueri agregat mentah ya
 5. Ekspor Excel ±1 dtk untuk 2.800 baris (penulisan xlsx dominan); cukup untuk sekarang.
 6. `npm audit`: Next sudah dinaikkan ke 16.4.0 (13 Okt 2026) sehingga celah kritis di next/og tertutup; tersisa 5 non-kritis
    (`prisma` CLI -> `deepmerge-ts`, `exceljs` -> `uuid`) yang tidak berdampak langsung (alat pengembangan / pemakaian tanpa buffer).
+
+## Peninjauan `npm audit` (14 Okt 2026)
+- Sebelum: 13 temuan (2 critical, 8 high, 3 moderate). Dinaikkan **vitest 3 -> 5.0.4** dan **@types/node 20 -> 22.19.19** (cocok dengan Node 22; vitest 5 mewajibkannya): kedua temuan critical (vitest/tinypool, hanya alat uji lokal) hilang; 562 tes, lint, typecheck, build tetap hijau. Sesudah: **10 temuan (8 high, 2 moderate)**, semua diputuskan diterima:
+  - `prisma` CLI -> `@prisma/config` -> `deepmerge-ts` (high, stack exhaustion saat menggabungkan konfigurasi): hanya alat pengembangan (migrasi) yang dijalankan manual dengan berkas konfigurasi sendiri; bukan kode yang melayani permintaan. "Perbaikan" yang ditawarkan menurunkan prisma ke 6.12 (mundur dari 6.19), jadi tidak diikuti.
+  - `eslint-config-next` -> `@next/eslint-plugin-next` -> `fast-glob/micromatch/braces` (high, DoS pola glob): hanya saat lint di komputer pengembang. "Perbaikan" menurunkan ke eslint-config-next 14, jadi tidak diikuti.
+  - `exceljs` -> `uuid` (moderate, batas buffer pada uuid v3/v5/v6 bila argumen `buf` diberikan): exceljs tidak memberi argumen itu; isi berkas unggahan tidak mempengaruhinya. Tidak ada versi exceljs yang memperbaikinya selain `3.4.0` (mundur jauh).
+  - Tinjau lagi bila prisma/eslint-config-next menerbitkan versi yang memperbaikinya.
