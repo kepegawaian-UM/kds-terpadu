@@ -73,3 +73,11 @@ Simpan satu salinan variabel lingkungan produksi di pengelola kata sandi supaya 
 - Atasan/UPT TIK menyatakan data wajib di Indonesia -> pindah ke server UM atau VPS Indonesia (rencana keluar §6, tanpa ubah kode).
 - Akun Hobby ditangguhkan atau atasan ingin yang resmi -> Vercel Pro (±US$25-45/bulan dengan Neon Launch), tanpa ubah kode.
 - Penyimpanan Neon mendekati 0,4 GB atau komputasi gratis tidak cukup -> naik ke Neon Launch.
+
+## 9. Catatan pelaksanaan Neon (14 Okt 2026)
+- Proyek Neon `kds-terpadu` dibuat oleh pengguna (akun GitHub institusi), wilayah **AWS Asia Pacific (Singapore, ap-southeast-1)**, database `neondb`. Dua alamat koneksi (pooling dan tanpa pooling) disimpan pengguna di `.env.neon` (diabaikan git, tidak pernah dicetak atau dikirim lewat chat).
+- Dilakukan dari komputer pengguna atas persetujuan eksplisit: `scripts/neon/periksa.ts` (memastikan Neon Singapura, alamat pooling/tanpa pooling benar, database kosong; hanya membaca), `prisma migrate deploy` (4 migrasi), seed master + akun admin (`kepegawaian@um.ac.id`, kata sandi dari `SEED_ADMIN_PASSWORD` di `.env.neon`), dan `scripts/neon/samakan-master.ts` (6 unit asrama KDS1 ditambahkan dengan kode yang sama dengan salinan kerja lokal; 12 tabel master identik; 0 baris data pegawai).
+- `AUTH_SECRET` produksi dibuat acak dan ditulis ke `.env.neon` (tidak ditampilkan); nilainya dipindahkan pengguna ke variabel Vercel (tipe Sensitive).
+- **Belum ada data pegawai di Neon.** Data asli baru masuk setelah syarat §1 lengkap (cadangan terjadwal dan uji pulih, akun institusi dengan verifikasi dua langkah) dan lewat dry-run, cadangan, serta persetujuan pengguna.
+- Seed bawaan (`prisma/seed-data`) tetap tanpa unit asrama karena tes paritas master membandingkan dengan KDS2; unit itu ditambahkan ke produksi lewat `samakan-master.ts` bila database baru dibuat.
+- `.env.neon` berisi rahasia produksi: simpan salinannya di pengelola kata sandi, jangan di Drive atau repo. Bila bocor: ganti kata sandi role database di konsol Neon dan buat `AUTH_SECRET` baru.
