@@ -156,6 +156,18 @@ export function Sidebar({
         ))}
       </nav>
 
+      <div className="px-3 pb-3">
+        <a
+          href="/panduan/index.html"
+          target="_blank"
+          rel="noopener"
+          className="flex items-center justify-between rounded-full border border-sidebar-lighter px-3 py-2 text-sm text-sidebar-muted transition-colors hover:bg-sidebar-lighter hover:text-white"
+        >
+          <span>Panduan</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
       <div className="border-t border-sidebar-lighter px-4 py-4">
         <Link href="/akun" title="Pengaturan akun dan kata sandi" className="-m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-lighter">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-green text-xs font-semibold text-white">

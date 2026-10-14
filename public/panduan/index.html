@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panduan KDS Terpadu untuk Pegawai Baru</title>
+<style>
+  :root { --hijau:#1d443a; --hijau-muda:#e8f0ed; --emas:#d1ab68; --emas-muda:#faf3e4; --merah:#dc2626; --merah-muda:#fdecec; --teks:#1f2933; --abu:#f4f5f6; --garis:#dfe3e6; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--teks); background:#fff; line-height:1.65; }
+  a { color: var(--hijau); }
+  header.nav { position: sticky; top:0; z-index:20; background:var(--hijau); color:#fff; display:flex; align-items:center; gap:12px; padding:10px 16px; }
+  header.nav strong { white-space:nowrap; }
+  header.nav nav { display:flex; gap:4px; overflow-x:auto; flex:1; }
+  header.nav nav a { color:#e8f0ed; text-decoration:none; padding:6px 10px; border-radius:999px; font-size:.9rem; white-space:nowrap; }
+  header.nav nav a:hover { background:rgba(255,255,255,.15); color:#fff; }
+  .hero { background:linear-gradient(135deg,var(--hijau),#2c5d50); color:#fff; padding:56px 16px; text-align:center; }
+  .hero h1 { margin:0 0 10px; font-size:clamp(1.7rem,4vw,2.4rem); }
+  .hero p { margin:0 auto 22px; max-width:640px; color:#e8f0ed; }
+  .btn { display:inline-block; padding:10px 20px; border-radius:999px; text-decoration:none; font-weight:600; margin:4px; }
+  .btn.emas { background:var(--emas); color:#1d443a; }
+  .btn.garis { border:2px solid var(--emas); color:#fff; }
+  main { max-width:900px; margin:0 auto; padding:8px 16px 64px; }
+  section { padding-top:36px; }
+  h2 { color:var(--hijau); border-bottom:3px solid var(--emas); padding-bottom:6px; margin-bottom:14px; }
+  h3 { color:var(--hijau); margin-top:22px; }
+  .kartu { background:var(--abu); border:1px solid var(--garis); border-radius:12px; padding:14px 18px; margin:12px 0; }
+  .langkah { counter-reset: n; list-style:none; padding:0; }
+  .langkah li { counter-increment: n; position:relative; padding:10px 14px 10px 54px; margin:10px 0; background:var(--abu); border:1px solid var(--garis); border-radius:12px; }
+  .langkah li::before { content: counter(n); position:absolute; left:12px; top:10px; width:30px; height:30px; border-radius:50%; background:var(--hijau); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .tips, .awas { border-radius:10px; padding:12px 16px; margin:14px 0; }
+  .tips { background:var(--emas-muda); border-left:5px solid var(--emas); }
+  .awas { background:var(--merah-muda); border-left:5px solid var(--merah); }
+  .tips::before { content:"Tips: "; font-weight:700; color:#8a6a1f; }
+  .awas::before { content:"Awas: "; font-weight:700; color:var(--merah); }
+  table { border-collapse:collapse; width:100%; margin:12px 0; font-size:.95rem; }
+  th, td { border:1px solid var(--garis); padding:8px 10px; text-align:left; vertical-align:top; }
+  th { background:var(--hijau-muda); color:var(--hijau); }
+  code, kbd { background:#eef1f2; border-radius:5px; padding:1px 6px; font-family: ui-monospace, Consolas, monospace; font-size:.9em; }
+  pre { background:#12261f; color:#e8f0ed; padding:12px 14px; border-radius:10px; overflow-x:auto; }
+  pre code { background:none; color:inherit; padding:0; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:12px; }
+  #cari { width:100%; padding:10px 14px; border:2px solid var(--garis); border-radius:10px; font-size:1rem; margin-bottom:10px; }
+  #cari:focus { outline:none; border-color:var(--hijau); }
+  dl.glosarium dt { font-weight:700; color:var(--hijau); margin-top:12px; }
+  dl.glosarium dd { margin:2px 0 0; }
+  .sembunyi { display:none; }
+  footer { background:var(--abu); border-top:1px solid var(--garis); text-align:center; padding:20px 16px; font-size:.9rem; color:#52606d; }
+  #atas { position:fixed; right:16px; bottom:16px; background:var(--hijau); color:#fff; border:none; border-radius:999px; padding:10px 14px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+  @media print { header.nav, #atas, .hero .btn, #cari { display:none !important; } .hero { background:none; color:#000; padding:8px 0; } .hero p { color:#000; } section { break-inside: avoid-page; } a { color:#000; } }
+</style>
+</head>
+<body>
+<header class="nav">
+  <strong>KDS Terpadu</strong>
+  <nav>
+    <a href="#apa">Apa itu?</a>
+    <a href="#alur">Alur bulanan</a>
+    <a href="#langkah0">1. Bersihkan</a>
+    <a href="#standarisasi">2. Standarisasi</a>
+    <a href="#rekap">3. Rekap</a>
+    <a href="#periksa">4. Periksa</a>
+    <a href="#laporan">5. Laporan</a>
+    <a href="#jarang">Jarang dipakai</a>
+    <a href="#akun">Akun</a>
+    <a href="#masalah">Masalah umum</a>
+    <a href="#glosarium">Glosarium</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Panduan KDS Terpadu untuk Pegawai Baru</h1>
+  <p>Cara memasukkan data bulanan, memeriksa hasilnya, dan mengambil laporan, dijelaskan langkah demi langkah tanpa istilah teknis yang tidak dijelaskan.</p>
+  <a class="btn emas" href="#apa">Mulai dari sini</a>
+  <a class="btn garis" href="#glosarium">Lihat Glosarium</a>
+</div>
+
+<main>
+
+<section id="apa">
+  <h2>Apa itu KDS Terpadu?</h2>
+  <p><strong>KDS Terpadu</strong> adalah aplikasi web milik Seksi Kinerja, Disiplin, dan Sistem Informasi (KDS), Subdirektorat SDM, Universitas Negeri Malang. Aplikasi ini menyatukan dua alat lama: <strong>KDS1</strong> (merapikan data nominatif) dan <strong>KDS2</strong> (arsip nominatif dan rekap kehadiran).</p>
+  <div class="grid">
+    <div class="kartu"><strong>Isinya</strong><br>Arsip data pegawai Dosen, Tendik, dan Akademisi Luar UM yang diperbarui <em>tiap bulan</em> lewat berkas Excel.</div>
+    <div class="kartu"><strong>Penggunanya</strong><br>Admin SDM pusat saja. Hanya ada satu akun, tanpa persetujuan berjenjang.</div>
+    <div class="kartu"><strong>Sifatnya</strong><br><em>Arsip historis yang dirapikan</em>, bukan cermin kondisi terkini. Kondisi terkini tetap ada di SIMPEGA resmi universitas.</div>
+  </div>
+  <div class="tips">KDS Terpadu <em>bukan</em> SIMPEGA. Jangan menyebut aplikasi ini "SIMPEGA" supaya tidak tertukar.</div>
+</section>
+
+<section id="alur">
+  <h2>Alur kerja satu bulan, sekilas</h2>
+  <p>Menu di sisi kiri aplikasi sudah disusun mengikuti urutan ini, dari atas ke bawah.</p>
+  <ol class="langkah">
+    <li><strong>Bersihkan berkas SIMPEGA</strong> di komputermu supaya data sensitif tidak ikut terunggah.</li>
+    <li><strong>Standarisasi</strong>: unggah berkas yang sudah bersih, periksa, simpan, lalu selesaikan antrean Review.</li>
+    <li><strong>Bandingkan Batch</strong>: cek apa yang berubah dibanding bulan lalu.</li>
+    <li><strong>Upload Rekap</strong>: unggah rekap kehadiran bulan itu, lalu <strong>Koreksi Rekap</strong> bila perlu.</li>
+    <li><strong>Periksa hasilnya</strong>: Belum Ada Rekap, Nominatif, Rekap Bulanan.</li>
+    <li><strong>Laporan</strong>: Rekap Tahunan, Rekap Individual, Statistik.</li>
+  </ol>
+  <div class="tips">Kerjakan satu bulan sampai tuntas sebelum membuka bulan berikutnya. Setiap unggahan memakai <strong>bulan dan tahun</strong> yang kamu pilih, jadi pastikan pilihannya benar sebelum menyimpan.</div>
+</section>
+
+<section id="langkah0">
+  <h2>Langkah 1: Bersihkan berkas SIMPEGA</h2>
+  <p>Berkas tarikan SIMPEGA (<code>REKAP_PEGAWAI.xlsx</code>) berisi sekitar 67 kolom, termasuk data pribadi seperti NIK, nama ibu kandung, alamat, email, dan nomor rekening. Data itu <strong>tidak boleh</strong> masuk ke aplikasi. Karena itu berkasnya dibersihkan dulu di komputermu sampai tinggal 17 kolom yang memang dipakai.</p>
+  <ol class="langkah">
+    <li>Unduh berkas <strong>Rekap Pegawai</strong> dari SIMPEGA (bukan daftar pegawai biasa; yang dibutuhkan punya sekitar 67 kolom dan berukuran beberapa MB).</li>
+    <li>Buka terminal di folder proyek KDS Terpadu (komputer yang sudah disiapkan seniormu).</li>
+    <li>Jalankan perintah ini. Ganti jalurnya dengan lokasi berkasmu, dan pertahankan tanda kutip:
+<pre><code>npm run bersihkan -- "C:\Users\...\REKAP_PEGAWAI.xlsx"</code></pre></li>
+    <li>Di folder yang sama muncul berkas baru <code>REKAP_PEGAWAI_bersih.xlsx</code>. <strong>Itu yang diunggah.</strong></li>
+  </ol>
+  <div class="awas">Jangan pernah mengunggah berkas aslinya. Aplikasi akan menolaknya, dan berkas itu tidak boleh keluar dari komputermu. Setelah selesai, hapus berkas mentah dari folder Downloads.</div>
+  <div class="tips">Kalau pembersih menjawab "bukan format REKAP_PEGAWAI", berarti berkas yang diunduh keliru (mis. daftar pegawai dengan 8 kolom). Unduh ulang Rekap Pegawai yang benar.</div>
+</section>
+
+<section id="standarisasi">
+  <h2>Langkah 2: Standarisasi (data nominatif bulan itu)</h2>
+  <p>Menu <strong>Standarisasi</strong> membaca berkas bersih, merapikan namanya (unit, jabatan, golongan, dan sebagainya) agar seragam dengan data master, lalu menyimpannya sebagai nominatif bulan tersebut.</p>
+  <ol class="langkah">
+    <li>Buka <strong>Standarisasi</strong>, pilih <strong>bulan</strong> dan <strong>tahun</strong> yang benar.</li>
+    <li>Pilih berkas <code>_bersih.xlsx</code>, lalu jalankan <strong>Periksa</strong>. Tidak ada yang tersimpan pada tahap ini; kamu hanya melihat ringkasan dan peringatan.</li>
+    <li>Baca ringkasannya: jumlah baris berhasil, jumlah yang perlu <em>Review</em>, dan peringatan seperti pegawai yang ada di bulan lalu tapi hilang bulan ini.</li>
+    <li>Kalau sudah masuk akal, tekan <strong>Simpan</strong>. Penyimpanan dilakukan sekaligus: kalau gagal di tengah, tidak ada data setengah jadi.</li>
+    <li>Selesaikan antrean <strong>Review</strong> (lihat di bawah).</li>
+  </ol>
+  <h3>Antrean Review</h3>
+  <p>Sebagian baris tidak bisa dicocokkan otomatis, misalnya nama unit atau jabatan yang ejaannya baru. Baris itu masuk antrean <strong>Review</strong>. Untuk tiap baris, pilih nilai master yang benar lewat formulir <strong>Selesaikan</strong>. Pilihanmu bisa dicatat di <strong>Kamus Koreksi</strong>, sehingga bulan depan ejaan yang sama dikenali otomatis.</p>
+  <div class="tips">Mulailah dari Review yang jumlahnya paling banyak. Bulan-bulan berikutnya antrean ini biasanya makin pendek karena kamus sudah belajar.</div>
+  <div class="awas">Jika dua pegawai tampak punya NIP yang sama, atau Akademisi Luar ber-NIP sementara (placeholder), periksa identitasnya dulu sebelum menyelesaikan barisnya.</div>
+</section>
+
+<section id="bandingkan">
+  <h2>Langkah 3: Bandingkan Batch</h2>
+  <p>Menu <strong>Bandingkan Batch</strong> menunjukkan apa yang berubah antara dua unggahan (biasanya bulan ini dan bulan lalu): pegawai baru, yang hilang, dan yang datanya berubah. Kamu bisa menulis alasan tiap perubahan dan mengunduh hasilnya sebagai Excel. Gunakan ini untuk menangkap kesalahan sebelum rekap diunggah.</p>
+</section>
+
+<section id="rekap">
+  <h2>Langkah 4: Upload Rekap dan Koreksi Rekap</h2>
+  <h3>Upload Rekap</h3>
+  <ol class="langkah">
+    <li>Buka <strong>Upload Rekap</strong>. Unduh <strong>template</strong> bila perlu, dan isi sesuai kolomnya (kolom tidak boleh bergeser).</li>
+    <li>Pilih bulan dan tahun, pilih berkas, lalu <strong>Periksa</strong>. Aplikasi memberi peringatan kalau bulan di berkas tampak berbeda dari bulan yang kamu pilih.</li>
+    <li>Baca hasil pemeriksaan, lalu <strong>Simpan</strong>. Halaman Hasil menampilkan berapa baris masuk, dilewati, atau bermasalah.</li>
+  </ol>
+  <div class="kartu"><strong>Aturan penting rekap</strong>
+    <ul>
+      <li>NIP yang tidak dikenal dilewati.</li>
+      <li>Rekap untuk bulan <em>sebelum</em> tanggal mulai kerja (TMT) pegawai ditolak; bulan TMT sendiri diterima.</li>
+      <li>Akademisi Luar tidak masuk rekap.</li>
+      <li>Mengunggah ulang bulan yang sama <strong>mengganti</strong> data bulan itu.</li>
+      <li>Peringatan (misalnya TOTAL tidak sama dengan JUMLAH_MASUK_NYATA) tidak menggagalkan baris.</li>
+    </ul>
+  </div>
+  <h3>Koreksi Rekap</h3>
+  <p>Kalau ada angka kehadiran yang perlu dibetulkan tanpa mengubah berkas asli, pakai <strong>Koreksi Rekap</strong>. Ada dua jenis: <strong>periode</strong> (mis. memindahkan hari TK menjadi izin pada rentang tanggal) dan <strong>angka</strong> (menetapkan angka langsung). Aplikasi menampilkan pratinjau sebelum disimpan. Koreksi <strong>diterapkan ulang otomatis</strong> setiap kali rekap bulan itu diunggah lagi, dan jika dua jenis bertabrakan pada bulan yang sama, koreksi <em>angka</em> yang menang. Koreksi bisa dibatalkan.</p>
+</section>
+
+<section id="periksa">
+  <h2>Langkah 5: Periksa hasilnya</h2>
+  <table>
+    <tr><th>Menu</th><th>Gunanya</th></tr>
+    <tr><td>Belum Ada Rekap</td><td>Daftar pegawai aktif yang rekap kehadirannya belum ada untuk bulan itu. Tindak lanjuti sebelum laporan diambil.</td></tr>
+    <tr><td>Nominatif</td><td>Data pegawai per bulan. Cek jumlah dan beberapa baris acak.</td></tr>
+    <tr><td>Rekap Bulanan</td><td>Angka kehadiran semua pegawai untuk satu bulan.</td></tr>
+  </table>
+  <div class="tips">Bandingkan jumlah pegawai di <strong>Ringkasan</strong> dengan jumlah bulan lalu. Selisih besar tanpa alasan biasanya tanda ada berkas yang keliru.</div>
+</section>
+
+<section id="laporan">
+  <h2>Langkah 6: Laporan</h2>
+  <table>
+    <tr><th>Menu</th><th>Gunanya</th></tr>
+    <tr><td>Rekap Tahunan</td><td>Jumlah dari rekap bulanan sepanjang tahun, dihitung saat dibuka (tidak disimpan terpisah).</td></tr>
+    <tr><td>Rekap Individual</td><td>Rekap satu pegawai, atau banyak pegawai sekaligus (Massal). Bisa dicetak sebagai dokumen A4 atau diunduh sebagai Excel.</td></tr>
+    <tr><td>Statistik Dosen / Tendik</td><td>Ringkasan jumlah menurut jabatan, unit, dan golongan.</td></tr>
+  </table>
+  <p>Laporan punya filter <strong>Keaktifan</strong>: Aktif, Non-aktif, atau Semua. Pegawai dianggap non-aktif bila tidak ada di data bulan terakhir tahun itu atau tercatat berhenti (pensiun, resign, dsb.).</p>
+  <div class="tips">Untuk PDF, buka laporannya, tekan <kbd>Ctrl</kbd>+<kbd>P</kbd>, lalu pilih "Simpan sebagai PDF".</div>
+</section>
+
+<section id="jarang">
+  <h2>Menu yang jarang dipakai</h2>
+  <div class="grid">
+    <div class="kartu"><strong>Koreksi Pegawai</strong><br>Menetapkan tanggal mulai kerja (TMT) per NIP bila data SIMPEGA keliru. Dipakai Standarisasi dan validasi rekap.</div>
+    <div class="kartu"><strong>Upload Nominatif</strong><br>Jalur lama dari KDS2 memakai template. Tidak perlu lagi bila kamu memakai Standarisasi.</div>
+  </div>
+</section>
+
+<section id="akun">
+  <h2>Akun dan keamanan</h2>
+  <ul>
+    <li>Ganti nama atau kata sandi lewat <strong>Akun</strong> (klik namamu di kiri bawah). Kata sandi minimal 12 karakter, berisi huruf dan angka.</li>
+    <li>Setelah <strong>5 kali salah masuk</strong>, akun dikunci 15 menit (kata sandi yang benar pun ditolak selama terkunci). Tunggu, jangan terus mencoba.</li>
+    <li>Jangan berbagi kata sandi lewat chat atau menuliskannya di berkas.</li>
+    <li>Tombol <strong>Keluar</strong> ada di kiri bawah. Gunakan setiap selesai, terutama di komputer bersama.</li>
+  </ul>
+  <div class="awas">Data pribadi pegawai tidak boleh dikirim lewat email atau chat. Berkas SIMPEGA mentah hanya ada di komputer kerja dan dihapus setelah dibersihkan.</div>
+</section>
+
+<section id="masalah">
+  <h2>Masalah umum dan jawabannya</h2>
+  <table>
+    <tr><th>Yang terjadi</th><th>Artinya dan yang dilakukan</th></tr>
+    <tr><td>"Berkas ini bukan format REKAP_PEGAWAI" saat membersihkan</td><td>Berkas yang diunduh salah. Unduh ulang Rekap Pegawai yang punya sekitar 67 kolom.</td></tr>
+    <tr><td>Aplikasi menolak berkas karena kolom lain</td><td>Berkas belum dibersihkan. Jalankan <code>npm run bersihkan</code> dulu dan unggah yang <code>_bersih</code>.</td></tr>
+    <tr><td>Kolom bergeser / header tidak cocok (Upload Rekap)</td><td>Pakai template terbaru dan jangan menambah atau memindah kolom.</td></tr>
+    <tr><td>Rekap pegawai ditolak "sebelum TMT"</td><td>Tanggal mulai kerja pegawai itu lebih akhir dari bulan rekapnya. Cek TMT-nya; bila data TMT keliru, pakai Koreksi Pegawai.</td></tr>
+    <tr><td>Peringatan bulan tidak cocok</td><td>Bulan di berkas berbeda dari bulan yang dipilih. Pastikan pilihannya benar sebelum Simpan.</td></tr>
+    <tr><td>Akun terkunci</td><td>Tunggu 15 menit. Jika lupa kata sandi, minta senior melakukan reset darurat.</td></tr>
+    <tr><td>Halaman terasa lambat pertama kali dibuka</td><td>Normal: layanan gratis "tidur" saat lama tidak dipakai dan butuh beberapa detik untuk bangun.</td></tr>
+    <tr><td>Angka tidak sama dengan KDS2</td><td>Selama masa paralel, bandingkan keduanya. Beberapa selisih disengaja (mis. golongan Non-ASN yang sudah dikoreksi). Tanyakan ke senior sebelum menganggapnya salah.</td></tr>
+  </table>
+</section>
+
+<section id="glosarium">
+  <h2>Glosarium</h2>
+  <input id="cari" type="search" placeholder="Cari istilah, mis. nominatif, TMT, Review..." aria-label="Cari istilah">
+  <dl class="glosarium" id="daftar">
+    <div class="item"><dt>Nominatif</dt><dd>Daftar data pegawai pada satu bulan tertentu (satu baris per pegawai per bulan).</dd></div>
+    <div class="item"><dt>Snapshot</dt><dd>Foto data pada satu bulan. Data bulan lain tidak berubah ketika satu bulan diganti.</dd></div>
+    <div class="item"><dt>SIMPEGA</dt><dd>Sistem kepegawaian resmi universitas, sumber berkas mentah. Bukan KDS Terpadu.</dd></div>
+    <div class="item"><dt>Standarisasi</dt><dd>Proses merapikan nama unit, jabatan, golongan, dan lain-lain agar seragam dengan data master.</dd></div>
+    <div class="item"><dt>Review</dt><dd>Antrean baris yang tidak bisa dicocokkan otomatis dan perlu dipilihkan nilai yang benar oleh admin.</dd></div>
+    <div class="item"><dt>Kamus Koreksi</dt><dd>Catatan pilihan Review yang pernah dibuat, supaya ejaan yang sama dikenali otomatis di bulan berikutnya.</dd></div>
+    <div class="item"><dt>Batch</dt><dd>Satu kali unggahan berkas beserta hasilnya.</dd></div>
+    <div class="item"><dt>Periksa dan Simpan</dt><dd>Dua tahap unggahan. Periksa hanya melihat ringkasan; Simpan baru menyimpan data.</dd></div>
+    <div class="item"><dt>Rekap Kehadiran</dt><dd>Ringkasan kehadiran bulanan per pegawai (izin, sakit, cuti, terlambat, dan seterusnya).</dd></div>
+    <div class="item"><dt>TMT</dt><dd>Tanggal Mulai Tugas/Terhitung Mulai Tanggal; di sini berarti tanggal mulai kerja pegawai.</dd></div>
+    <div class="item"><dt>Koreksi Rekap</dt><dd>Perubahan angka rekap tanpa mengubah berkas asli. Jenisnya periode atau angka.</dd></div>
+    <div class="item"><dt>Koreksi Pegawai</dt><dd>Penetapan TMT per NIP yang menggantikan data SIMPEGA.</dd></div>
+    <div class="item"><dt>Akademisi Luar</dt><dd>Pegawai dari luar UM yang tercatat di nominatif. Tidak masuk Rekap Kehadiran.</dd></div>
+    <div class="item"><dt>Keaktifan</dt><dd>Filter laporan: Aktif, Non-aktif, atau Semua.</dd></div>
+    <div class="item"><dt>Master</dt><dd>Daftar acuan resmi (unit, jabatan, golongan, status, dst.) yang dipakai untuk menyeragamkan nama.</dd></div>
+    <div class="item"><dt>Pembersih</dt><dd>Perintah <code>npm run bersihkan</code> yang membuang kolom sensitif dari berkas SIMPEGA di komputermu.</dd></div>
+    <div class="item"><dt>Audit log</dt><dd>Catatan siapa mengubah apa untuk perubahan yang dilakukan manual (bukan unggahan massal).</dd></div>
+    <div class="item"><dt>Non-ASN (PTNA/CPTNA)</dt><dd>Pegawai bukan ASN yang golongannya tetap dicatat bila ada.</dd></div>
+    <div class="item"><dt>Arsip</dt><dd>Data historis yang dijaga rapi per bulan, bukan data kondisi terkini.</dd></div>
+  </dl>
+  <p id="kosong" class="sembunyi">Tidak ada istilah yang cocok.</p>
+</section>
+
+</main>
+
+<footer>
+  Panduan ini ringkasan per Oktober 2026; kalau ada yang berbeda dengan aplikasi, tanyakan ke senior KDS.<br>
+  Seksi Kinerja, Disiplin, dan Sistem Informasi, Subdirektorat SDM, Universitas Negeri Malang.
+</footer>
+
+<button id="atas" aria-label="Kembali ke atas" onclick="window.scrollTo({top:0})">↑ Atas</button>
+
+<script>
+  (function () {
+    var cari = document.getElementById("cari");
+    var items = Array.prototype.slice.call(document.querySelectorAll("#daftar .item"));
+    var kosong = document.getElementById("kosong");
+    cari.addEventListener("input", function () {
+      var q = cari.value.trim().toLowerCase(), ada = 0;
+      items.forEach(function (el) {
+        var cocok = !q || el.textContent.toLowerCase().indexOf(q) !== -1;
+        el.classList.toggle("sembunyi", !cocok);
+        if (cocok) ada++;
+      });
+      kosong.classList.toggle("sembunyi", ada !== 0);
+    });
+    var tombol = document.getElementById("atas");
+    function atur() { tombol.style.display = window.scrollY > 400 ? "block" : "none"; }
+    window.addEventListener("scroll", atur); atur();
+  })();
+</script>
+</body>
+</html>
