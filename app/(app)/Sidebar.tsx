@@ -5,37 +5,47 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Kerangka F1: hanya "Ringkasan" yang aktif. Modul lain adalah penanda tempat dan akan
-// diaktifkan per tahap (lihat docs/01-rancangan.md): Nominatif/Rekap/Statistik/Dashboard di
-// F3, Upload/Koreksi/Standarisasi di F4.
-type NavItem = { href: string; label: string; exact?: boolean; tahap?: string };
+type NavItem = { href: string; label: string; exact?: boolean };
 
+// Urutan mengikuti alur kerja bulanan: masukkan data -> periksa -> laporan. Yang jarang dipakai ada di bawah.
 const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
+  { label: "", items: [{ href: "/", label: "Ringkasan", exact: true }] },
   {
-    label: "Data",
+    label: "1. Masukkan data bulan baru",
     items: [
-      { href: "/", label: "Ringkasan", exact: true },
+      { href: "/standarisasi", label: "Standarisasi" },
+      { href: "/bandingkan", label: "Bandingkan Batch" },
+      { href: "/rekap-kehadiran/upload", label: "Upload Rekap" },
+      { href: "/koreksi-rekap", label: "Koreksi Rekap" },
+    ],
+  },
+  {
+    label: "2. Periksa hasilnya",
+    items: [
+      { href: "/rekap-kehadiran/belum-upload", label: "Belum Ada Rekap" },
       { href: "/nominatif", label: "Nominatif" },
       { href: "/rekap-kehadiran/bulanan", label: "Rekap Bulanan" },
+    ],
+  },
+  {
+    label: "3. Laporan",
+    items: [
       { href: "/rekap-kehadiran/tahunan", label: "Rekap Tahunan" },
       { href: "/rekap-kehadiran/individual", label: "Rekap Individual" },
-      { href: "/rekap-kehadiran/belum-upload", label: "Belum Ada Rekap" },
       { href: "/statistik/dosen", label: "Statistik Dosen" },
       { href: "/statistik/tendik", label: "Statistik Tendik" },
     ],
   },
   {
-    label: "Proses",
+    label: "Jarang dipakai",
     items: [
-      { href: "/nominatif/upload", label: "Upload Nominatif" },
-      { href: "/rekap-kehadiran/upload", label: "Upload Rekap" },
-      { href: "/standarisasi", label: "Standarisasi" },
-      { href: "/bandingkan", label: "Bandingkan Batch" },
-      { href: "/koreksi-rekap", label: "Koreksi Rekap" },
       { href: "/koreksi-pegawai", label: "Koreksi Pegawai" },
+      { href: "/nominatif/upload", label: "Upload Nominatif" },
     ],
   },
 ];
+
+const SEMUA_HREF = NAV_SECTIONS.flatMap((s) => s.items.map((i) => i.href));
 
 function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -117,27 +127,15 @@ export function Sidebar({
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
-            <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-sidebar-muted">
-              {section.label}
-            </p>
+            {section.label && (
+              <p className="px-3 pb-2 text-xs font-semibold tracking-wider text-sidebar-muted">{section.label}</p>
+            )}
             <ul className="space-y-1">
               {section.items.map((item) => {
-                if (item.tahap) {
-                  return (
-                    <li key={item.href}>
-                      <span
-                        aria-disabled="true"
-                        className="flex cursor-not-allowed items-center justify-between rounded-full px-3 py-2 text-sm text-sidebar-muted/60"
-                      >
-                        <span className="truncate">{item.label}</span>
-                        <span className="rounded-full border border-sidebar-lighter px-2 text-[10px] uppercase">
-                          {item.tahap}
-                        </span>
-                      </span>
-                    </li>
-                  );
-                }
-                const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+                // yang menyala hanya alamat paling spesifik (mis. /nominatif/upload tidak ikut menyalakan /nominatif)
+                const active = item.exact
+                  ? pathname === item.href
+                  : pathname.startsWith(item.href) && !SEMUA_HREF.some((h) => h.length > item.href.length && h !== "/" && pathname.startsWith(h));
                 return (
                   <li key={item.href}>
                     <Link
