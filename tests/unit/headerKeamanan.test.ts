@@ -9,6 +9,7 @@ describe("header keamanan", () => {
   it("memuat header wajib dengan nilai ketat", () => {
     expect(nilai("X-Frame-Options")).toBe("DENY");
     expect(nilai("X-Content-Type-Options")).toBe("nosniff");
+    expect(nilai("X-Robots-Tag")).toBe("noindex, nofollow, noarchive");
     expect(nilai("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
     expect(nilai("Permissions-Policy")).toContain("camera=()");
     expect(nilai("Strict-Transport-Security")).toMatch(/max-age=\d{7,}/);

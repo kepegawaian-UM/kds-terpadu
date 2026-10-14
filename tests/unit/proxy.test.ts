@@ -16,7 +16,7 @@ describe("matcher proxy", () => {
   });
 
   it("tidak melindungi halaman login, aset Next, favicon, dan logo", () => {
-    for (const j of ["/login", "/api/auth/session", "/_next/static/chunks/a.js", "/_next/image", "/favicon.ico", "/logo.png"]) expect(dilindungi(j), j).toBe(false);
+    for (const j of ["/login", "/api/auth/session", "/_next/static/chunks/a.js", "/_next/image", "/favicon.ico", "/logo.png", "/robots.txt"]) expect(dilindungi(j), j).toBe(false);
   });
 
   it("tidak melonggarkan berkas lain di public", () => {
