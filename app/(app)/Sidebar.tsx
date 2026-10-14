@@ -29,6 +29,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
       { href: "/nominatif/upload", label: "Upload Nominatif" },
       { href: "/rekap-kehadiran/upload", label: "Upload Rekap" },
       { href: "/standarisasi", label: "Standarisasi" },
+      { href: "/bandingkan", label: "Bandingkan Batch" },
       { href: "/koreksi-rekap", label: "Koreksi Rekap" },
     ],
   },

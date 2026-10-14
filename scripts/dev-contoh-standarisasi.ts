@@ -1,6 +1,6 @@
 /**
  * Mengisi database LOKAL kds_dev dengan satu batch Standarisasi SINTETIS (tanpa data pegawai asli) supaya halaman Standarisasi
- * bisa dicoba di browser. Menolak berjalan terhadap database selain kds_dev. Pakai: npx tsx scripts/dev-contoh-standarisasi.ts
+ * bisa dicoba di browser. Menolak berjalan terhadap database selain kds_dev. Pakai: npx tsx scripts/dev-contoh-standarisasi.ts [bulan] [benih]
  */
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
@@ -20,8 +20,8 @@ async function main() {
     akl: (await prisma.kategoriAkademisiLuar.findMany()).map((x) => x.nama), status: await prisma.statusKepegawaian.findMany(),
     role: (await prisma.jabatanTambahanRole.findMany()).map((x) => x.namaRole), prodi: (await prisma.programStudi.findMany()).map((x) => x.nama),
   };
-  const { buffer } = await buatBerkasRaw({ vocab, bulan: 10, tahun: 2026, jumlah: 60, benih: 5, tanpaPlaceholder: true });
-  const r = await simpanStandarisasi(prisma, buffer, "contoh-sintetis.xlsx", { bulan: 10, tahun: 2026 }, { id: null, nama: "Contoh Sintetis" });
+  const { buffer } = await buatBerkasRaw({ vocab, bulan: Number(process.argv[2] ?? 10), tahun: 2026, jumlah: 60, benih: Number(process.argv[3] ?? 5), tanpaPlaceholder: true });
+  const r = await simpanStandarisasi(prisma, buffer, "contoh-sintetis.xlsx", { bulan: Number(process.argv[2] ?? 10), tahun: 2026 }, { id: null, nama: "Contoh Sintetis" });
   console.log(`Batch ${r.batchId}: ${r.ringkasan.berhasil} berhasil, ${r.ringkasan.perluReview} perlu review.`);
 }
 
