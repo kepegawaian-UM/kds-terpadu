@@ -318,6 +318,14 @@ function kodeBelumDiketahui(daftar: readonly { kode: string; nama: string }[], u
   return ketemu.kode;
 }
 
+/** Istilah sehari-hari di sumber data yang dikenali sebagai nama lain Fungsi Umum Pelaksana (sama dengan alias importer KDS2). */
+const ALIAS_FUNGSI_UMUM: Record<string, string> = { laboran: "Teknisi Laboratorium" };
+
+function cariFungsiUmumSepadan(master: MasterCache, raw: string) {
+  const alias = ALIAS_FUNGSI_UMUM[normalize(raw)];
+  return exactMatch(master.jabatanFungsiUmumPelaksana, (j) => j.nama, alias ?? raw);
+}
+
 export function resolveJabatan(
   row: RawNominatifRow,
   master: MasterCache,
@@ -374,6 +382,16 @@ export function resolveJabatan(
     const tendik =
       (diingatTendik && master.jabatanFungsionalTendik.find((j) => j.kode === diingatTendik)) ||
       matchJabatanFungsionalTendik(master.jabatanFungsionalTendik, row.jabatanFungsionalRaw);
+    // BEDA DARI KDS1 (keputusan pengguna 14 Okt 2026, bukti: berkas SIMPEGA September 2026 vs riwayat KDS2): jabatan Tendik tanpa jenjang
+    // (jenjang "-", mis. "Pelaksana" 767 orang dan "Laboran" 66 orang) yang namanya juga ada di master Fungsi Umum Pelaksana dicatat
+    // sebagai Fungsi Umum, seperti riwayat KDS2 (importer KDS2 mencari kunci "<jabatan> <jenjang>" dulu; nama tanpa jenjang dari ekspor
+    // KDS1 tidak cocok, lalu jatuh ke Fungsi Umum). Pilihan eksplisit admin di Kamus ("JabatanFungsionalTendik") tetap menang.
+    if (tendik && tendik.jenjang.trim() === "-" && !diingatTendik) {
+      const umumSepadan = cariFungsiUmumSepadan(master, row.jabatanFungsionalRaw);
+      if (umumSepadan) {
+        return { jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: umumSepadan.kode };
+      }
+    }
     if (tendik) {
       return { jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: tendik.kode, jabatanFungsiUmumKode: null };
     }

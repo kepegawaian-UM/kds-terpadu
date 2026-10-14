@@ -27,8 +27,10 @@ async function bangunVocab(prisma: PrismaClient): Promise<Vocab> {
   return {
     unit: unit.map((u) => ({ nama: u.nama, induk: u.unitInduk.nama })),
     dosen: (await prisma.jabatanFungsionalDosen.findMany()).map((x) => x.nama),
-    tendik: (await prisma.jabatanFungsionalTendik.findMany()).map((x) => `${x.jabatanPokok} ${x.jenjang}`.trim()),
-    umum: (await prisma.jabatanFungsiUmumPelaksana.findMany()).map((x) => x.nama),
+    // Jabatan tanpa jenjang yang juga ada sebagai Fungsi Umum ("Pelaksana", "Laboran") sengaja dicatat BERBEDA dari KDS1 (lihat
+    // tests/integration/standarisasiTendik.test.ts), jadi tidak dipakai di data sintetis paritas supaya perbandingan dengan KDS1 tetap murni.
+    tendik: (await prisma.jabatanFungsionalTendik.findMany()).filter((x) => !(x.jenjang.trim() === "-" && ["pelaksana", "laboran"].includes(x.jabatanPokok.trim().toLowerCase()))).map((x) => `${x.jabatanPokok} ${x.jenjang}`.trim()),
+    umum: (await prisma.jabatanFungsiUmumPelaksana.findMany()).map((x) => x.nama).filter((n) => n.toLowerCase() !== "pelaksana"),
     akl: (await prisma.kategoriAkademisiLuar.findMany()).map((x) => x.nama),
     status: await prisma.statusKepegawaian.findMany(),
     role: (await prisma.jabatanTambahanRole.findMany()).map((x) => x.namaRole),
