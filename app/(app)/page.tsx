@@ -9,7 +9,6 @@ import { dataDashboard } from "@/lib/laporan/dashboard";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { NAMA_BULAN, namaBulan } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Ringkasan — KDS Terpadu" };
 
 const HIJAU = "#1d443a";
 const EMAS = "#d1ab68";

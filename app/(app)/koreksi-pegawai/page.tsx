@@ -3,7 +3,6 @@ import { daftarKoreksiTmt } from "@/lib/koreksi/tanggalMulaiKerja";
 
 import { FormTambahKoreksi, TombolHapusKoreksi } from "./FormKoreksi";
 
-export const metadata = { title: "Koreksi Pegawai — KDS Terpadu" };
 
 const tanggal = (d: Date) => new Intl.DateTimeFormat("id-ID", { timeZone: "UTC", day: "2-digit", month: "long", year: "numeric" }).format(d);
 

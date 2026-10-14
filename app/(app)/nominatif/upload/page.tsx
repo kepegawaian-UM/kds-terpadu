@@ -1,7 +1,6 @@
 import { FormUploadNominatif } from "@/components/upload/FormUploadNominatif";
 import { bulanTahunSekarang } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Upload Nominatif — KDS Terpadu" };
 // Pemeriksaan dan penyimpanan (aksi server halaman ini) berjalan sinkron; batas Vercel Hobby 300 dtk.
 export const maxDuration = 300;
 

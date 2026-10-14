@@ -1,7 +1,6 @@
 import { FormUploadRekap } from "@/components/upload/FormUploadRekap";
 import { bulanTahunSekarang } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Upload Rekap Kehadiran — KDS Terpadu" };
 // Pemeriksaan dan penyimpanan (aksi server halaman ini) berjalan sinkron; batas Vercel Hobby 300 dtk.
 export const maxDuration = 300;
 

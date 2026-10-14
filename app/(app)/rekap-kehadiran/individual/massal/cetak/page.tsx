@@ -5,7 +5,6 @@ import { TombolCetak } from "@/components/rekap/TombolCetak";
 import { prisma } from "@/lib/db";
 import { bacaParamMassal, dariRecord, laporanTerpilih, namaFileMassal, tanggalCetakWib } from "@/lib/laporan/rekapIndividual";
 
-export const metadata = { title: "Cetak Massal Rekap Individual — KDS Terpadu" };
 export const maxDuration = 120;
 
 export default async function CetakMassalPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {

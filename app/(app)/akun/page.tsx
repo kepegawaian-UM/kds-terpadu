@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 
 import { FormNama, FormSandi } from "./FormAkun";
 
-export const metadata = { title: "Akun — KDS Terpadu" };
 
 const waktuWib = (d: Date) =>
   new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);

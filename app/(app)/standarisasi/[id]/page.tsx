@@ -8,7 +8,6 @@ import { namaBulan } from "@/lib/laporan/periode";
 
 import { hapusPegawaiBulanAksi } from "../actions";
 
-export const metadata = { title: "Hasil Standarisasi — KDS Terpadu" };
 
 const waktuWib = (d: Date) =>
   new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(d);

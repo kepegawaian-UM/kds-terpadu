@@ -4,7 +4,6 @@ import { FormUploadStandarisasi } from "@/components/upload/FormUploadStandarisa
 import { prisma } from "@/lib/db";
 import { bulanTahunSekarang, namaBulan } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Standarisasi — KDS Terpadu" };
 // Pemeriksaan dan penyimpanan (aksi server halaman ini) berjalan sinkron; batas Vercel Hobby 300 dtk.
 export const maxDuration = 300;
 

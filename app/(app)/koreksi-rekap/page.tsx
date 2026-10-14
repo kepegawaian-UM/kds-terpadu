@@ -6,7 +6,6 @@ import { prisma } from "@/lib/db";
 import { komponenTersedia } from "@/lib/koreksi/layanan";
 import { bulanTahunSekarang } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Koreksi Rekap — KDS Terpadu" };
 export const maxDuration = 300;
 
 const teksTanggal = (d: Date | null) => (d ? `${String(d.getUTCDate()).padStart(2, "0")}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${d.getUTCFullYear()}` : null);

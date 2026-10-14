@@ -7,7 +7,6 @@ import { daftarStatusKepegawaian } from "@/lib/laporan/filter";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { bacaParamMassal, dariRecord, kandidatMassal, MAKS_PEGAWAI_MASSAL } from "@/lib/laporan/rekapIndividual";
 
-export const metadata = { title: "Rekap Individual Massal — KDS Terpadu" };
 export const maxDuration = 120;
 
 export default async function RekapIndividualMassalPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {

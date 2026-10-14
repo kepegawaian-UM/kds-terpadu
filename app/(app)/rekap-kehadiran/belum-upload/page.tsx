@@ -5,7 +5,6 @@ import { laporanBelumUpload, urutkanUntukTampilan } from "@/lib/laporan/belumUpl
 import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { namaBulan, resolveBulanTahun } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Pegawai Belum Ada Rekap — KDS Terpadu" };
 
 function Kartu({ judul, nilai, kelas = "text-slate-900", children }: { judul: string; nilai: number; kelas?: string; children?: React.ReactNode }) {
   return (

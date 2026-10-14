@@ -6,7 +6,6 @@ import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { namaBulan } from "@/lib/laporan/periode";
 import { laporanRekapBulanan, periodeBulanBerjalan } from "@/lib/laporan/rekapBulanan";
 
-export const metadata = { title: "Rekap Kehadiran Bulanan — KDS Terpadu" };
 
 export default async function RekapBulananPage({
   searchParams,

@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { namaBulan } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Hasil Upload Rekap Kehadiran — KDS Terpadu" };
 
 const AWALAN = "[PERINGATAN] ";
 const angka = (n: number) => n.toLocaleString("id-ID");

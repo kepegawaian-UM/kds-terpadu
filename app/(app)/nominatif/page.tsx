@@ -6,7 +6,6 @@ import { prisma } from "@/lib/db";
 import { daftarNominatif, namaFileNominatif, tahunNominatif } from "@/lib/laporan/nominatif";
 import { resolveBulanTahun } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Nominatif — KDS Terpadu" };
 
 export default async function NominatifPage({
   searchParams,

@@ -7,7 +7,6 @@ import { buatNamaFile } from "@/lib/laporan/namaFile";
 import { bulanTahunSekarang, keInt } from "@/lib/laporan/periode";
 import { bangunRekapIndividual, cariPegawaiIndividual, type KandidatCari, type LaporanIndividual, tanggalCetakWib } from "@/lib/laporan/rekapIndividual";
 
-export const metadata = { title: "Rekap Individual — KDS Terpadu" };
 
 const kotak = "mt-1 block w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm";
 const satu = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

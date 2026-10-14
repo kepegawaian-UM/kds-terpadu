@@ -9,7 +9,6 @@ import { namaBulan } from "@/lib/laporan/periode";
 
 import { kecualikanBarisAksi } from "../../actions";
 
-export const metadata = { title: "Review Standarisasi — KDS Terpadu" };
 
 const MAKS_TAMPIL = 500;
 

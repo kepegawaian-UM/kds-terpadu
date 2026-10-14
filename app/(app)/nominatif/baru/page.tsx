@@ -2,7 +2,6 @@ import { FormTambahPegawai } from "@/components/nominatif/FormTambahPegawai";
 import { prisma } from "@/lib/db";
 import { bulanTahunSekarang, namaBulan } from "@/lib/laporan/periode";
 
-export const metadata = { title: "Tambah Pegawai — KDS Terpadu" };
 
 export default async function TambahPegawaiPage() {
   const [bulan, tahun] = bulanTahunSekarang(new Date());

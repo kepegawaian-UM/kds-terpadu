@@ -4,7 +4,6 @@ import { namaBulan } from "@/lib/laporan/periode";
 import { hitungPerbandinganBatch } from "@/lib/standarisasi/bandingkan";
 import { JENIS_BATCH_SNAPSHOT } from "@/lib/standarisasi/proses";
 
-export const metadata = { title: "Bandingkan Batch — KDS Terpadu" };
 
 const pilihan = (v: string | undefined) => (v && /^\d+$/.test(v) ? Number(v) : null);
 

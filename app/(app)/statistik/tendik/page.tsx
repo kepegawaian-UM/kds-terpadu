@@ -5,7 +5,6 @@ import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { namaBulan, resolveBulanTahun } from "@/lib/laporan/periode";
 import { statistikTendik } from "@/lib/laporan/statistik";
 
-export const metadata = { title: "Statistik Tendik — KDS Terpadu" };
 
 export default async function StatistikTendikPage({
   searchParams,

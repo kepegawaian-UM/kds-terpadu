@@ -5,7 +5,6 @@ import { daftarStatusKepegawaian, jenisStatusDari, keaktifanDari } from "@/lib/l
 import { tahunNominatif } from "@/lib/laporan/nominatif";
 import { laporanRekapTahunan, periodeTahunBerjalan } from "@/lib/laporan/rekapTahunan";
 
-export const metadata = { title: "Rekap Kehadiran Tahunan — KDS Terpadu" };
 
 export default async function RekapTahunanPage({
   searchParams,

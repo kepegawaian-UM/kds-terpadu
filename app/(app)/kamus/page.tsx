@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 
 import { hapusKamusAksi } from "../standarisasi/actions";
 
-export const metadata = { title: "Kamus Koreksi — KDS Terpadu" };
 
 export default async function KamusPage() {
   const entri = await prisma.kamusKoreksi.findMany({
