@@ -11,7 +11,7 @@ export type SlotJabatan = { role: string; unit: string | null; prodi: string | n
 
 /** Kolom Nominatif yang dibandingkan (nama field KDS Terpadu). NIP adalah kunci; id dan batch tidak dibandingkan. */
 export const KOLOM_NOMINATIF = [
-  "nama", "jenisKelamin", "tanggalLahir", "pendidikanTerakhir", "agama", "jenisPegawaiKode", "statusKepegawaianKode", "golonganKode",
+  "nama", "jenisKelamin", "tanggalLahir", "pendidikanTerakhir", "jenisPegawaiKode", "statusKepegawaianKode", "golonganKode",
   "jabatanFungsionalDosenKode", "jabatanFungsionalTendikKode", "jabatanFungsiUmumKode", "kategoriAkademisiLuarKode", "unitAsalKode", "tanggalMulaiKerja",
 ] as const;
 /** Kolom yang nilainya KODE master atau tanggal/atribut non-pribadi: pasangan nilai boleh dicetak. Kolom lain hanya dihitung. */

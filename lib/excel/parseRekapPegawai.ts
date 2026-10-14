@@ -11,7 +11,7 @@ import { ColumnMappingError, type ParseRawNominatifResult, type RawNominatifRow 
 
 /** Karakter kontrol tak-terlihat yang ditempel di depan SETIAP nilai teks file ini - dibuang
  *  sebelum diproses lebih lanjut, bukan cuma di-trim (trim tidak membuang karakter ini). */
-function stripInvisible(s: string): string {
+export function stripInvisible(s: string): string {
   return s.replace(/[​-‏﻿]/g, "");
 }
 
@@ -56,7 +56,6 @@ const KOLOM_WAJIB = [
   "Nama Lengkap (Tanpa Gelar)",
   "Nama Lengkap (Dengan Gelar)",
   "Jenis Kelamin",
-  "Agama",
   "Status Pegawai",
   "Kelompok Jabatan",
   "Jenis Pegawai",
@@ -73,6 +72,26 @@ const KOLOM_WAJIB = [
 // Tanggal Lahir SENGAJA tidak wajib - tarikan ini terkonfirmasi tidak pernah mengisinya
 // (keputusan user), tapi tetap dipetakan kalau kolomnya ada & suatu saat terisi.
 const KOLOM_OPSIONAL = ["Tanggal Lahir"] as const;
+
+/**
+ * Daftar putih kolom yang BOLEH masuk aplikasi (minimisasi data pribadi, keputusan pengguna 14 Okt 2026): hanya kolom yang benar-benar dibaca.
+ * Berkas SIMPEGA asli memuat puluhan kolom lain (NIK, nama ibu, alamat, email, rekening, gaji, dst.) yang TIDAK boleh sampai ke server; alat
+ * `npm run bersihkan` membuangnya di komputer pengguna, dan Standarisasi lewat web menolak berkas yang masih memuatnya.
+ */
+export const KOLOM_DIIZINKAN: readonly string[] = [...KOLOM_WAJIB, ...KOLOM_OPSIONAL];
+export const KOLOM_WAJIB_REKAP: readonly string[] = KOLOM_WAJIB;
+
+/** Nama kolom di baris header yang TIDAK ada di daftar putih (nama saja, tanpa isi). */
+export function kolomDiLuarDaftar(sheet: ExcelJS.Worksheet): string[] {
+  const header = sheet.getRow(1);
+  const lain: string[] = [];
+  for (let c = 1; c <= sheet.columnCount; c++) {
+    const v = header.getCell(c).value;
+    const nama = v === null || v === undefined ? "" : stripInvisible(String(typeof v === "object" && "richText" in v ? v.richText.map((t) => t.text).join("") : v)).trim();
+    if (nama && !KOLOM_DIIZINKAN.includes(nama)) lain.push(nama);
+  }
+  return lain;
+}
 
 type ColumnMapRekapPegawai = Record<(typeof KOLOM_WAJIB)[number], number> &
   Partial<Record<(typeof KOLOM_OPSIONAL)[number], number>>;
@@ -127,7 +146,6 @@ function extractRow(sheet: ExcelJS.Worksheet, rowNumber: number, map: ColumnMapR
     namaTanpaGelar: cellStr(row, map["Nama Lengkap (Tanpa Gelar)"]),
     jenisKelaminRaw: cellStr(row, map["Jenis Kelamin"]),
     tanggalLahir: map["Tanggal Lahir"] ? cellDate(row, map["Tanggal Lahir"]) : null,
-    agamaRaw: cellStr(row, map.Agama),
     statusPegawaiRaw: cellStr(row, map["Status Pegawai"]),
     jenisPegawaiRaw: cellStr(row, map["Jenis Pegawai"]),
     kelompokJabatanRaw: cellStr(row, map["Kelompok Jabatan"]) || null,

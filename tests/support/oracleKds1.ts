@@ -59,7 +59,7 @@ export type KeluaranKasusKds1 = {
   batchLain: number;
   batchLamaStatus: string[];
   nominatif: {
-    nip: string; bulan: number; tahun: number; nama: string; jenisKelamin: string; tanggalLahir: string | null; pendidikanTerakhir: string | null; agama: string | null;
+    nip: string; bulan: number; tahun: number; nama: string; jenisKelamin: string; tanggalLahir: string | null; pendidikanTerakhir: string | null;
     jenisPegawaiKode: string; statusKepegawaianKode: string; golonganKode: string | null; jabatanFungsionalDosenKode: string | null; jabatanFungsionalTendikKode: string | null;
     jabatanFungsiUmumKode: string | null; kategoriAkademisiLuarKode: string | null; unitAsalKode: string; tanggalMulaiKerja: string; dariBatchBaru: boolean;
     jabatanTambahan: { role: string; unit: string | null; prodi: string | null; status: string }[];

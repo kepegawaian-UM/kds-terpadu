@@ -85,7 +85,6 @@ export async function uraiFormResolve(prisma: PrismaClient, f: FormData): Promis
     tanggalLahir: tanggal(f.get("tanggalLahir")),
     tanggalMulaiKerja,
     pendidikanTerakhir: teks(f, "pendidikanTerakhir") || null,
-    agama: teks(f, "agama") || null,
     jenisPegawaiKode: jenisPegawai.kode,
     statusKepegawaianKode: akl ? "PTT" : statusKepegawaianKode,
     golonganKode: akl ? null : teks(f, "golonganKode") || null,

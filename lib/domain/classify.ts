@@ -29,7 +29,6 @@ export type ResolvedNominatif = {
   // Opsional sejak format tarikan SIMPEGA Okt 2026 (REKAP_PEGAWAI) tidak pernah menyertakannya.
   tanggalLahir: Date | null;
   pendidikanTerakhir: string | null;
-  agama: string | null;
   jenisPegawaiKode: string;
   statusKepegawaianKode: string;
   golonganKode: string | null;
@@ -1087,7 +1086,6 @@ export function classifyRow(
       jenisKelamin: jenisKelamin as "L" | "P",
       tanggalLahir: row.tanggalLahir,
       pendidikanTerakhir: row.pendidikanRaw.trim() || null,
-      agama: row.agamaRaw.trim() || null,
       jenisPegawaiKode: kodeJenisPegawai(master, kelompok),
       statusKepegawaianKode,
       golonganKode,

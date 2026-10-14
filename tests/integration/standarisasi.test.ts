@@ -115,7 +115,7 @@ describe.skipIf(!ada)("Standarisasi (Periksa, transaksi, Review)", () => {
     const status = (await prisma.statusKepegawaian.findFirstOrThrow({ where: { kategori: "ASN" } })).kode;
     const role = (await prisma.jabatanTambahanRole.findMany({ take: 2, orderBy: { kode: "asc" } })).map((r) => r.kode);
     const data = {
-      nama: "Selesai", jenisKelamin: "P" as const, tanggalLahir: null, pendidikanTerakhir: null, agama: null, jenisPegawaiKode: "TDK", statusKepegawaianKode: status, golonganKode: "III/a",
+      nama: "Selesai", jenisKelamin: "P" as const, tanggalLahir: null, pendidikanTerakhir: null, jenisPegawaiKode: "TDK", statusKepegawaianKode: status, golonganKode: "III/a",
       jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: (await prisma.jabatanFungsiUmumPelaksana.findFirstOrThrow()).kode, kategoriAkademisiLuarKode: null,
       unitAsalKode: unit, tanggalMulaiKerja: new Date("2020-02-02T00:00:00Z"),
       jabatanTambahan: [{ jabatanTambahanRoleKode: role[0], unitAsalKode: unit, programStudiKode: null, statusPengangkatan: "Definitif" }],

@@ -1,5 +1,5 @@
 /**
- * Membandingkan MySQL `kds2_produksi` dengan PostgreSQL `PARITAS_DATABASE_URL` baris demi baris.
+ * Membandingkan MySQL `kds2_produksi` dengan PostgreSQL `KDS2_SALINAN_DATABASE_URL` baris demi baris.
  * Keluar dengan kode 1 bila ada perbedaan. Laporan hanya angka (tanpa isi baris).
  *   npx tsx scripts/verifikasi-migrasi.ts
  */
@@ -10,8 +10,8 @@ import { bukaKds2BacaSaja } from "./kds2-mysql";
 import { jalankanVerifikasi } from "./migrasi/verifikasi";
 
 async function main() {
-  const url = process.env.PARITAS_DATABASE_URL;
-  if (!url) throw new Error("PARITAS_DATABASE_URL belum diisi di .env.");
+  const url = process.env.KDS2_SALINAN_DATABASE_URL;
+  if (!url) throw new Error("KDS2_SALINAN_DATABASE_URL belum diisi di .env.");
   const prisma = new PrismaClient({ datasourceUrl: url });
   const kds2 = await bukaKds2BacaSaja();
   try {

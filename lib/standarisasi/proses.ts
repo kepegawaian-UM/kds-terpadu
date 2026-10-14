@@ -15,8 +15,8 @@ import { isNipPlaceholderTidakStabil, JENIS_FIELD_IDENTITAS_EKSTERNAL, kunciIden
 import { petaKoreksiTmt } from "@/lib/koreksi/tanggalMulaiKerja";
 import { loadKamusMap, loadMasterCache, loadNipDikecualikanPermanen, loadNipTerdaftar } from "@/lib/domain/masterCache";
 import { parseRawNominatif } from "@/lib/excel/parseRawNominatif";
-import { ColumnMappingError, type RawNominatifRow } from "@/lib/excel/types";
-import { KesalahanUpload } from "@/lib/upload/konstanta";
+import { BerkasTidakBersihError, ColumnMappingError, type RawNominatifRow } from "@/lib/excel/types";
+import { BerkasMemuatKolomLain, KesalahanUpload } from "@/lib/upload/konstanta";
 import { periksaBerkas } from "@/lib/upload/penjagaBerkas";
 
 type Db = PrismaClient | Prisma.TransactionClient;
@@ -46,11 +46,12 @@ function keDataMentah(row: RawNominatifRow): Prisma.InputJsonValue {
 }
 
 /** Membaca dan mengklasifikasi seluruh berkas di memori (tanpa menulis). */
-export async function klasifikasiBerkas(db: Db, berkas: Buffer, bulan: number, tahun: number): Promise<HasilKlasifikasi> {
+export async function klasifikasiBerkas(db: Db, berkas: Buffer, bulan: number, tahun: number, opsi: { tolakKolomLain?: boolean } = {}): Promise<HasilKlasifikasi> {
   let parsed;
   try {
-    parsed = await parseRawNominatif(berkas);
+    parsed = await parseRawNominatif(berkas, { tolakKolomLain: opsi.tolakKolomLain });
   } catch (e) {
+    if (e instanceof BerkasTidakBersihError) throw new BerkasMemuatKolomLain(e.message);
     if (e instanceof ColumnMappingError) throw new KesalahanUpload(e.message);
     throw e;
   }
@@ -150,12 +151,13 @@ async function ringkas(db: Db, h: HasilKlasifikasi, bulan: number, tahun: number
   };
 }
 
-export type OpsiStandarisasi = { bulan: number; tahun: number };
+/** `tolakKolomLain`: tolak berkas yang masih memuat kolom di luar daftar putih (dipakai jalur web; skrip lokal dan tes paritas boleh membaca berkas mentah). */
+export type OpsiStandarisasi = { bulan: number; tahun: number; tolakKolomLain?: boolean };
 
 /** Tahap PERIKSA: membaca dan mengklasifikasi tanpa menulis apa pun. */
 export async function periksaStandarisasi(prisma: PrismaClient, berkas: Buffer, opsi: OpsiStandarisasi): Promise<RingkasanStandarisasi> {
   await periksaBerkas(berkas, null);
-  return ringkas(prisma, await klasifikasiBerkas(prisma, berkas, opsi.bulan, opsi.tahun), opsi.bulan, opsi.tahun);
+  return ringkas(prisma, await klasifikasiBerkas(prisma, berkas, opsi.bulan, opsi.tahun, { tolakKolomLain: opsi.tolakKolomLain }), opsi.bulan, opsi.tahun);
 }
 
 const potong = <T>(a: T[], n: number): T[][] => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, (i + 1) * n));
@@ -173,7 +175,7 @@ export async function simpanStandarisasi(
 
   return prisma.$transaction(
     async (tx) => {
-      const h = await klasifikasiBerkas(tx, berkas, bulan, tahun);
+      const h = await klasifikasiBerkas(tx, berkas, bulan, tahun, { tolakKolomLain: opsi.tolakKolomLain });
       const ringkasan = await ringkas(tx, h, bulan, tahun);
       const status = h.bermasalah.length === 0 ? "Selesai" : "MenungguReview";
 

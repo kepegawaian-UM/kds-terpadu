@@ -44,7 +44,7 @@ async function main() {
   const diBoth = h.nominatif.filter((n) => perNip.has(n.pegawaiNip));
   console.log(`NIP berhasil yang ada di snapshot KDS2: ${diBoth.length}/${h.nominatif.length} (${PERSEN(diBoth.length, h.nominatif.length)}) | NIP snapshot yang tidak ada di berkas (berhasil+review): ${snapshot.filter((s) => !nipHasil.has(s.pegawaiNip) && !nipReview.has(s.pegawaiNip)).length} | NIP Review yang ada di snapshot: ${[...nipReview].filter((n) => perNip.has(n)).length}/${nipReview.size}`);
 
-  const kolom = ["nama", "jenisKelamin", "jenisPegawaiKode", "statusKepegawaianKode", "golonganKode", "jabatanFungsionalDosenKode", "jabatanFungsionalTendikKode", "jabatanFungsiUmumKode", "kategoriAkademisiLuarKode", "unitAsalKode", "pendidikanTerakhir", "agama"] as const;
+  const kolom = ["nama", "jenisKelamin", "jenisPegawaiKode", "statusKepegawaianKode", "golonganKode", "jabatanFungsionalDosenKode", "jabatanFungsionalTendikKode", "jabatanFungsiUmumKode", "kategoriAkademisiLuarKode", "unitAsalKode", "pendidikanTerakhir"] as const;
   for (const k of kolom) {
     let cocok = 0;
     for (const n of diBoth) {

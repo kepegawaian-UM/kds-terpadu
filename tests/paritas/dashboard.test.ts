@@ -10,7 +10,7 @@ import { dataDashboard } from "@/lib/laporan/dashboard";
 
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 type Oracle = Awaited<ReturnType<typeof dataDashboard>>;
@@ -78,7 +78,7 @@ describe.skipIf(!jalan)("paritas Dashboard KDS2 <-> KDS Terpadu", () => {
 });
 
 describe.skipIf(jalan)("paritas Dashboard (dilewati)", () => {
-  it("PARITAS_DATABASE_URL atau oracle tidak tersedia", () => {
-    console.warn("Paritas Dashboard dilewati: PARITAS_DATABASE_URL/oracle tidak tersedia.");
+  it("KDS2_SALINAN_DATABASE_URL atau oracle tidak tersedia", () => {
+    console.warn("Paritas Dashboard dilewati: KDS2_SALINAN_DATABASE_URL/oracle tidak tersedia.");
   });
 });

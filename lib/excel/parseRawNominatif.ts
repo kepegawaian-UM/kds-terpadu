@@ -1,8 +1,8 @@
 import ExcelJS from "exceljs";
 
 import { buildColumnMap, type ColumnMap } from "./columnMap";
-import { detectRekapPegawaiSheet, parseRekapPegawai } from "./parseRekapPegawai";
-import { ColumnMappingError, type ParseRawNominatifResult, type RawNominatifRow } from "./types";
+import { detectRekapPegawaiSheet, kolomDiLuarDaftar, parseRekapPegawai } from "./parseRekapPegawai";
+import { BerkasTidakBersihError, ColumnMappingError, type ParseRawNominatifResult, type RawNominatifRow } from "./types";
 
 const SHEET_NAME = "Nominatif";
 const MAX_HEADER_SCAN_ROWS = 10;
@@ -72,7 +72,6 @@ function extractRow(sheet: ExcelJS.Worksheet, rowNumber: number, map: ColumnMap)
     namaTanpaGelar: cellStr(row, map.namaTanpaGelar),
     jenisKelaminRaw: cellStr(row, map.jenisKelamin),
     tanggalLahir: cellDate(row, map.tanggalLahir),
-    agamaRaw: cellStr(row, map.agama),
     statusPegawaiRaw: cellStr(row, map.statusPegawai),
     jenisPegawaiRaw: cellStr(row, map.jenisPegawai),
     kelompokJabatanRaw: map.kelompokJabatan ? cellStr(row, map.kelompokJabatan) || null : null,
@@ -122,16 +121,28 @@ function parseNominatifLama(workbook: ExcelJS.Workbook): ParseRawNominatifResult
  * tarikan ini generik "Worksheet"). Kalau dua-duanya tidak cocok, GAGAL KERAS dgn pesan jelas -
  * konsisten dgn kebijakan "tidak menebak diam-diam" utk perubahan format yang belum dikenali.
  */
-export async function parseRawNominatif(buffer: Buffer): Promise<ParseRawNominatifResult> {
+export async function parseRawNominatif(buffer: Buffer, opsi: { tolakKolomLain?: boolean } = {}): Promise<ParseRawNominatifResult> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
 
   if (workbook.getWorksheet(SHEET_NAME)) {
+    if (opsi.tolakKolomLain) {
+      throw new BerkasTidakBersihError("Berkas berformat Nominatif lama (memuat kolom di luar daftar yang diizinkan) tidak diterima lewat web. Gunakan tarikan REKAP_PEGAWAI yang sudah dibersihkan dengan perintah: npm run bersihkan.", []);
+    }
     return parseNominatifLama(workbook);
   }
 
   const sheetBaru = detectRekapPegawaiSheet(workbook);
   if (sheetBaru) {
+    if (opsi.tolakKolomLain) {
+      const lain = kolomDiLuarDaftar(sheetBaru);
+      if (lain.length > 0) {
+        throw new BerkasTidakBersihError(
+          `Berkas ini masih memuat ${lain.length} kolom di luar yang diperlukan (mis. ${lain.slice(0, 5).join(", ")}). Data pribadi yang sensitif tidak boleh diunggah. Bersihkan dulu di komputer Anda dengan perintah: npm run bersihkan -- "<berkas>" , lalu unggah berkas _bersih yang dihasilkan.`,
+          lain,
+        );
+      }
+    }
     return parseRekapPegawai(sheetBaru);
   }
 

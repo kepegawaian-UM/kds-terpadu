@@ -46,7 +46,7 @@ describe.skipIf(!ada)("Paritas Tambah Pegawai manual terhadap controller KDS2 as
     const asn = status.find((s) => s.kategori === "ASN")!;
     const nonAsn = status.find((s) => s.kategori !== "ASN")!;
     const dasar: InputTambahPegawai = {
-      nip: nip(1), nama: "Nama Uji", jenis_kelamin: "L", tanggal_lahir: "1990-05-17", pendidikan_terakhir: "S1", agama: "Islam", jenis_pegawai_kode: "DSN",
+      nip: nip(1), nama: "Nama Uji", jenis_kelamin: "L", tanggal_lahir: "1990-05-17", pendidikan_terakhir: "S1", jenis_pegawai_kode: "DSN",
       status_kepegawaian_kode: asn.kode, golongan_kode: "III/a", jabatan_fungsional_dosen_kode: dosen[0].kode, unit_asal_kode: unit[0].kode, tanggal_mulai_kerja: "2018-03-04",
     };
     const K = (id: string, ubah: InputTambahPegawai, ekstra: Partial<Kasus> = {}): Kasus => ({ id, input: { ...dasar, ...ubah }, ...ekstra });
@@ -62,12 +62,12 @@ describe.skipIf(!ada)("Paritas Tambah Pegawai manual terhadap controller KDS2 as
       K("non-asn-golongan-opsional", { status_kepegawaian_kode: nonAsn.kode, golongan_kode: "III/a" }),
       K("non-asn-tanpa-golongan", { status_kepegawaian_kode: nonAsn.kode, golongan_kode: null }),
       K("asn-tanpa-golongan", { golongan_kode: null }),
-      K("opsional-kosong", { tanggal_lahir: null, pendidikan_terakhir: "", agama: "   " }),
+      K("opsional-kosong", { tanggal_lahir: null, pendidikan_terakhir: "" }),
       K("dosen-tanpa-jabatan", { jabatan_fungsional_dosen_kode: null }),
       K("wajib-kosong", { nip: "", nama: null, jenis_kelamin: "", jenis_pegawai_kode: "", status_kepegawaian_kode: null, unit_asal_kode: "", tanggal_mulai_kerja: "" }),
       K("jenis-kelamin-salah", { jenis_kelamin: "l" }),
-      K("terlalu-panjang", { nip: "1".repeat(19), nama: "N".repeat(151), pendidikan_terakhir: "P".repeat(101), agama: "A".repeat(21) }),
-      K("batas-panjang-pas", { nip: "1".repeat(18), nama: "N".repeat(150), pendidikan_terakhir: "P".repeat(100), agama: "A".repeat(20) }),
+      K("terlalu-panjang", { nip: "1".repeat(19), nama: "N".repeat(151), pendidikan_terakhir: "P".repeat(101) }),
+      K("batas-panjang-pas", { nip: "1".repeat(18), nama: "N".repeat(150), pendidikan_terakhir: "P".repeat(100) }),
       K("tanggal-tidak-valid", { tanggal_lahir: "bukan tanggal", tanggal_mulai_kerja: "31-31-2018" }),
       K("kode-master-tidak-ada", { jenis_pegawai_kode: "ZZZ", status_kepegawaian_kode: "ZZZ", golongan_kode: "ZZZ", jabatan_fungsional_dosen_kode: "ZZZ", jabatan_fungsional_tendik_kode: "ZZZ", jabatan_fungsi_umum_kode: "ZZZ", kategori_akademisi_luar_kode: "ZZZ", unit_asal_kode: "ZZZ" }),
       K("pegawai-sudah-ada-bulan-lain", { nip: nip(5) }, { keadaan: { nominatif: [{ nip: nip(5), bulan: 9, tahun: 2026, jenis: "DSN", tmt: "2018-01-01" }] } }),
@@ -141,12 +141,13 @@ describe.skipIf(!ada)("Paritas Tambah Pegawai manual terhadap controller KDS2 as
       const tgl = (d: Date | null) => (d ? d.toISOString().slice(0, 10) : null);
       const nominatif = (await prisma.nominatifBulanan.findMany({ orderBy: { id: "asc" } })).map((n) => ({
         id: n.id, nip: n.pegawaiNip, bulan: n.bulan, tahun: n.tahun, nama: n.nama, jenis_kelamin: n.jenisKelamin, tanggal_lahir: tgl(n.tanggalLahir),
-        pendidikan_terakhir: n.pendidikanTerakhir, agama: n.agama, jenis_pegawai_kode: n.jenisPegawaiKode, status_kepegawaian_kode: n.statusKepegawaianKode,
+        pendidikan_terakhir: n.pendidikanTerakhir, jenis_pegawai_kode: n.jenisPegawaiKode, status_kepegawaian_kode: n.statusKepegawaianKode,
         golongan_kode: n.golonganKode, jabatan_fungsional_dosen_kode: n.jabatanFungsionalDosenKode, jabatan_fungsional_tendik_kode: n.jabatanFungsionalTendikKode,
         jabatan_fungsi_umum_kode: n.jabatanFungsiUmumKode, kategori_akademisi_luar_kode: n.kategoriAkademisiLuarKode, unit_asal_kode: n.unitAsalKode,
         tanggal_mulai_kerja: tgl(n.tanggalMulaiKerja), upload_batch_id: n.uploadBatchId,
       }));
-      const seragam = (r: Record<string, unknown>) => ({ ...r, tanggal_lahir: r.tanggal_lahir ? String(r.tanggal_lahir).slice(0, 10) : null, tanggal_mulai_kerja: String(r.tanggal_mulai_kerja).slice(0, 10) });
+      // KDS2 masih punya kolom agama (kosong karena tidak dikirim); aplikasi ini sengaja tidak menyimpannya: dibuang dari pembanding.
+      const seragam = (r0: Record<string, unknown>) => { const { agama: _a, ...r } = r0; void _a; return { ...r, tanggal_lahir: r.tanggal_lahir ? String(r.tanggal_lahir).slice(0, 10) : null, tanggal_mulai_kerja: String(r.tanggal_mulai_kerja).slice(0, 10) }; };
       expect(nominatif).toEqual(harapan.nominatif.map(seragam));
 
       expect((await prisma.pegawai.findMany({ orderBy: { nip: "asc" } })).map((p) => p.nip)).toEqual(harapan.pegawai);
@@ -166,6 +167,6 @@ describe.skipIf(!ada)("Paritas Tambah Pegawai manual terhadap controller KDS2 as
     const berhasil = idKasus().filter((id) => oracle[id].nominatif.length > ((kasus.find((k) => k.id === id)!.keadaan?.nominatif ?? []).length));
     expect(berhasil.length).toBeGreaterThan(8);
     expect(idKasus().filter((id) => oracle[id].galat).length).toBeGreaterThan(15);
-    expect(oracle["dosen-lengkap"].audit.length).toBe(15);
+    expect(oracle["dosen-lengkap"].audit.length).toBe(14); // 15 di KDS2 dikurangi baris agama (tidak ada lagi)
   });
 });

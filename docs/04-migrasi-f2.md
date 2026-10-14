@@ -3,7 +3,7 @@
 Selesai dan terbukti 13 Okt 2026. Skrip ini dipakai lagi di F6 (cutover), jadi dibuat bisa diulang.
 
 ## Cara menjalankan
-Prasyarat: MySQL `kds2_produksi` lokal berjalan, `PARITAS_DATABASE_URL` di `.env` (dibuat oleh
+Prasyarat: MySQL `kds2_produksi` lokal berjalan, `KDS2_SALINAN_DATABASE_URL` (database `kds_kds2_paritas`: salinan KDS2 MURNI; sejak 14 Okt 2026 terpisah dari `kds_paritas` yang menjadi salinan kerja terkoreksi) di `.env` (dibuat oleh
 `npx tsx scripts/siapkan-db-lokal.ts`), dan skema + master sudah ada di `kds_paritas`
 (`prisma migrate deploy` + `prisma db seed` dengan `DATABASE_URL` menunjuk `kds_paritas`).
 

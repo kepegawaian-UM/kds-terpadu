@@ -1,6 +1,6 @@
 /**
  * Menyiapkan PostgreSQL lokal: membuat database kds_dev, kds_test & kds_paritas (bila belum ada), lalu
- * menulis DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL, PARITAS_DATABASE_URL ke .env. Membaca
+ * menulis DATABASE_URL, DATABASE_URL_UNPOOLED, TEST_DATABASE_URL, PARITAS_DATABASE_URL ke .env (dan KDS2_SALINAN_DATABASE_URL: salinan KDS2 MURNI hasil migrasi F2, khusus tes paritas; kds_paritas adalah salinan kerja yang sudah dikoreksi). Membaca
  * POSTGRES_PASSWORD dari .env; kata sandi tidak pernah dicetak.
  * Jalankan: npx tsx scripts/siapkan-db-lokal.ts
  */
@@ -21,7 +21,7 @@ const url = (db: string) =>
 async function main() {
   const admin = new PrismaClient({ datasourceUrl: url("postgres") });
   try {
-    for (const db of ["kds_dev", "kds_test", "kds_paritas"]) {
+    for (const db of ["kds_dev", "kds_test", "kds_paritas", "kds_kds2_paritas"]) {
       const ada = await admin.$queryRawUnsafe<{ n: number }[]>(
         `SELECT 1 AS n FROM pg_database WHERE datname = '${db}'`
       );
@@ -41,6 +41,7 @@ async function main() {
     DATABASE_URL_UNPOOLED: url("kds_dev"),
     TEST_DATABASE_URL: url("kds_test"),
     PARITAS_DATABASE_URL: url("kds_paritas"),
+    KDS2_SALINAN_DATABASE_URL: url("kds_kds2_paritas"),
   };
   let env = readFileSync(".env", "utf8");
   for (const [k, v] of Object.entries(isi)) {

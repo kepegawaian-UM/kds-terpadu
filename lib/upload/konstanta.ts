@@ -27,3 +27,11 @@ export class KesalahanUpload extends Error {
     this.name = "KesalahanUpload";
   }
 }
+
+/** Berkas mentah masih memuat kolom sensitif: potongan unggahannya harus langsung dibuang dari database. */
+export class BerkasMemuatKolomLain extends KesalahanUpload {
+  constructor(message: string) {
+    super(message, "file");
+    this.name = "BerkasMemuatKolomLain";
+  }
+}

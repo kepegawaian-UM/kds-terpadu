@@ -15,7 +15,7 @@ const kotak = "mt-1 block w-full rounded-md border border-slate-300 bg-white px-
 export function FormTambahPegawai({ opsi }: { opsi: OpsiForm }) {
   const router = useRouter();
   const [nilai, setNilai] = useState<Record<KolomTambah, string>>({
-    nip: "", nama: "", jenis_kelamin: "", tanggal_lahir: "", pendidikan_terakhir: "", agama: "", jenis_pegawai_kode: "", status_kepegawaian_kode: "",
+    nip: "", nama: "", jenis_kelamin: "", tanggal_lahir: "", pendidikan_terakhir: "", jenis_pegawai_kode: "", status_kepegawaian_kode: "",
     golongan_kode: "", jabatan_fungsional_dosen_kode: "", jabatan_fungsional_tendik_kode: "", jabatan_fungsi_umum_kode: "", kategori_akademisi_luar_kode: "",
     unit_asal_kode: "", tanggal_mulai_kerja: "",
   });
@@ -94,7 +94,6 @@ export function FormTambahPegawai({ opsi }: { opsi: OpsiForm }) {
         </div>
         {teks("tanggal_lahir", "Tanggal Lahir", { tipe: "date" })}
         {teks("pendidikan_terakhir", "Pendidikan Terakhir", { maks: 100 })}
-        {teks("agama", "Agama", { maks: 20 })}
         {teks("tanggal_mulai_kerja", "Tanggal Mulai Kerja (TMT)", { tipe: "date", wajib: true })}
         {pilih("unit_asal_kode", "Unit Kerja", opsi.unit, { wajib: true, kosong: "-- Pilih Unit --" })}
       </div>

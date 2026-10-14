@@ -19,7 +19,7 @@ import { phpLtrim, phpTrim, strLimit } from "./phpString";
 import { parseTanggalNominatif } from "./tanggal";
 
 // ---------- kontrak kolom ----------
-const K = { NIP: 0, NAMA: 1, JK: 2, LAHIR: 3, PENDIDIKAN: 4, AGAMA: 5, JENIS: 6, STATUS: 7, GOLONGAN: 8, JABFUNG: 9, KATAKL: 10, UNIT: 11, TMT: 12 } as const;
+const K = { NIP: 0, NAMA: 1, JK: 2, LAHIR: 3, PENDIDIKAN: 4, JENIS: 6, STATUS: 7, GOLONGAN: 8, JABFUNG: 9, KATAKL: 10, UNIT: 11, TMT: 12 } as const;
 const SLOT: readonly [number, number, number][] = [
   [13, 14, 15],
   [16, 17, 18],
@@ -124,7 +124,6 @@ export type DataNominatif = {
   jenisKelamin: string;
   tanggalLahir: string | null;
   pendidikanTerakhir: string | null;
-  agama: string | null;
   jenisPegawaiKode: string;
   statusKepegawaianKode: string;
   golonganKode: string | null;
@@ -210,7 +209,7 @@ function prosesBaris(row: BarisSheet, m: MasterNominatif, galat: string[]): Data
 
   if (galat.length > 0 || !jenis || !status || !unit || !tmt) return null;
   return {
-    nama, jenisKelamin: jk, tanggalLahir: lahir, pendidikanTerakhir: atauNull(row, K.PENDIDIKAN), agama: atauNull(row, K.AGAMA),
+    nama, jenisKelamin: jk, tanggalLahir: lahir, pendidikanTerakhir: atauNull(row, K.PENDIDIKAN),
     jenisPegawaiKode: jenis, statusKepegawaianKode: status.kode, golonganKode: golongan, jabatanFungsionalDosenKode: jfd,
     jabatanFungsionalTendikKode: jft, jabatanFungsiUmumKode: jfu, kategoriAkademisiLuarKode: akl, unitAsalKode: unit, tanggalMulaiKerja: tmt,
   };
@@ -364,21 +363,21 @@ export async function simpanNominatif(
         const kol = <T,>(f: (d: DataNominatif) => T) => bagian.map(([, v]) => f(v.data));
         // upsert massal: id baris yang sudah ada dipertahankan (penting: "snapshot terakhir" laporan tahunan memakai MAX(id))
         await tx.$executeRaw`
-          INSERT INTO nominatif_bulanan ("pegawaiNip", bulan, tahun, nama, "jenisKelamin", "tanggalLahir", "pendidikanTerakhir", agama,
+          INSERT INTO nominatif_bulanan ("pegawaiNip", bulan, tahun, nama, "jenisKelamin", "tanggalLahir", "pendidikanTerakhir",
             "jenisPegawaiKode", "statusKepegawaianKode", "golonganKode", "jabatanFungsionalDosenKode", "jabatanFungsionalTendikKode",
             "jabatanFungsiUmumKode", "kategoriAkademisiLuarKode", "unitAsalKode", "tanggalMulaiKerja", "uploadBatchId")
-          SELECT t.nip, ${bulan}, ${tahun}, t.nama, t.jk, t.lahir::date, t.pend, t.agama, t.jp, t.sk, t.gol, t.jfd, t.jft, t.jfu, t.akl, t.unit,
+          SELECT t.nip, ${bulan}, ${tahun}, t.nama, t.jk, t.lahir::date, t.pend, t.jp, t.sk, t.gol, t.jfd, t.jft, t.jfu, t.akl, t.unit,
             t.tmt::date, ${batch.id}
           FROM unnest(${bagian.map(([nip]) => nip)}::text[], ${kol((d) => d.nama)}::text[], ${kol((d) => d.jenisKelamin)}::text[],
-            ${kol((d) => d.tanggalLahir)}::text[], ${kol((d) => d.pendidikanTerakhir)}::text[], ${kol((d) => d.agama)}::text[],
+            ${kol((d) => d.tanggalLahir)}::text[], ${kol((d) => d.pendidikanTerakhir)}::text[],
             ${kol((d) => d.jenisPegawaiKode)}::text[], ${kol((d) => d.statusKepegawaianKode)}::text[], ${kol((d) => d.golonganKode)}::text[],
             ${kol((d) => d.jabatanFungsionalDosenKode)}::text[], ${kol((d) => d.jabatanFungsionalTendikKode)}::text[],
             ${kol((d) => d.jabatanFungsiUmumKode)}::text[], ${kol((d) => d.kategoriAkademisiLuarKode)}::text[], ${kol((d) => d.unitAsalKode)}::text[],
             ${kol((d) => d.tanggalMulaiKerja)}::text[])
-            AS t(nip, nama, jk, lahir, pend, agama, jp, sk, gol, jfd, jft, jfu, akl, unit, tmt)
+            AS t(nip, nama, jk, lahir, pend, jp, sk, gol, jfd, jft, jfu, akl, unit, tmt)
           ON CONFLICT ("pegawaiNip", bulan, tahun) DO UPDATE SET
             nama = EXCLUDED.nama, "jenisKelamin" = EXCLUDED."jenisKelamin", "tanggalLahir" = EXCLUDED."tanggalLahir",
-            "pendidikanTerakhir" = EXCLUDED."pendidikanTerakhir", agama = EXCLUDED.agama, "jenisPegawaiKode" = EXCLUDED."jenisPegawaiKode",
+            "pendidikanTerakhir" = EXCLUDED."pendidikanTerakhir", "jenisPegawaiKode" = EXCLUDED."jenisPegawaiKode",
             "statusKepegawaianKode" = EXCLUDED."statusKepegawaianKode", "golonganKode" = EXCLUDED."golonganKode",
             "jabatanFungsionalDosenKode" = EXCLUDED."jabatanFungsionalDosenKode", "jabatanFungsionalTendikKode" = EXCLUDED."jabatanFungsionalTendikKode",
             "jabatanFungsiUmumKode" = EXCLUDED."jabatanFungsiUmumKode", "kategoriAkademisiLuarKode" = EXCLUDED."kategoriAkademisiLuarKode",

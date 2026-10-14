@@ -11,7 +11,7 @@ import { resolveBulanTahun } from "@/lib/laporan/periode";
 
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 type Baris = Record<string, string | number>;
@@ -71,7 +71,7 @@ describe.skipIf(!jalan)("paritas Statistik KDS2 <-> KDS Terpadu", () => {
 });
 
 describe.skipIf(jalan)("paritas Statistik (dilewati)", () => {
-  it("PARITAS_DATABASE_URL atau oracle tidak tersedia", () => {
-    console.warn("Paritas Statistik dilewati: PARITAS_DATABASE_URL/oracle tidak tersedia.");
+  it("KDS2_SALINAN_DATABASE_URL atau oracle tidak tersedia", () => {
+    console.warn("Paritas Statistik dilewati: KDS2_SALINAN_DATABASE_URL/oracle tidak tersedia.");
   });
 });

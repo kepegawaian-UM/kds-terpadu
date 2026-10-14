@@ -59,7 +59,6 @@ export type DetailNominatif = {
   jenisKelamin: string;
   tanggalLahir: string;
   pendidikan: string;
-  agama: string;
   tmt: string | null;
   unit: string | null;
   unitInduk: string | null;
@@ -118,7 +117,6 @@ export async function detailNominatif(
     jenisKelamin: n.jenisKelamin === "L" ? "Laki-laki" : "Perempuan",
     tanggalLahir: formatTanggal(n.tanggalLahir) ?? "-",
     pendidikan: n.pendidikanTerakhir ?? "-",
-    agama: n.agama ?? "-",
     tmt: formatTanggal(n.tanggalMulaiKerja),
     unit: n.unitAsal?.nama ?? null,
     unitInduk: n.unitAsal?.unitInduk?.nama ?? null,

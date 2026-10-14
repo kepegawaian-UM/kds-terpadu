@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { type RingkasanStandarisasi, periksaStandarisasi, simpanStandarisasi } from "@/lib/standarisasi/proses";
 import { type HasilTindakan, hapusKamus, hapusPegawaiBulan, kecualikanBaris } from "@/lib/standarisasi/tindakan";
-import { KesalahanUpload } from "@/lib/upload/konstanta";
+import { BerkasMemuatKolomLain, KesalahanUpload } from "@/lib/upload/konstanta";
 import { hapusPotongan, rakitBerkas, uploadIdValid } from "@/lib/upload/potongan";
 
 /** Tahap Periksa dan Simpan Standarisasi berkas mentah SIMPEGA (alur sama dengan Upload Nominatif). */
@@ -37,8 +37,10 @@ export async function periksaUploadStandarisasi(m: Masukan): Promise<HasilPeriks
   if (tidakValid) return tidakValid;
   try {
     const berkas = await rakitBerkas(prisma, m.uploadId, m.totalPotongan);
-    return { ok: true, ringkasan: await periksaStandarisasi(prisma, berkas, { bulan: m.bulan, tahun: m.tahun }) };
+    return { ok: true, ringkasan: await periksaStandarisasi(prisma, berkas, { bulan: m.bulan, tahun: m.tahun, tolakKolomLain: true }) };
   } catch (e) {
+    // Berkas masih memuat kolom sensitif: buang potongannya dari database SEGERA (jangan menunggu klien membatalkan).
+    if (e instanceof BerkasMemuatKolomLain) await hapusPotongan(prisma, m.uploadId);
     return galat(e);
   }
 }
@@ -51,11 +53,12 @@ export async function simpanUploadStandarisasi(m: Masukan): Promise<HasilSimpanS
   try {
     const berkas = await rakitBerkas(prisma, m.uploadId, m.totalPotongan);
     const ada = sesi.user.id ? await prisma.user.findUnique({ where: { id: sesi.user.id }, select: { id: true } }) : null;
-    const r = await simpanStandarisasi(prisma, berkas, m.namaFile, { bulan: m.bulan, tahun: m.tahun }, { id: ada?.id ?? null, nama: sesi.user.name ?? "Admin" });
+    const r = await simpanStandarisasi(prisma, berkas, m.namaFile, { bulan: m.bulan, tahun: m.tahun, tolakKolomLain: true }, { id: ada?.id ?? null, nama: sesi.user.name ?? "Admin" });
     await hapusPotongan(prisma, m.uploadId);
     revalidatePath("/standarisasi");
     return { ok: true, batchId: r.batchId, perluReview: r.ringkasan.perluReview };
   } catch (e) {
+    if (e instanceof BerkasMemuatKolomLain) await hapusPotongan(prisma, m.uploadId);
     return galat(e);
   }
 }

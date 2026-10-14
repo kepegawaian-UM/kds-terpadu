@@ -12,7 +12,7 @@ import type { Keaktifan } from "@/lib/laporan/filter";
 import { bandingkanRekapBulanan, type FilterUji, type OracleBulanan as Oracle } from "../support/bandingkanRekap";
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 const periodeKasus = (bulan: number, filter: { jenis?: string[]; status?: string[]; keaktifan?: Keaktifan } = {}) => ({
@@ -126,7 +126,7 @@ describe.skipIf(!jalan)("paritas Rekap Kehadiran Bulanan KDS2 <-> KDS Terpadu", 
 });
 
 describe.skipIf(jalan)("paritas Rekap Bulanan (dilewati)", () => {
-  it("PARITAS_DATABASE_URL atau oracle tidak tersedia", () => {
-    console.warn("Paritas Rekap Bulanan dilewati: PARITAS_DATABASE_URL/oracle tidak tersedia.");
+  it("KDS2_SALINAN_DATABASE_URL atau oracle tidak tersedia", () => {
+    console.warn("Paritas Rekap Bulanan dilewati: KDS2_SALINAN_DATABASE_URL/oracle tidak tersedia.");
   });
 });

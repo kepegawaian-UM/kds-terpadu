@@ -10,7 +10,7 @@ import { urutkanMenurutNama } from "@/lib/laporan/urutNama";
 
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 describe.skipIf(!jalan)("paritas urutan nama (data asli, lokal)", () => {
@@ -44,7 +44,7 @@ describe.skipIf(!jalan)("paritas urutan nama (data asli, lokal)", () => {
 });
 
 describe.skipIf(jalan)("paritas urutan nama (dilewati)", () => {
-  it("PARITAS_DATABASE_URL atau oracle tidak tersedia", () => {
-    console.warn("Paritas urutan nama dilewati: PARITAS_DATABASE_URL/oracle tidak tersedia.");
+  it("KDS2_SALINAN_DATABASE_URL atau oracle tidak tersedia", () => {
+    console.warn("Paritas urutan nama dilewati: KDS2_SALINAN_DATABASE_URL/oracle tidak tersedia.");
   });
 });

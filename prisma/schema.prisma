@@ -339,7 +339,6 @@ model NominatifBulanan {
   jenisKelamin                String // L / P
   tanggalLahir                DateTime? @db.Date // opsional: format tarikan SIMPEGA Okt 2026 tidak menyertakannya
   pendidikanTerakhir          String?
-  agama                       String? // data pribadi spesifik (UU PDP) - jangan masuk ekspor luas
   jenisPegawaiKode            String
   statusKepegawaianKode       String
   golonganKode                String? // ASN wajib; Non-ASN (PTNA/CPTNA) opsional; PTT/AKL kosong

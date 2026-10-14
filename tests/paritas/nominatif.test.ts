@@ -11,7 +11,7 @@ import { namaBulan, resolveBulanTahun } from "@/lib/laporan/periode";
 
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 type BarisIndex = { id: number; nip: string; nama: string; jenis: string | null; unit: string | null };
@@ -69,7 +69,8 @@ describe.skipIf(!jalan)("paritas Nominatif KDS2 <-> KDS Terpadu", () => {
       const saya = await detailNominatif(db, id);
       expect(saya, `detail ${id} tidak ditemukan`).not.toBeNull();
       const { periodeLabel: labelSaya, ...sayaTanpaLabel } = saya as unknown as Detail;
-      const { periodeLabel: labelOracle, ...oracleTanpaLabel } = o[String(id)];
+      const { periodeLabel: labelOracle, agama: _agama, ...oracleTanpaLabel } = o[String(id)] as Detail & { agama?: unknown }; // KDS2 menampilkan agama; aplikasi ini sengaja tidak menyimpannya (14 Okt 2026)
+      void _agama;
       if (JSON.stringify(sayaTanpaLabel) !== JSON.stringify(oracleTanpaLabel)) bedaId.push(id);
       // Label bulan: KDS2 bisa berbahasa Inggris (APP_LOCALE=en); di sini selalu Indonesia.
       if (labelSaya !== `${namaBulan(saya!.bulan)} ${saya!.tahun}`) bedaLabelNonBahasa++;
@@ -113,7 +114,7 @@ describe.skipIf(!jalan)("paritas Nominatif KDS2 <-> KDS Terpadu", () => {
 });
 
 describe.skipIf(jalan)("paritas Nominatif (dilewati)", () => {
-  it("PARITAS_DATABASE_URL atau oracle tidak tersedia", () => {
-    console.warn("Paritas Nominatif dilewati: PARITAS_DATABASE_URL/oracle tidak tersedia.");
+  it("KDS2_SALINAN_DATABASE_URL atau oracle tidak tersedia", () => {
+    console.warn("Paritas Nominatif dilewati: KDS2_SALINAN_DATABASE_URL/oracle tidak tersedia.");
   });
 });

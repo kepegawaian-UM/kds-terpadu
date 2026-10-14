@@ -4,7 +4,6 @@ export type RawNominatifRow = {
   namaTanpaGelar: string;
   jenisKelaminRaw: string;
   tanggalLahir: Date | null;
-  agamaRaw: string;
   statusPegawaiRaw: string;
   jenisPegawaiRaw: string;
   kelompokJabatanRaw: string | null;
@@ -34,3 +33,14 @@ export type ParseRawNominatifResult = {
 };
 
 export class ColumnMappingError extends Error {}
+
+/** Berkas masih memuat kolom di luar daftar putih (atau berformat lama): ditolak oleh Standarisasi lewat web. */
+export class BerkasTidakBersihError extends Error {
+  constructor(
+    message: string,
+    readonly kolom: string[],
+  ) {
+    super(message);
+    this.name = "BerkasTidakBersihError";
+  }
+}

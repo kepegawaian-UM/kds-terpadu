@@ -10,7 +10,7 @@ import { PrismaClient } from "@prisma/client";
 import { dataDashboard } from "@/lib/laporan/dashboard";
 import { laporanRekapTahunan } from "@/lib/laporan/rekapTahunan";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 
 async function ukurBerulang(f: () => Promise<unknown>, kali = 14): Promise<{ awal: number; akhir: number; semua: number[] }> {
   const w: number[] = [];

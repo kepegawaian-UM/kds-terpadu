@@ -26,7 +26,7 @@ import {
 } from "../support/bandingkanRekap";
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = process.env.PARITAS_PENUH === "1" && Boolean(url) && (await oracleTersedia());
 
 const KEAKTIFAN: Keaktifan[] = ["aktif", "nonaktif", "semua"];

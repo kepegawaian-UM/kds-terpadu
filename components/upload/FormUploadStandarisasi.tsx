@@ -64,8 +64,13 @@ export function FormUploadStandarisasi({ bulanAwal, tahunAwal }: { bulanAwal: nu
     <div className="space-y-5">
       <div className="rounded-xl border border-slate-200 bg-white p-6">
         <p className="mb-5 text-sm text-slate-600">
-          Unggah berkas <b>mentah</b> hasil tarikan data pegawai (format REKAP_PEGAWAI). Aplikasi membersihkan dan mencocokkan kolomnya dengan data master; baris yang tidak bisa dipastikan masuk antrean <b>Review</b>.
+          Unggah berkas hasil tarikan data pegawai (format REKAP_PEGAWAI) yang <b>sudah dibersihkan</b>. Aplikasi mencocokkan kolomnya dengan data master; baris yang tidak bisa dipastikan masuk antrean <b>Review</b>.
         </p>
+        <div role="note" className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <b>Jangan unggah berkas asli SIMPEGA.</b> Berkas asli memuat data pribadi sensitif (NIK, nama ibu kandung, alamat, email, rekening, dan lainnya). Bersihkan dulu di komputer Anda:
+          <code className="mx-1 rounded bg-white px-1.5 py-0.5 text-xs">npm run bersihkan -- &quot;C:\jalur\REKAP_PEGAWAI.xlsx&quot;</code>
+          lalu unggah berkas <b>_bersih</b> yang dihasilkan. Berkas yang masih memuat kolom sensitif ditolak dan langsung dibuang.
+        </div>
         <div className="grid max-w-md grid-cols-2 gap-4">
           <div>
             <label htmlFor="std-bulan" className="block text-sm font-medium">Bulan</label>

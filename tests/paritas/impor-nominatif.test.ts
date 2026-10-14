@@ -225,6 +225,7 @@ function seragamkan(d: Dump) {
     urutan.set(Number(n.id), i);
     const tanpaId: Record<string, unknown> = { ...n };
     delete tanpaId.id;
+    delete tanpaId.agama; // KDS2 menyimpan agama; aplikasi ini sengaja tidak (keputusan 14 Okt 2026)
     const { tanggal_lahir, tanggal_mulai_kerja, ...sisa } = tanpaId;
     // SQLite menyimpan kolom date baris keadaan awal sebagai "Y-m-d 00:00:00": samakan ke tanggal murni
     const tgl = (v: unknown) => (v ? String(v).slice(0, 10) : null);
@@ -238,7 +239,7 @@ async function ambilDump(prisma: PrismaClient, batchId: number): Promise<Dump> {
   const tgl = (d: Date | null) => (d ? d.toISOString().slice(0, 10) : null);
   const nominatif = (await prisma.nominatifBulanan.findMany({ orderBy: { id: "asc" } })).map((n) => ({
     id: n.id, nip: n.pegawaiNip, bulan: n.bulan, tahun: n.tahun, nama: n.nama, jenis_kelamin: n.jenisKelamin, tanggal_lahir: tgl(n.tanggalLahir),
-    pendidikan_terakhir: n.pendidikanTerakhir, agama: n.agama, jenis_pegawai_kode: n.jenisPegawaiKode, status_kepegawaian_kode: n.statusKepegawaianKode,
+    pendidikan_terakhir: n.pendidikanTerakhir, jenis_pegawai_kode: n.jenisPegawaiKode, status_kepegawaian_kode: n.statusKepegawaianKode,
     golongan_kode: n.golonganKode, jabatan_fungsional_dosen_kode: n.jabatanFungsionalDosenKode, jabatan_fungsional_tendik_kode: n.jabatanFungsionalTendikKode,
     jabatan_fungsi_umum_kode: n.jabatanFungsiUmumKode, kategori_akademisi_luar_kode: n.kategoriAkademisiLuarKode, unit_asal_kode: n.unitAsalKode,
     tanggal_mulai_kerja: tgl(n.tanggalMulaiKerja), upload_batch_id: n.uploadBatchId === batchId ? "baru" : "lama",

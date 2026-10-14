@@ -1,7 +1,7 @@
 /**
  * Paritas migrasi F2: salinan data domain di PostgreSQL `kds_paritas` harus IDENTIK dengan
  * MySQL `kds2_produksi` (kunci jawaban) - baris demi baris, agregat, sequence, dan jam WIB.
- * Dilewati (dengan alasan jelas) bila `PARITAS_DATABASE_URL` belum diisi / MySQL KDS2 tidak
+ * Dilewati (dengan alasan jelas) bila `KDS2_SALINAN_DATABASE_URL` belum diisi / MySQL KDS2 tidak
  * terjangkau / migrasi belum dijalankan. Data asli hanya ada di mesin lokal; tes ini TIDAK
  * mencetak isi baris.
  */
@@ -11,7 +11,7 @@ import { PrismaClient } from "@prisma/client";
 import { bukaKds2BacaSaja, kds2Tersedia, type Kds2Baca } from "../../scripts/kds2-mysql";
 import { jalankanVerifikasi, type LaporanVerifikasi } from "../../scripts/migrasi/verifikasi";
 
-const urlParitas = process.env.PARITAS_DATABASE_URL;
+const urlParitas = process.env.KDS2_SALINAN_DATABASE_URL;
 const kds2Ada = await kds2Tersedia();
 const jalan = Boolean(urlParitas) && kds2Ada;
 
@@ -63,7 +63,7 @@ describe.skipIf(!jalan)("paritas migrasi KDS2 -> PostgreSQL (data asli, lokal)",
 describe.skipIf(jalan)("paritas migrasi (dilewati)", () => {
   it("prasyarat belum terpenuhi", () => {
     console.warn(
-      `Paritas migrasi dilewati: PARITAS_DATABASE_URL ${urlParitas ? "ada" : "BELUM diisi"}, MySQL KDS2 ${kds2Ada ? "terjangkau" : "TIDAK terjangkau"}.`
+      `Paritas migrasi dilewati: KDS2_SALINAN_DATABASE_URL ${urlParitas ? "ada" : "BELUM diisi"}, MySQL KDS2 ${kds2Ada ? "terjangkau" : "TIDAK terjangkau"}.`
     );
   });
 });

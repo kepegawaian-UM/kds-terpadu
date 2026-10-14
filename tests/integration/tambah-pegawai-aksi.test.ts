@@ -43,12 +43,12 @@ describe.skipIf(!ada)("Aksi Tambah Pegawai", () => {
   });
 
   it("berhasil: baris Nominatif bulan berjalan (WIB), pegawai, batch semu, dan audit tercatat", async () => {
-    const h = await tambahPegawai({ ...masukan, pendidikan_terakhir: "  ", agama: "" });
+    const h = await tambahPegawai({ ...masukan, pendidikan_terakhir: "  " });
     expect(h.ok).toBe(true);
     if (!h.ok) return;
     const [bulan, tahun] = bulanTahunSekarang(new Date());
     const n = await prisma.nominatifBulanan.findUniqueOrThrow({ where: { id: h.id } });
-    expect(n).toMatchObject({ pegawaiNip: masukan.nip, bulan, tahun, nama: "Uji Manual", pendidikanTerakhir: null, agama: null });
+    expect(n).toMatchObject({ pegawaiNip: masukan.nip, bulan, tahun, nama: "Uji Manual", pendidikanTerakhir: null });
     expect(await prisma.pegawai.count({ where: { nip: masukan.nip! } })).toBe(1);
     const batch = await prisma.uploadBatch.findUniqueOrThrow({ where: { id: n.uploadBatchId } });
     expect(batch).toMatchObject({ jenis: "tambah_pegawai_manual", diunggahOlehNama: "Admin Uji", jumlahBerhasil: 1 });

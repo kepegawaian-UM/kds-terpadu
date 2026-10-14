@@ -51,7 +51,6 @@ describe.skipIf(!ada)("migrasi KDS2 -> PostgreSQL (sumber sintetis)", () => {
       jenisKelamin: "L",
       tanggalLahir: lahir,
       pendidikanTerakhir: null,
-      agama: null,
       jenisPegawaiKode: kode.jenis,
       statusKepegawaianKode: kode.status,
       golonganKode: null,

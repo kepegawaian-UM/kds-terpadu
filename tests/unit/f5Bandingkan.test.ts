@@ -5,7 +5,7 @@ import { type BarisNominatif, type SlotJabatan, bandingkanJabatanTambahan, bandi
 
 const kategoriStatus = new Map([["PNS", "ASN"], ["PTNA", "Non-ASN"]]);
 const baris = (nip: string, ubah: BarisNominatif = {}): BarisNominatif => ({
-  pegawaiNip: nip, nama: `Nama ${nip}`, jenisKelamin: "L", tanggalLahir: "1980-01-01", pendidikanTerakhir: "S1", agama: "Islam", jenisPegawaiKode: "TDK",
+  pegawaiNip: nip, nama: `Nama ${nip}`, jenisKelamin: "L", tanggalLahir: "1980-01-01", pendidikanTerakhir: "S1", jenisPegawaiKode: "TDK",
   statusKepegawaianKode: "PNS", golonganKode: "III/a", jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: "UMM-01",
   kategoriAkademisiLuarKode: null, unitAsalKode: "UA-001", tanggalMulaiKerja: "2010-01-01", ...ubah,
 });

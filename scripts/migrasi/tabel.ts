@@ -79,7 +79,6 @@ export const TABEL_DOMAIN: TabelDomain[] = [
       k("jenis_kelamin", "jenisKelamin"),
       k("tanggal_lahir", "tanggalLahir", "date"),
       k("pendidikan_terakhir", "pendidikanTerakhir"),
-      sama("agama"),
       k("jenis_pegawai_kode", "jenisPegawaiKode"),
       k("status_kepegawaian_kode", "statusKepegawaianKode"),
       k("golongan_kode", "golonganKode"),

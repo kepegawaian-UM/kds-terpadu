@@ -42,7 +42,6 @@ export default async function DetailNominatifPage({ params }: { params: Promise<
           <Isian label="Jenis Kelamin">{d.jenisKelamin}</Isian>
           <Isian label="Tanggal Lahir">{d.tanggalLahir}</Isian>
           <Isian label="Pendidikan Terakhir">{d.pendidikan}</Isian>
-          <Isian label="Agama">{d.agama}</Isian>
           <Isian label="Tanggal Mulai Kerja">{d.tmt}</Isian>
           <Isian label="Unit Kerja">
             {d.unit} <span className="text-slate-400">({d.unitInduk})</span>

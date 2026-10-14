@@ -12,7 +12,7 @@ import { barisEksporIndividual, bangunRekapIndividual, cariPegawaiIndividual, ju
 
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
-const url = process.env.PARITAS_DATABASE_URL;
+const url = process.env.KDS2_SALINAN_DATABASE_URL;
 const jalan = Boolean(url) && (await oracleTersedia());
 
 /** PHP mengeluarkan array kosong sebagai [] meskipun bertipe peta: samakan ke {}. Urutan kunci peta tidak bermakna (hanya dibaca per kunci). */

@@ -103,7 +103,7 @@ describe.skipIf(!ada)("Paritas Standarisasi terhadap importBatch/resolveRow KDS1
     const tendikKode = (await prisma.jabatanFungsionalTendik.findFirstOrThrow()).kode;
     const role = (await prisma.jabatanTambahanRole.findFirstOrThrow()).kode;
     const dataDasar = {
-      nama: "Nama Diselesaikan", jenisKelamin: "L", tanggalLahir: null, pendidikanTerakhir: "S2", agama: "Islam", jenisPegawaiKode: "DSN", statusKepegawaianKode: status.kode, golonganKode: "III/b",
+      nama: "Nama Diselesaikan", jenisKelamin: "L", tanggalLahir: null, pendidikanTerakhir: "S2", jenisPegawaiKode: "DSN", statusKepegawaianKode: status.kode, golonganKode: "III/b",
       jabatanFungsionalDosenKode: dosenKode, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: null, kategoriAkademisiLuarKode: null, unitAsalKode: unitKode, tanggalMulaiKerja: "2019-05-06T00:00:00.000Z",
       jabatanTambahan: [{ jabatanTambahanRoleKode: role, unitAsalKode: unitKode, programStudiKode: null, statusPengangkatan: "Definitif" }],
     };
@@ -176,13 +176,16 @@ describe.skipIf(!ada)("Paritas Standarisasi terhadap importBatch/resolveRow KDS1
 
       // batch
       const b = await prisma.uploadBatch.findUniqueOrThrow({ where: { id: batchId } });
-      expect({ bulan: b.bulan, tahun: b.tahun, namaFileAsli: b.namaFileAsli, status: b.status, jumlahBarisTotal: b.jumlahBarisTotal, jumlahBerhasil: b.jumlahBerhasil, jumlahPerluReview: b.jumlahPerluReview, petaKolomTerdeteksi: b.petaKolomTerdeteksi }).toEqual(h.batch);
+      // KDS1 mencatat kolom Agama di peta kolom; aplikasi ini sengaja tidak membacanya (keputusan 14 Okt 2026): dibuang dari pembanding.
+      const petaKds1 = { ...((h.batch as unknown as { petaKolomTerdeteksi: Record<string, unknown> }).petaKolomTerdeteksi) };
+      delete petaKds1.Agama;
+      expect({ bulan: b.bulan, tahun: b.tahun, namaFileAsli: b.namaFileAsli, status: b.status, jumlahBarisTotal: b.jumlahBarisTotal, jumlahBerhasil: b.jumlahBerhasil, jumlahPerluReview: b.jumlahPerluReview, petaKolomTerdeteksi: b.petaKolomTerdeteksi }).toEqual({ ...h.batch, petaKolomTerdeteksi: petaKds1 });
       const lainnya = await prisma.uploadBatch.findMany({ where: { id: { not: batchId } } });
       expect(lainnya.filter((x) => x.namaFileAsli === "lama.xlsx").map((x) => x.status)).toEqual(h.batchLamaStatus);
 
       // snapshot
       const nominatif = (await prisma.nominatifBulanan.findMany({ include: { jabatanTambahan: { orderBy: { id: "asc" } } }, orderBy: [{ pegawaiNip: "asc" }, { bulan: "asc" }, { tahun: "asc" }] })).map((n) => ({
-        nip: n.pegawaiNip, bulan: n.bulan, tahun: n.tahun, nama: n.nama, jenisKelamin: n.jenisKelamin, tanggalLahir: tgl(n.tanggalLahir), pendidikanTerakhir: n.pendidikanTerakhir, agama: n.agama,
+        nip: n.pegawaiNip, bulan: n.bulan, tahun: n.tahun, nama: n.nama, jenisKelamin: n.jenisKelamin, tanggalLahir: tgl(n.tanggalLahir), pendidikanTerakhir: n.pendidikanTerakhir,
         jenisPegawaiKode: n.jenisPegawaiKode, statusKepegawaianKode: n.statusKepegawaianKode, golonganKode: n.golonganKode, jabatanFungsionalDosenKode: n.jabatanFungsionalDosenKode,
         jabatanFungsionalTendikKode: n.jabatanFungsionalTendikKode, jabatanFungsiUmumKode: n.jabatanFungsiUmumKode, kategoriAkademisiLuarKode: n.kategoriAkademisiLuarKode, unitAsalKode: n.unitAsalKode,
         tanggalMulaiKerja: tgl(n.tanggalMulaiKerja), dariBatchBaru: n.uploadBatchId === batchId,
@@ -192,7 +195,9 @@ describe.skipIf(!ada)("Paritas Standarisasi terhadap importBatch/resolveRow KDS1
 
       // antrean review
       const baris = (await prisma.barisBermasalah.findMany()).map((x) => ({ nip: x.nip, alasanUtama: x.alasanUtama, detailAlasan: x.detailAlasan, status: x.status, dataMentah: x.dataMentah, resolvedFields: x.resolvedFields }));
-      expect(urutBaris(baris)).toEqual(urutBaris(h.barisBermasalah));
+      // KDS1 menyimpan agamaRaw di data mentah baris Review; aplikasi ini sengaja tidak membacanya: dibuang dari pembanding.
+      const tanpaAgama = h.barisBermasalah.map((x) => { const { agamaRaw: _a, ...sisa } = (x.dataMentah ?? {}) as Record<string, unknown>; void _a; return { ...x, dataMentah: sisa }; });
+      expect(urutBaris(baris)).toEqual(urutBaris(tanpaAgama as typeof h.barisBermasalah));
 
       // kamus dan pegawai
       const kamus = (await prisma.kamusKoreksi.findMany({ orderBy: [{ jenisField: "asc" }, { kunciMentah: "asc" }] })).map((x) => ({ jenisField: x.jenisField, kunciMentah: x.kunciMentah, nilaiResolusi: x.nilaiResolusi }));

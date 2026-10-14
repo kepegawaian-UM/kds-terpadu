@@ -63,7 +63,6 @@ export type ColumnMap = {
   namaTanpaGelar: number;
   jenisKelamin: number;
   tanggalLahir: number;
-  agama: number;
   statusPegawai: number;
   jenisPegawai: number;
   kelompokJabatan: number | null;
@@ -116,7 +115,6 @@ export function buildColumnMap(headerRow: unknown[]): ColumnMap {
     namaTanpaGelar: single(occ, "Nama Lengkap(Tanpa Gelar)"),
     jenisKelamin: single(occ, "Jenis Kelamin"),
     tanggalLahir: single(occ, "Tanggal Lahir"),
-    agama: nth(occ, "Agama", 0),
     statusPegawai: single(occ, "Status Pegawai"),
     jenisPegawai: single(occ, "Jenis Pegawai"),
     kelompokJabatan: occ.has("Kelompok Jabatan") ? single(occ, "Kelompok Jabatan") : null,

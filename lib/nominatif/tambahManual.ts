@@ -14,7 +14,7 @@ type Db = PrismaClient | Prisma.TransactionClient;
 
 /** Nama kolom mengikuti formulir/KDS2 (snake_case); nilai kosong = null atau "". */
 export const KOLOM_TAMBAH_PEGAWAI = [
-  "nip", "nama", "jenis_kelamin", "tanggal_lahir", "pendidikan_terakhir", "agama", "jenis_pegawai_kode", "status_kepegawaian_kode",
+  "nip", "nama", "jenis_kelamin", "tanggal_lahir", "pendidikan_terakhir", "jenis_pegawai_kode", "status_kepegawaian_kode",
   "golongan_kode", "jabatan_fungsional_dosen_kode", "jabatan_fungsional_tendik_kode", "jabatan_fungsi_umum_kode",
   "kategori_akademisi_luar_kode", "unit_asal_kode", "tanggal_mulai_kerja",
 ] as const;
@@ -65,7 +65,6 @@ export async function validasiTambahPegawai(db: Db, mentah: InputTambahPegawai):
   if (wajib("jenis_kelamin", "Jenis kelamin") && d.jenis_kelamin !== "L" && d.jenis_kelamin !== "P") tambah("jenis_kelamin", "Jenis kelamin yang dipilih tidak valid.");
   tanggal("tanggal_lahir", "Tanggal lahir");
   maks("pendidikan_terakhir", "Pendidikan terakhir", 100);
-  maks("agama", "Agama", 20);
   if (wajib("tanggal_mulai_kerja", "Tanggal mulai kerja")) tanggal("tanggal_mulai_kerja", "Tanggal mulai kerja");
 
   if (wajib("jenis_pegawai_kode", "Jenis pegawai")) await ada("jenis_pegawai_kode", "Jenis pegawai", async (k) => !!(await db.jenisPegawai.findUnique({ where: { kode: k } })));
@@ -132,7 +131,7 @@ export async function tambahPegawaiManual(prisma: PrismaClient, input: InputTamb
     const baris = await tx.nominatifBulanan.create({
       data: {
         pegawaiNip: d.nip!, bulan, tahun, nama: d.nama!, jenisKelamin: d.jenis_kelamin!, tanggalLahir: tgl(d.tanggal_lahir), pendidikanTerakhir: d.pendidikan_terakhir,
-        agama: d.agama, jenisPegawaiKode: d.jenis_pegawai_kode!, statusKepegawaianKode: d.status_kepegawaian_kode!, golonganKode: d.golongan_kode,
+        jenisPegawaiKode: d.jenis_pegawai_kode!, statusKepegawaianKode: d.status_kepegawaian_kode!, golonganKode: d.golongan_kode,
         jabatanFungsionalDosenKode: d.jabatan_fungsional_dosen_kode, jabatanFungsionalTendikKode: d.jabatan_fungsional_tendik_kode,
         jabatanFungsiUmumKode: d.jabatan_fungsi_umum_kode, kategoriAkademisiLuarKode: d.kategori_akademisi_luar_kode, unitAsalKode: d.unit_asal_kode!,
         tanggalMulaiKerja: tgl(d.tanggal_mulai_kerja)!, uploadBatchId: batch.id,
@@ -144,7 +143,7 @@ export async function tambahPegawaiManual(prisma: PrismaClient, input: InputTamb
     const tmt = iso(d.tanggal_mulai_kerja)!;
     const kolom: [string, string | null][] = [
       ["nip", d.nip], ["nama", d.nama], ["jenis_kelamin", d.jenis_kelamin], ["tanggal_lahir", lahir === null ? null : teksTanggal(lahir)],
-      ["pendidikan_terakhir", d.pendidikan_terakhir], ["agama", d.agama], ["jenis_pegawai_kode", d.jenis_pegawai_kode],
+      ["pendidikan_terakhir", d.pendidikan_terakhir], ["jenis_pegawai_kode", d.jenis_pegawai_kode],
       ["status_kepegawaian_kode", d.status_kepegawaian_kode], ["golongan_kode", d.golongan_kode],
       ["jabatan_fungsional_dosen_kode", d.jabatan_fungsional_dosen_kode], ["jabatan_fungsional_tendik_kode", d.jabatan_fungsional_tendik_kode],
       ["jabatan_fungsi_umum_kode", d.jabatan_fungsi_umum_kode], ["kategori_akademisi_luar_kode", d.kategori_akademisi_luar_kode],

@@ -103,7 +103,7 @@ async function main() {
       batchLamaStatus: batches.filter((b) => b.namaFileAsli === "lama.xlsx").map((b) => b.status),
       nominatif: nominatif.map((n) => ({
         nip: n.pegawaiNip, bulan: n.bulan, tahun: n.tahun, nama: n.nama, jenisKelamin: n.jenisKelamin, tanggalLahir: n.tanggalLahir?.toISOString() ?? null, pendidikanTerakhir: n.pendidikanTerakhir,
-        agama: n.agama, jenisPegawaiKode: n.jenisPegawaiKode, statusKepegawaianKode: n.statusKepegawaianKode, golonganKode: n.golonganKode, jabatanFungsionalDosenKode: n.jabatanFungsionalDosenKode,
+        jenisPegawaiKode: n.jenisPegawaiKode, statusKepegawaianKode: n.statusKepegawaianKode, golonganKode: n.golonganKode, jabatanFungsionalDosenKode: n.jabatanFungsionalDosenKode,
         jabatanFungsionalTendikKode: n.jabatanFungsionalTendikKode, jabatanFungsiUmumKode: n.jabatanFungsiUmumKode, kategoriAkademisiLuarKode: n.kategoriAkademisiLuarKode, unitAsalKode: n.unitAsalKode,
         tanggalMulaiKerja: n.tanggalMulaiKerja.toISOString(), dariBatchBaru: n.uploadBatchId === batchId,
         jabatanTambahan: n.jabatanTambahan.map((j) => ({ role: j.jabatanTambahanRoleKode, unit: j.unitAsalKode, prodi: j.programStudiKode, status: j.statusPengangkatan })),

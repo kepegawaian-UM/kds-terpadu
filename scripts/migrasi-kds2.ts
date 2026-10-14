@@ -1,5 +1,5 @@
 /**
- * Migrasi data domain MySQL `kds2_produksi` -> PostgreSQL (`PARITAS_DATABASE_URL`).
+ * Migrasi data domain MySQL `kds2_produksi` -> PostgreSQL (`KDS2_SALINAN_DATABASE_URL`).
  *
  *   npx tsx scripts/migrasi-kds2.ts --dry-run   # jalankan penuh lalu BATALKAN (tidak menyimpan)
  *   npx tsx scripts/migrasi-kds2.ts             # migrasi sungguhan (target harus kosong)
@@ -16,8 +16,8 @@ import { sumberMysql } from "./migrasi/sumber";
 
 async function main() {
   const args = new Set(process.argv.slice(2));
-  const url = process.env.PARITAS_DATABASE_URL;
-  if (!url) throw new Error("PARITAS_DATABASE_URL belum diisi di .env (jalankan scripts/siapkan-db-lokal.ts).");
+  const url = process.env.KDS2_SALINAN_DATABASE_URL;
+  if (!url) throw new Error("KDS2_SALINAN_DATABASE_URL belum diisi di .env (jalankan scripts/siapkan-db-lokal.ts).");
   const u = new URL(url);
   const nama = u.pathname.replace("/", "");
   if (!nama.endsWith("_paritas")) {
