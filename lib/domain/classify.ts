@@ -904,7 +904,11 @@ export function resolveJabatanTambahan(
   // (jabatan kedua) terbuang diam-diam, krn pencocokan unit menerima sisa apa pun di belakang
   // nama unit (lihat cariUnitAtauProdi).
   const teks = row.jabatanTambahanRaw.replace(/\s+/g, " ").trim();
-  if (diawaliNamaRole(teks, master)) {
+  // BEDA DARI KDS1 (ditemukan pada uji berkas SIMPEGA asli, 14 Okt 2026): teks yang PERSIS sama dengan satu nama role di master
+  // (mis. "Sekretaris merangkap Bendahara Tim Pengelola Sertifikasi Dosen" = JBT-81) adalah satu jabatan; KDS1 memecahnya dulu karena
+  // diawali nama role lain ("Sekretaris") dan menghasilkan dua slot yang salah. Pencocokan persis menang atas pemecahan.
+  const persisSatuRole = exactMatch(master.jabatanTambahanRole, (r) => r.namaRole, teks) !== undefined;
+  if (!persisSatuRole && diawaliNamaRole(teks, master)) {
     const pemisah = cariPemisahJabatan(teks, master);
     if (pemisah.length + 1 > MAKS_JABATAN_TAMBAHAN) {
       return {
