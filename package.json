@@ -15,6 +15,7 @@
     "db:reset": "prisma migrate reset --force",
     "migrasi:kds2": "tsx scripts/migrasi-kds2.ts",
     "migrasi:verifikasi": "tsx scripts/verifikasi-migrasi.ts",
+    "migrasi:kds1": "tsx scripts/migrasi-kds1.ts",
     "dev:paritas": "node scripts/dev-paritas.mjs",
     "test:paritas-penuh": "node scripts/test-paritas-penuh.mjs",
     "ukur-kinerja": "tsx scripts/ukur-kinerja.ts"
