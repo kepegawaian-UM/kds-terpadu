@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         userEmail={session.user.email ?? ""}
         onSignOut={doSignOut}
       />
-      <main className="min-w-0 flex-1 overflow-y-auto px-6 py-8 lg:px-10">
+      <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-16 sm:px-6 lg:px-10 lg:py-8">
         <div className="mx-auto w-full max-w-6xl">{children}</div>
       </main>
     </div>

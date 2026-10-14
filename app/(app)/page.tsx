@@ -46,10 +46,16 @@ export default async function RingkasanPage({
   const tabAwal = sp.tab === "kinerja" ? "kinerja" : "pegawai";
   const kinerja = d.dashboardKinerja;
 
-  const kartuAtas = [
+  const kartuAtas: { label: string; nilai: number; ikon: string; catatan?: string }[] = [
     { label: "Total Dosen", nilai: d.jumlahPerJenis.DSN, ikon: "school" },
     { label: "Total Tendik", nilai: d.jumlahPerJenis.TDK, ikon: "briefcase" },
-    { label: "Total Akademisi Luar UM", nilai: d.jumlahPerJenis.AKL, ikon: "globe" },
+    {
+      label: "Total Akademisi Luar UM",
+      nilai: d.jumlahPerJenis.AKL,
+      ikon: "globe",
+      // Perilaku KDS2 yang sengaja dipertahankan (paritas): kartu memakai semua baris snapshot, grafik tidak.
+      catatan: 'Semua baris snapshot. Grafik "Kategori akademisi luar" tidak menghitung yang berunit "Unit Kerja Belum Diketahui", jadi jumlahnya lebih kecil.',
+    },
   ];
 
   return (
@@ -78,6 +84,7 @@ export default async function RingkasanPage({
             </div>
             <div className="text-sm text-slate-500">{k.label}</div>
             <div className="mt-1 text-3xl font-bold text-sidebar">{k.nilai.toLocaleString("id-ID")}</div>
+            {k.catatan && <p className="mt-2 text-xs leading-snug text-slate-500">{k.catatan}</p>}
           </div>
         ))}
         <div className="rounded-xl border border-slate-200 bg-white p-6">

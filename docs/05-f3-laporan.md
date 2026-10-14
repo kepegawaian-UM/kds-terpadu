@@ -216,3 +216,9 @@ dan `tests/integration/kueri-rencana.test.ts`. **Aturan: kueri agregat mentah ya
   - `eslint-config-next` -> `@next/eslint-plugin-next` -> `fast-glob/micromatch/braces` (high, DoS pola glob): hanya saat lint di komputer pengembang. "Perbaikan" menurunkan ke eslint-config-next 14, jadi tidak diikuti.
   - `exceljs` -> `uuid` (moderate, batas buffer pada uuid v3/v5/v6 bila argumen `buf` diberikan): exceljs tidak memberi argumen itu; isi berkas unggahan tidak mempengaruhinya. Tidak ada versi exceljs yang memperbaikinya selain `3.4.0` (mundur jauh).
   - Tinjau lagi bila prisma/eslint-config-next menerbitkan versi yang memperbaikinya.
+
+## Utang UX yang ditutup (14 Okt 2026)
+- **Utang 1 (sidebar)**: di bawah 1024 px sidebar menjadi laci yang dibuka tombol di bilah atas (tutup lewat tombol, klik latar, Escape, atau pindah halaman); di atasnya tampil tetap seperti sebelumnya; bilah atas dan laci disembunyikan saat cetak. Diperiksa di browser pada 375 px dan 1280 px.
+- **Utang 2 (kartu Akademisi Luar)**: kartu Ringkasan kini memuat satu kalimat penjelasan bahwa jumlahnya semua baris snapshot sedangkan grafik tidak menghitung unit "Unit Kerja Belum Diketahui". Angka tidak diubah (paritas KDS2).
+- **Utang 3 (default periode)** tetap dipertahankan sampai setelah cutover.
+- **Temuan sampingan**: logo (`/logo.png`) rusak karena ikut dilindungi proxy login; pengoptimal gambar Next mengambilnya tanpa cookie sehingga dialihkan ke /login (berlaku juga di halaman login dan di produksi). Dikecualikan dari matcher `proxy.ts`, diuji di `tests/unit/proxy.test.ts` (tanpa pengecualian, tes gagal).

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // Kerangka F1: hanya "Ringkasan" yang aktif. Modul lain adalah penanda tempat dan akan
 // diaktifkan per tahap (lihat docs/01-rancangan.md): Nominatif/Rekap/Statistik/Dashboard di
@@ -52,17 +53,64 @@ export function Sidebar({
   onSignOut: () => Promise<void>;
 }) {
   const pathname = usePathname();
+  // Di layar sempit (< lg) sidebar menjadi laci yang dibuka lewat tombol di bilah atas; di lg ke atas selalu tampil.
+  const [terbuka, setTerbuka] = useState(false);
+  const [jalurSebelumnya, setJalurSebelumnya] = useState(pathname);
+  if (jalurSebelumnya !== pathname) {
+    // Pindah halaman: tutup laci (disesuaikan saat render, bukan di effect).
+    setJalurSebelumnya(pathname);
+    setTerbuka(false);
+  }
+
+  useEffect(() => {
+    if (!terbuka) return;
+    const tutupDenganEsc = (e: KeyboardEvent) => e.key === "Escape" && setTerbuka(false);
+    window.addEventListener("keydown", tutupDenganEsc);
+    return () => window.removeEventListener("keydown", tutupDenganEsc);
+  }, [terbuka]);
 
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col bg-sidebar text-white">
+    <>
+      <div className="tanpa-cetak fixed inset-x-0 top-0 z-30 flex h-12 items-center gap-3 bg-sidebar px-3 text-white lg:hidden">
+        <button
+          type="button"
+          onClick={() => setTerbuka(true)}
+          aria-label="Buka menu"
+          aria-expanded={terbuka}
+          aria-controls="menu-samping"
+          className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-sidebar-lighter"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className="truncate text-sm font-bold">KDS Terpadu</span>
+      </div>
+      {terbuka && <div className="tanpa-cetak fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setTerbuka(false)} aria-hidden="true" />}
+    <aside
+      id="menu-samping"
+      className={`fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col bg-sidebar text-white transition-transform duration-200 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
+        terbuka ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white p-1">
           <Image src="/logo.png" alt="Logo KDS SDM" width={40} height={40} className="h-full w-full object-contain" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold leading-tight">KDS Terpadu</p>
           <p className="truncate text-xs leading-tight text-sidebar-muted">SDM Universitas Negeri Malang</p>
         </div>
+        <button
+          type="button"
+          onClick={() => setTerbuka(false)}
+          aria-label="Tutup menu"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-sidebar-lighter lg:hidden"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
       </div>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
@@ -129,5 +177,6 @@ export function Sidebar({
         </form>
       </div>
     </aside>
+    </>
   );
 }
