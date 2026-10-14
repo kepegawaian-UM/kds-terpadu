@@ -1,4 +1,3 @@
-import Link from "next/link";
 
 import { GrafikBatang } from "@/components/dashboard/GrafikBatang";
 import { GrafikTren } from "@/components/dashboard/GrafikTren";
@@ -105,20 +104,6 @@ export default async function RingkasanPage({
           ))}
         </div>
       </div>
-
-      <section className="rounded-xl border border-slate-200 bg-white p-6">
-        <h3 className="mb-4 text-sm font-semibold uppercase text-slate-500">Pintasan</h3>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <Link href="/nominatif" className="text-accent-green underline">
-            Detail Pegawai
-          </Link>
-          {["Upload Nominatif Bulanan", "Upload Rekap Kehadiran", "+ Tambah Pegawai"].map((t) => (
-            <span key={t} className="cursor-not-allowed text-slate-400" title="Tersedia di tahap F4">
-              {t}
-            </span>
-          ))}
-        </div>
-      </section>
 
       <TabUtama
         tabAwal={tabAwal}
