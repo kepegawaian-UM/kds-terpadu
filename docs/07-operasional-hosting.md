@@ -4,7 +4,7 @@ Keputusan 13 Okt 2026 (lihat `docs/06-perbandingan-hosting.md` §10). Panduan in
 cadangan dan pemulihan, dan **rencana keluar** bila layanan gratis bermasalah. Bahasa sengaja sederhana.
 
 ## 1. Syarat keputusan (harus terpenuhi sebelum DATA ASLI masuk)
-- [ ] **Konfirmasi tertulis** dari atasan/UPT TIK bahwa data boleh disimpan di server cloud Singapura (dasar saat ini hanya "KDS1 sudah di sana").
+- [x] **Konfirmasi tertulis** (pengguna menyatakan sudah ada, 14 Okt 2026; simpan salinannya bersama arsip proyek) dari atasan/UPT TIK bahwa data boleh disimpan di server cloud Singapura (dasar saat ini hanya "KDS1 sudah di sana").
 - [ ] **Verifikasi dua langkah** aktif di GitHub, Vercel, dan Neon.
 - [ ] Semua akun memakai **email institusi** (`kepegawaian@um.ac.id`), dan **satu orang kedua** dicatat sebagai pemilik cadangan/pemulih akun.
 - [ ] **Cadangan terjadwal** berjalan dan **uji pulih berhasil** pada database produksi (§4).

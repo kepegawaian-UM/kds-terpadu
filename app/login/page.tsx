@@ -15,7 +15,7 @@ async function login(formData: FormData) {
     });
   } catch (err) {
     if (err instanceof AuthError) {
-      redirect("/login?error=1");
+      redirect(err.type === "CredentialsSignin" && (err as { code?: string }).code === "terkunci" ? "/login?error=terkunci" : "/login?error=1");
     }
     throw err;
   }
@@ -63,8 +63,10 @@ export default async function LoginPage({
           </div>
 
           {error && (
-            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-              Email atau password salah.
+            <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error === "terkunci"
+                ? "Terlalu banyak percobaan masuk. Akun dikunci sementara; coba lagi sekitar 15 menit lagi."
+                : "Email atau password salah."}
             </p>
           )}
 

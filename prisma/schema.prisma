@@ -175,11 +175,15 @@ model Pegawai {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  nama         String
-  dibuatPada   DateTime @default(now())
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  nama            String
+  dibuatPada      DateTime  @default(now())
+  /// Pembatasan percobaan masuk: jumlah gagal beruntun, dan batas waktu akun terkunci (null = tidak terkunci).
+  gagalMasuk      Int       @default(0)
+  terkunciSampai  DateTime?
+  sandiDiubahPada DateTime?
 
   uploadBatch       UploadBatch[]
   barisDiselesaikan BarisBermasalah[]

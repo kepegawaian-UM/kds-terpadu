@@ -158,7 +158,7 @@ export function Sidebar({
       </nav>
 
       <div className="border-t border-sidebar-lighter px-4 py-4">
-        <div className="flex items-center gap-3">
+        <Link href="/akun" title="Pengaturan akun dan kata sandi" className="-m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-sidebar-lighter">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-green text-xs font-semibold text-white">
             {initialsOf(userName)}
           </div>
@@ -166,7 +166,7 @@ export function Sidebar({
             <p className="truncate text-sm font-medium text-white">{userName}</p>
             <p className="truncate text-xs text-sidebar-muted">{userEmail}</p>
           </div>
-        </div>
+        </Link>
         <form action={onSignOut} className="mt-3">
           <button
             type="submit"
