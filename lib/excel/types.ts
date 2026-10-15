@@ -9,6 +9,8 @@ export type RawNominatifRow = {
   kelompokJabatanRaw: string | null;
   golonganPangkatRaw: string;
   jabatanFungsionalRaw: string;
+  /** Kolom "Jabatan Remunerasi" (AG) tarikan SIMPEGA; hanya ada di format REKAP_PEGAWAI dan bila kolomnya disertakan. */
+  jabatanRemunerasiRaw?: string;
   jabatanTambahanRaw: string;
   pendidikanRaw: string;
   subagUnitKerjaRaw: string;

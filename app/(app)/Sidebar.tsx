@@ -40,7 +40,6 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
     label: "Jarang dipakai",
     items: [
       { href: "/koreksi-pegawai", label: "Koreksi Pegawai" },
-      { href: "/nominatif/upload", label: "Upload Nominatif" },
     ],
   },
 ];

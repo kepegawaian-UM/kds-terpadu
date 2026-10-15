@@ -15,13 +15,13 @@ const SENSITIF = ["NIK", "No KK", "NPWP", "Nama Ibu Kandung", "No HP", "Email Re
 const penanda = (kolom: string, i: number) => `RAHASIA-${kolom.replace(/\W/g, "")}-${i}`;
 
 /** Berkas mirip tarikan SIMPEGA: kolom wajib + kolom sensitif di antaranya, nilai teks berawalan U+200C, dua sheet, properti pembuat. */
-async function buatBerkas(opsi: { jumlah?: number; tanpaKolomWajib?: string } = {}): Promise<Buffer> {
+async function buatBerkas(opsi: { jumlah?: number; tanpaKolomWajib?: string; denganRemunerasi?: boolean } = {}): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
   wb.creator = "PEMBUAT-RAHASIA";
   wb.lastModifiedBy = "PENGUBAH-RAHASIA";
   const ws = wb.addWorksheet("Worksheet");
   const wajib = KOLOM_WAJIB_REKAP.filter((k) => k !== opsi.tanpaKolomWajib);
-  const kolom = [SENSITIF[0], SENSITIF[1], ...wajib.slice(0, 4), ...SENSITIF.slice(2, 6), ...wajib.slice(4), "Tanggal Lahir", ...SENSITIF.slice(6)];
+  const kolom = [SENSITIF[0], SENSITIF[1], ...wajib.slice(0, 4), ...SENSITIF.slice(2, 6), ...wajib.slice(4), "Tanggal Lahir", ...(opsi.denganRemunerasi ? ["Jabatan Remunerasi"] : []), ...SENSITIF.slice(6)];
   ws.addRow(kolom.map((k) => `${ZW}${k}`));
   for (let i = 0; i < (opsi.jumlah ?? 5); i++) {
     ws.addRow(
@@ -80,6 +80,16 @@ describe("bersihkanRekapPegawai", () => {
     const baca = await parseRawNominatif(buffer);
     expect(baca.rows[3].nip).toBe("199001012020011003");
     expect(baca.rows[3].tanggalMasuk?.toISOString()).toBe("2015-04-01T00:00:00.000Z");
+  });
+
+  it("kolom Jabatan Remunerasi (AG) dipertahankan dan terbaca; berkas tanpa kolom itu tetap diterima", async () => {
+    const { buffer, laporan } = await bersihkanRekapPegawai(await buatBerkas({ denganRemunerasi: true }));
+    expect(laporan.kolomDipertahankan).toContain("Jabatan Remunerasi");
+    expect(laporan.kolomDibuang.sort()).toEqual([...SENSITIF].sort());
+    const baca = await parseRawNominatif(buffer, { tolakKolomLain: true });
+    expect(baca.rows[2].jabatanRemunerasiRaw).toBe("Jabatan Remunerasi 2");
+    const tanpa = await parseRawNominatif((await bersihkanRekapPegawai(await buatBerkas())).buffer, { tolakKolomLain: true });
+    expect(tanpa.rows[2]).not.toHaveProperty("jabatanRemunerasiRaw");
   });
 
   it("baris tanpa NIP digit (catatan kaki) tidak dibawa; berkas yang bukan REKAP_PEGAWAI ditolak dengan pesan jelas", async () => {

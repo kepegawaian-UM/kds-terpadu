@@ -13,9 +13,9 @@ status pernikahan, no HP, tiga email, rekening, tiga alamat, data pasangan, gaji
 
 Berkas bersih sekitar 5x lebih kecil (September 2026: 1,0 MB menjadi 219 KB).
 
-## Yang masuk aplikasi (daftar putih, 17 kolom)
+## Yang masuk aplikasi (daftar putih, 18 kolom; "Jabatan Remunerasi" ditambah 16 Okt 2026)
 NIP, Nama Lengkap (Tanpa Gelar), Nama Lengkap (Dengan Gelar), Tanggal Lahir, Jenis Kelamin, Status Pegawai, Kelompok Jabatan, Jenis Pegawai, Tanggal Masuk, Golongan,
-Jabatan Fungsional, Jabatan Tambahan, Unit Kerja Jabatan Tambahan, Jenjang Pendidikan, Unit Kerja, Unit Kerja Induk, Unit Kerja Induk (Level Atas).
+Jabatan Fungsional, Jabatan Tambahan, Unit Kerja Jabatan Tambahan, Jenjang Pendidikan, Unit Kerja, Unit Kerja Induk, Unit Kerja Induk (Level Atas), Jabatan Remunerasi (kolom AG; opsional, hanya nama jabatan: dipakai untuk jabatan Tendik, lihat docs/08 §16).
 Sumber tunggal daftar ini: `KOLOM_DIIZINKAN` di `lib/excel/parseRekapPegawai.ts` (dipakai pembersih dan penjaga server).
 
 ## Agama dihapus dari aplikasi (keputusan pengguna)

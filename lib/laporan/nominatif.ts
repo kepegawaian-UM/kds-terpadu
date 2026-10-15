@@ -7,6 +7,8 @@ import type { PrismaClient } from "@prisma/client";
 
 import { type DasarRemunerasi, dasarRemunerasi } from "@/lib/domain/dasarRemunerasi";
 
+import { HEADER_TEMPLATE_NOMINATIF } from "@/lib/upload/templateNominatif";
+
 import { formatTanggal } from "./format";
 import { buatNamaFile } from "./namaFile";
 import { namaBulan } from "./periode";
@@ -177,5 +179,70 @@ export async function eksporNominatif(
       r.unitAsal?.nama ?? null,
       formatTanggal(r.tanggalMulaiKerja),
     ]),
+  };
+}
+
+export function namaFileNominatifLengkap(bulan: number, tahun: number): string {
+  return buatNamaFile("Nominatif Lengkap", [], [], `${namaBulan(bulan)} ${tahun}`, []);
+}
+
+const isoTanggal = (d: Date | null | undefined): string | null => (d ? d.toISOString().slice(0, 10) : null);
+
+/**
+ * Ekspor Nominatif LENGKAP: seluruh kolom hasil standarisasi (jabatan fungsional / fungsi umum, kategori akademisi luar, jabatan tambahan 1-3 beserta
+ * unit/prodi dan status pengangkatan). Susunan kolom SAMA dengan template Upload Nominatif (HEADER_TEMPLATE_NOMINATIF; kolom Agama dibiarkan kosong),
+ * dan nilainya memakai nama master sehingga berkas ini bisa diunggah ulang. Ekspor ringkas 9 kolom ala KDS2 tetap ada di eksporNominatif.
+ */
+export async function eksporNominatifLengkap(
+  db: Pick<PrismaClient, "nominatifBulanan">,
+  bulan: number,
+  tahun: number,
+  filter: { jenisPegawaiKode?: string | null; unitAsalKode?: string | null } = {}
+): Promise<{ headings: string[]; rows: (string | null)[][] }> {
+  const rows = await db.nominatifBulanan.findMany({
+    where: {
+      bulan,
+      tahun,
+      ...(filter.jenisPegawaiKode ? { jenisPegawaiKode: filter.jenisPegawaiKode } : {}),
+      ...(filter.unitAsalKode ? { unitAsalKode: filter.unitAsalKode } : {}),
+    },
+    include: {
+      jenisPegawai: true,
+      statusKepegawaian: true,
+      golongan: true,
+      unitAsal: true,
+      jabatanFungsionalDosen: true,
+      jabatanFungsionalTendik: true,
+      jabatanFungsiUmum: true,
+      kategoriAkademisiLuar: true,
+      jabatanTambahan: { orderBy: { id: "asc" }, include: { jabatanTambahanRole: true, unitAsal: true, programStudi: true } },
+    },
+  });
+  return {
+    headings: [...HEADER_TEMPLATE_NOMINATIF],
+    rows: urutkanMenurutNama(rows).map((r) => {
+      const tendik = r.jabatanFungsionalTendik;
+      const jabatan = r.jabatanFungsionalDosen?.nama ?? (tendik ? `${tendik.jabatanPokok} ${tendik.jenjang}` : (r.jabatanFungsiUmum?.nama ?? null));
+      const slot = [0, 1, 2].flatMap((i) => {
+        const jt = r.jabatanTambahan[i];
+        return jt ? [jt.jabatanTambahanRole?.namaRole ?? null, jt.programStudi?.nama ?? jt.unitAsal?.nama ?? null, jt.statusPengangkatan] : [null, null, null];
+      });
+      return [
+        r.pegawaiNip,
+        r.nama,
+        r.jenisKelamin,
+        isoTanggal(r.tanggalLahir),
+        r.pendidikanTerakhir ?? null,
+        null, // Agama: sengaja tidak disimpan
+        r.jenisPegawai?.nama ?? null,
+        r.statusKepegawaian?.nama ?? null,
+        r.golongan?.kode ?? null,
+        jabatan,
+        r.kategoriAkademisiLuar?.nama ?? null,
+        r.unitAsal?.nama ?? null,
+        isoTanggal(r.tanggalMulaiKerja),
+        ...slot,
+      ];
+    }),
   };
 }

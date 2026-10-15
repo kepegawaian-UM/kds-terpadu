@@ -25,13 +25,13 @@ export default async function NominatifPage({
         <div>
           <h1 className="text-xl font-semibold text-slate-900">Detail Pegawai</h1>
           <p className="text-sm text-slate-500">
-            Snapshot data pegawai per bulan/tahun, diarsipkan dari upload Nominatif Bulanan.
+            Snapshot data pegawai per bulan/tahun, diarsipkan dari Standarisasi. Tombol Excel di tabel = ringkas; Unduh Excel Lengkap = semua kolom hasil standarisasi.
           </p>
         </div>
         <div className="tanpa-cetak flex gap-2">
-          <Link href="/nominatif/upload" className={tombol}>
-            Upload Nominatif Bulanan
-          </Link>
+          <a href={`/nominatif/export?format=lengkap&bulan=${bulan}&tahun=${tahun}`} className={tombol} download>
+            Unduh Excel Lengkap
+          </a>
           <Link href="/nominatif/baru" className={tombolUtama}>
             + Tambah Pegawai
           </Link>

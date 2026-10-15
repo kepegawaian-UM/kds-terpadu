@@ -229,6 +229,12 @@ export default async function ResolveRowPage({
           <dd className="col-span-2">{raw.golonganPangkatRaw || "-"}</dd>
           <dt className="font-medium">Jabatan Fungsional</dt>
           <dd className="col-span-2">{raw.jabatanFungsionalRaw || "-"}</dd>
+          {raw.jabatanRemunerasiRaw ? (
+            <>
+              <dt className="font-medium">Jabatan Remunerasi</dt>
+              <dd className="col-span-2">{raw.jabatanRemunerasiRaw}</dd>
+            </>
+          ) : null}
           <dt className="font-medium">Jabatan Tambahan</dt>
           <dd className="col-span-2">{raw.jabatanTambahanRaw || "-"}</dd>
           <dt className="font-medium">Subag/Unit Kerja</dt>

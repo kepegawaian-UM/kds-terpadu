@@ -71,7 +71,8 @@ const KOLOM_WAJIB = [
 ] as const;
 // Tanggal Lahir SENGAJA tidak wajib - tarikan ini terkonfirmasi tidak pernah mengisinya
 // (keputusan user), tapi tetap dipetakan kalau kolomnya ada & suatu saat terisi.
-const KOLOM_OPSIONAL = ["Tanggal Lahir"] as const;
+// "Jabatan Remunerasi" (kolom AG tarikan SIMPEGA) opsional supaya berkas bersih lama (tanpa kolom ini) tetap terbaca; bila ada, dipakai untuk jabatan Tendik (lihat classify.ts).
+const KOLOM_OPSIONAL = ["Tanggal Lahir", "Jabatan Remunerasi"] as const;
 
 /**
  * Daftar putih kolom yang BOLEH masuk aplikasi (minimisasi data pribadi, keputusan pengguna 14 Okt 2026): hanya kolom yang benar-benar dibaca.
@@ -154,6 +155,8 @@ function extractRow(sheet: ExcelJS.Worksheet, rowNumber: number, map: ColumnMapR
     // diekstrak lagi dari gabungan teks spt format lama.
     golonganPangkatRaw: cellStr(row, map.Golongan),
     jabatanFungsionalRaw: cellStr(row, map["Jabatan Fungsional"]),
+    // hanya bila kolomnya ada: tanpa AG data mentah (yang disimpan di antrean Review) tetap sama persis dengan yang dihasilkan KDS1
+    ...(map["Jabatan Remunerasi"] ? { jabatanRemunerasiRaw: cellStr(row, map["Jabatan Remunerasi"]) } : {}),
     jabatanTambahanRaw: cellStr(row, map["Jabatan Tambahan"]),
     pendidikanRaw: cellStr(row, map["Jenjang Pendidikan"]),
     subagUnitKerjaRaw: cellStr(row, map["Unit Kerja"]),
