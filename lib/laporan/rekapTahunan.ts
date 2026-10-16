@@ -68,7 +68,7 @@ export function nilaiEksporTahunan(total: Record<string, string>, kode: string):
 }
 
 /** id snapshot terakhir (MAX(id)) tiap NIP pada tahun itu. */
-async function idSnapshotTerakhir(db: Pick<PrismaClient, "nominatifBulanan">, tahun: number): Promise<number[]> {
+export async function idSnapshotTerakhir(db: Pick<PrismaClient, "nominatifBulanan">, tahun: number): Promise<number[]> {
   const g = await db.nominatifBulanan.groupBy({ by: ["pegawaiNip"], where: { tahun }, _max: { id: true } });
   return g.map((x) => x._max.id!).sort((a, b) => a - b);
 }

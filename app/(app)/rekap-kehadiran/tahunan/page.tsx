@@ -38,6 +38,36 @@ export default async function RekapTahunanPage({
         <BidangFilterRekap jenis={jenis} status={status} keaktifan={keaktifan} daftarStatus={daftarStatus} />
       </FormLaporan>
 
+      <form
+        method="get"
+        action="/rekap-kehadiran/tahunan/tk"
+        className="tanpa-cetak flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-white p-4"
+      >
+        {[...q.entries()].map(([k, v], i) => (
+          <input key={`${k}-${i}`} type="hidden" name={k} value={v} />
+        ))}
+        <div className="min-w-60 flex-1">
+          <h2 className="text-sm font-semibold text-slate-900">Laporan TK untuk Tindak Lanjut</h2>
+          <p className="text-xs text-slate-500">
+            Excel berisi ringkasan per unit, daftar pegawai ber-TK per bulan (Jan-Des), dan satu sheet per unit induk. Memakai tahun dan filter di atas.
+          </p>
+        </div>
+        <label className="text-xs font-medium text-slate-600">
+          Minimal hari TK setahun
+          <input
+            type="number"
+            name="min_tk"
+            min={1}
+            max={400}
+            defaultValue={3}
+            className="mt-1 block w-28 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm"
+          />
+        </label>
+        <button type="submit" className="rounded-md bg-sidebar px-4 py-1.5 text-sm font-medium text-white hover:bg-sidebar-lighter">
+          Unduh Excel TK
+        </button>
+      </form>
+
       <TabelRekapTahunan
         baris={lap.baris.map((b) => ({ id: b.id, nip: b.nip, nama: b.nama, badge: b.badge, sel: b.sel }))}
         komponen={lap.komponen}
