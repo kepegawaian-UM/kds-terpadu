@@ -8,6 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { PrismaClient } from "@prisma/client";
 
+import tambahan from "../../prisma/seed-data/tambahanTerpadu.json";
 import { barisKeJson, TABEL_MASTER } from "../../scripts/ekspor-master-kds2";
 import { bukaKds2BacaSaja, kds2Tersedia, type Kds2Baca } from "../../scripts/kds2-mysql";
 
@@ -51,7 +52,13 @@ describe.skipIf(!jalan)("paritas master data KDS2 <-> KDS Terpadu", () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const model = prisma[MODEL[berkas]] as any;
-      const aktual = (await model.findMany({ orderBy: { kode: "asc" } })) as Record<string, unknown>[];
+      const semua = (await model.findMany({ orderBy: { kode: "asc" } })) as Record<string, unknown>[];
+
+      // Master TAMBAHAN khusus KDS Terpadu (prisma/seed-data/tambahanTerpadu.json) tidak ada di KDS2: dikeluarkan dari pembanding, lalu dipastikan ada persis.
+      const ekstra = ((tambahan as unknown as Record<string, { kode: string; nama: string }[]>)[berkas] ?? []).map((r) => ({ ...r }));
+      const kodeEkstra = new Set(ekstra.map((r) => r.kode));
+      const aktual = semua.filter((r) => !kodeEkstra.has(String(r.kode)));
+      expect(semua.filter((r) => kodeEkstra.has(String(r.kode))), "master tambahan harus ada").toEqual(ekstra);
 
       expect(aktual.length).toBe(diharapkan.length);
       expect(aktual).toEqual(diharapkan);

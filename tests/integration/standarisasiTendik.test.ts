@@ -53,11 +53,11 @@ describe.skipIf(!ada)("Jabatan Tendik tanpa jenjang yang sepadan Fungsi Umum", (
 
     // generik "Pelaksana"/"Laboran" -> jabatan spesifik dari AG (termasuk akhiran sampah ## dan huruf kecil)
     for (const [jf, ag, nama] of [["Pelaksana", "Pengolah Data dan Informasi", "Pengolah Data dan Informasi"], ["Pelaksana", "Pengadministrasi Perkantoran", "Pengadministrasi Perkantoran"],
-      ["Pelaksana", "Pengelola Layanan Operasional##", "Pengelola Layanan Operasional"], ["Pelaksana", "dokter pertama", "Dokter Pertama"], ["Laboran", "Teknisi Laboratorium", "Teknisi Laboratorium"]] as const) {
+      ["Pelaksana", "Pengelola Layanan Operasional##", "Pengelola Layanan Operasional"], ["Pelaksana", "dokter pertama", "Dokter Pertama"], ["Pelaksana", "Penata Layanan Kesehatan", "Penata Layanan Kesehatan"], ["Laboran", "Teknisi Laboratorium", "Teknisi Laboratorium"]] as const) {
       expect(hasil(jf, ag), `${jf} -> ${ag}`).toEqual({ jabatanFungsionalDosenKode: null, jabatanFungsionalTendikKode: null, jabatanFungsiUmumKode: umum(nama) });
     }
     // AG tidak dikenal master (jabatan struktural / belum ada di master) atau kosong -> perilaku lama (Pelaksana tetap Fungsi Umum "Pelaksana")
-    for (const ag of ["Koordinator Tata Usaha, FT", "Penata Layanan Kesehatan", "", "Belum Diketahui (Perlu Verifikasi Manual)"]) {
+    for (const ag of ["Koordinator Tata Usaha, FT", "Kepala Seksi Humas, Direktorat Perencanaan", "", "Belum Diketahui (Perlu Verifikasi Manual)"]) {
       expect(hasil("Pelaksana", ag), ag).toMatchObject({ jabatanFungsiUmumKode: umum("Pelaksana") });
     }
     // JF fungsional spesifik tetap dari JF walau AG berisi nama lain (termasuk yang kebetulan ada di Fungsi Umum)

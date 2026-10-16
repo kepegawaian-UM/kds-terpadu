@@ -28,6 +28,14 @@ async function main() {
     await neon.unitAsal.createMany({ data: tambah.map((u) => ({ kode: u.kode, nama: u.nama, unitIndukKode: u.unitIndukKode })) });
     console.log("Ditambahkan ke Neon.");
   }
+  const umumLokal = await lokal.jabatanFungsiUmumPelaksana.findMany();
+  const kodeUmumNeon = new Set((await neon.jabatanFungsiUmumPelaksana.findMany({ select: { kode: true } })).map((u) => u.kode));
+  const umumTambah = umumLokal.filter((u) => !kodeUmumNeon.has(u.kode));
+  console.log(`Fungsi Umum Pelaksana di lokal yang belum ada di Neon: ${umumTambah.length}${umumTambah.length ? " -> " + umumTambah.map((u) => `${u.kode} ${u.nama}`).join(" | ") : ""}`);
+  if (umumTambah.length > 0) {
+    await neon.jabatanFungsiUmumPelaksana.createMany({ data: umumTambah.map((u) => ({ kode: u.kode, nama: u.nama })) });
+    console.log("Ditambahkan ke Neon.");
+  }
   let semuaSama = true;
   for (const t of TABEL) {
     const [a, b] = [await ambil(lokal, t), await ambil(neon, t)];
@@ -37,7 +45,7 @@ async function main() {
   }
   console.log(semuaSama ? "\nSEMUA TABEL MASTER IDENTIK." : "\nADA TABEL MASTER YANG BEDA.");
   const data = await neon.$queryRawUnsafe<{ n: number }[]>(`select (select count(*) from nominatif_bulanan)::int + (select count(*) from pegawai)::int + (select count(*) from rekap_kehadiran_bulanan)::int as n`);
-  console.log(`Baris data pegawai di Neon (harapan 0): ${data[0].n}`);
+  console.log(`Total baris data pegawai di Neon (informasi; data asli sudah dimuat 14 Okt 2026): ${data[0].n}`);
   if (!semuaSama || data[0].n !== 0) process.exit(1);
 }
 main().catch((e) => { console.error("Gagal:", e instanceof Error ? e.message.slice(0, 250) : e); process.exit(1); }).finally(async () => { await lokal.$disconnect(); await neon.$disconnect(); });

@@ -14,6 +14,7 @@ import unitAsal from "./seed-data/unitAsal.json";
 import programStudi from "./seed-data/programStudi.json";
 import kategoriAkademisiLuar from "./seed-data/kategoriAkademisiLuar.json";
 import komponenKehadiran from "./seed-data/komponenKehadiran.json";
+import tambahanTerpadu from "./seed-data/tambahanTerpadu.json";
 
 const prisma = new PrismaClient();
 
@@ -36,6 +37,9 @@ async function main() {
     await prisma.jabatanFungsionalTendik.upsert({ where: { kode: row.kode }, create: row, update: row });
   }
   for (const row of jabatanFungsiUmumPelaksana) {
+    await prisma.jabatanFungsiUmumPelaksana.upsert({ where: { kode: row.kode }, create: row, update: row });
+  }
+  for (const row of tambahanTerpadu.jabatanFungsiUmumPelaksana) {
     await prisma.jabatanFungsiUmumPelaksana.upsert({ where: { kode: row.kode }, create: row, update: row });
   }
   for (const row of jabatanTambahanRole) {
