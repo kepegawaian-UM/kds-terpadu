@@ -62,7 +62,10 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     expect(a.jumlahBulan).toBe(3);
     expect(a.bulanTk).toBe("Jan (2), Mar (1), Jun (3)");
     expect(a.unitInduk).toBe(indukX);
-    expect(lap.namaFile).toBe("Laporan TK Tahunan 2026 minimal 3 hari Aktif");
+    expect(lap.namaFile).toBe("Laporan TK Tahunan Aktif 2026 minimal 3 hari");
+    // nama file mengikuti filter jenis/status/keaktifan, seperti laporan lain
+    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["TDK"], status: [], keaktifan: "aktif" }, 3)).namaFile).toBe("Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari");
+    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["DSN", "TDK"], status: ["PNS", "PPPK"], keaktifan: "semua" }, 5)).namaFile).toBe("Laporan TK Tahunan Dosen dan Tendik PNS-PPPK 2026 minimal 5 hari");
 
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 1)).baris.map((b) => b.nip).sort()).toEqual([A, B, C, D].sort()); // E (0 hari) tidak pernah masuk
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 10)).baris).toEqual([]);
@@ -102,7 +105,7 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
 
     const res = await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=3"));
     expect(res.status).toBe(200);
-    expect(res.headers.get("Content-Disposition")).toContain("Laporan TK Tahunan 2026 minimal 3 hari Aktif.xlsx");
+    expect(res.headers.get("Content-Disposition")).toContain("Laporan TK Tahunan Aktif 2026 minimal 3 hari.xlsx");
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
     expect(wb.worksheets.map((w) => w.name).slice(0, 2)).toEqual(["Ringkasan Unit", "Semua Pegawai"]);
@@ -122,6 +125,9 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     const ring = wb.getWorksheet("Ringkasan Unit")!;
     expect(String(ring.getRow(1).getCell(1).value)).toContain("Tahun 2026");
     expect(String(ring.getRow(2).getCell(1).value)).toContain("minimal 3 hari");
+
+    const tendik = await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=3&jenis=TDK"));
+    expect(tendik.headers.get("Content-Disposition")).toContain("Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari.xlsx");
 
     const longgar = new ExcelJS.Workbook();
     await longgar.xlsx.load(Buffer.from(await (await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1"))).arrayBuffer()) as unknown as ArrayBuffer);

@@ -6,13 +6,14 @@
 import ExcelJS from "exceljs";
 import type { PrismaClient } from "@prisma/client";
 
-import { labelFileKeaktifan, nipNonaktif } from "./filter";
+import { labelFileKeaktifan, nipNonaktif, urutanKodeStatus } from "./filter";
 import { kueriRencanaKustom } from "./kueri";
 import { type FilterRekap, kondisiNominatif } from "./rekapBulanan";
+import { buatNamaFile } from "./namaFile";
 import { idSnapshotTerakhir } from "./rekapTahunan";
 import { urutkanMenurutNama } from "./urutNama";
 
-type Db = Pick<PrismaClient, "nominatifBulanan" | "catatanStatusPegawai" | "$transaction">;
+type Db = Pick<PrismaClient, "nominatifBulanan" | "catatanStatusPegawai" | "statusKepegawaian" | "$transaction">;
 
 export const BULAN_SINGKAT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"] as const;
 export const AMBANG_TK_BAWAAN = 3;
@@ -125,7 +126,6 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
     .map((r) => ({ ...r, persen: r.jumlahPegawai === 0 ? 0 : Math.round((r.pegawaiTk / r.jumlahPegawai) * 1000) / 10 }))
     .sort((a, b) => b.totalHari - a.totalHari || b.pegawaiTk - a.pegawaiTk || a.unitInduk.localeCompare(b.unitInduk, "id"));
 
-  const label = labelFileKeaktifan(filter.keaktifan);
   return {
     tahun,
     ambang,
@@ -133,7 +133,8 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
     jumlahPegawaiDiperiksa: kandidat.length,
     baris,
     ringkasan: ringkasanUrut,
-    namaFile: `Laporan TK Tahunan ${tahun} minimal ${ambang} hari${label ? ` ${label}` : ""}`,
+    // nama mengikuti filter seperti laporan lain (jenis, status, keaktifan), mis. "Laporan TK Tahunan Tendik PNS-PPPK Aktif 2026 minimal 3 hari"
+    namaFile: buatNamaFile("Laporan TK Tahunan", filter.jenis, filter.status, `${tahun} minimal ${ambang} hari`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan)),
   };
 }
 
