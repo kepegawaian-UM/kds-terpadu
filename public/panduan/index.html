@@ -131,12 +131,21 @@
   <h3>Antrean Review</h3>
   <p>Sebagian baris tidak bisa dicocokkan otomatis, misalnya nama unit atau jabatan yang ejaannya baru. Baris itu masuk antrean <strong>Review</strong>. Untuk tiap baris, pilih nilai master yang benar lewat formulir <strong>Selesaikan</strong>. Pilihanmu bisa dicatat di <strong>Kamus Koreksi</strong>, sehingga bulan depan ejaan yang sama dikenali otomatis.</p>
   <div class="tips">Mulailah dari Review yang jumlahnya paling banyak. Bulan-bulan berikutnya antrean ini biasanya makin pendek karena kamus sudah belajar.</div>
+  <div class="awas">Menyimpan ulang bulan yang sama <strong>menimpa</strong> data bulan itu. Aman dilakukan bila berkasnya memang perlu diganti, tetapi pastikan bulan dan tahunnya benar.</div>
+  <h3>Bagaimana jabatan dibaca</h3>
+  <table>
+    <tr><th>Yang dilihat</th><th>Dibaca dari</th></tr>
+    <tr><td>Dosen atau Tendik</td><td>Status Pegawai (Akademisi Luar bila Praktisi/AP), lalu Kelompok Jabatan, lalu Jenis Pegawai.</td></tr>
+    <tr><td>Jabatan Dosen</td><td>Kolom <strong>Jabatan Fungsional</strong> (Lektor, Guru Besar, dst.).</td></tr>
+    <tr><td>Jabatan Tendik</td><td>Jabatan Fungsional bila spesifik (PLP, Pustakawan, Arsiparis). Bila hanya "Pelaksana"/"Laboran", dipakai kolom <strong>Jabatan Remunerasi</strong> (mis. Pengolah Data dan Informasi). Jabatan struktural tidak dipakai di sini karena masuk Jabatan Tambahan.</td></tr>
+    <tr><td>Jabatan Tambahan</td><td>Kolom Jabatan Tambahan (maksimal 3 per bulan). Awalan "Plt." atau "Pjs." menentukan statusnya; tanpa awalan dianggap Definitif. Teks yang memuat "merangkap" dipecah menjadi beberapa jabatan.</td></tr>
+  </table>
   <div class="awas">Jika dua pegawai tampak punya NIP yang sama, atau Akademisi Luar ber-NIP sementara (placeholder), periksa identitasnya dulu sebelum menyelesaikan barisnya.</div>
 </section>
 
 <section id="bandingkan">
   <h2>Langkah 3: Bandingkan Batch</h2>
-  <p>Menu <strong>Bandingkan Batch</strong> menunjukkan apa yang berubah antara dua unggahan (biasanya bulan ini dan bulan lalu): pegawai baru, yang hilang, dan yang datanya berubah. Kamu bisa menulis alasan tiap perubahan dan mengunduh hasilnya sebagai Excel. Gunakan ini untuk menangkap kesalahan sebelum absensi diunggah.</p>
+  <p>Pilih dua unggahan (biasanya bulan ini dan bulan lalu). Hasilnya terbagi dalam tab <strong>Orang Baru</strong>, <strong>Orang Hilang</strong>, dan <strong>NIP Anomali</strong>; angka di dalam kurung adalah jumlah orang di tab itu. Kamu bisa menulis alasan tiap perubahan (pensiun, mutasi, dst.) dan mengunduh hasilnya sebagai Excel. Gunakan ini untuk menangkap kesalahan sebelum absensi diunggah. Tanda "#58" pada daftar pilihan hanyalah nomor internal unggahan.</p>
 </section>
 
 <section id="absensi">
@@ -165,7 +174,7 @@
   <table>
     <tr><th>Menu</th><th>Gunanya</th></tr>
     <tr><td>Belum Ada Absensi</td><td>Daftar pegawai aktif yang absensinya belum ada untuk bulan itu. Tindak lanjuti sebelum laporan diambil.</td></tr>
-    <tr><td>Nominatif</td><td>Data pegawai per bulan. Cek jumlah dan beberapa baris acak.</td></tr>
+    <tr><td>Nominatif (Detail Pegawai)</td><td>Data pegawai per bulan. Tombol <strong>Excel</strong> pada tabel mengunduh 9 kolom ringkas; <strong>Excel Lengkap</strong> mengunduh semua kolom hasil standarisasi (jabatan, jabatan tambahan 1-3, dst.). <strong>+ Tambah Pegawai</strong> untuk kasus mendesak.</td></tr>
     <tr><td>Absensi Bulanan</td><td>Angka kehadiran semua pegawai untuk satu bulan.</td></tr>
   </table>
   <div class="tips">Bandingkan jumlah pegawai di <strong>Ringkasan</strong> dengan jumlah bulan lalu. Selisih besar tanpa alasan biasanya tanda ada berkas yang keliru.</div>
@@ -175,11 +184,16 @@
   <h2>Langkah 6: Laporan</h2>
   <table>
     <tr><th>Menu</th><th>Gunanya</th></tr>
+    <tr><td>Ringkasan</td><td>Dashboard. Tab <strong>Pegawai</strong> (per Dosen, Tendik, Akademisi Luar) dan tab <strong>Kinerja</strong> (absensi setahun; sub-tab Semua, Dosen, Tendik). Akademisi Luar dihitung seluruhnya, termasuk yang belum punya unit.</td></tr>
     <tr><td>Absensi Tahunan</td><td>Jumlah dari absensi bulanan sepanjang tahun, dihitung saat dibuka (tidak disimpan terpisah).</td></tr>
     <tr><td>Absensi Pegawai</td><td>Absensi satu pegawai, atau banyak pegawai sekaligus (Massal). Bisa dicetak sebagai dokumen A4 atau diunduh sebagai Excel.</td></tr>
-    <tr><td>Statistik Dosen / Tendik</td><td>Ringkasan jumlah menurut jabatan, unit, dan golongan.</td></tr>
+    <tr><td>Statistik Dosen / Tendik</td><td>Ringkasan jumlah menurut jabatan, unit, dan golongan. Tombol <strong>Excel</strong> mengunduh isi tabel.</td></tr>
   </table>
-  <p>Laporan punya filter <strong>Keaktifan</strong>: Aktif, Non-aktif, atau Semua. Pegawai dianggap non-aktif bila tidak ada di data bulan terakhir tahun itu atau tercatat berhenti (pensiun, resign, dsb.).</p>
+  <h3>Filter</h3>
+  <p>Pilihan <strong>Bulan</strong>, <strong>Tahun</strong>, <strong>Jenis</strong>, <strong>Status</strong>, dan <strong>Keaktifan</strong> langsung berlaku begitu dipilih; tidak ada tombol Terapkan. Jenis dan Status berupa dropdown berisi kotak centang: centang yang diinginkan, lalu klik di luar dropdown (atau tekan Esc) untuk menerapkannya. Alamat halaman ikut berubah sehingga bisa dibagikan.</p>
+  <p><strong>Keaktifan</strong>: Aktif, Non-aktif, atau Semua. Pegawai dianggap non-aktif bila tidak ada di data bulan terakhir tahun itu atau tercatat berhenti (pensiun, resign, dsb.).</p>
+  <h3>Laporan TK untuk tindak lanjut</h3>
+  <p>Di <strong>Absensi Tahunan</strong>, isi <strong>TK minimal</strong> (hari setahun, bawaan 3) lalu klik <strong>Excel TK</strong>. Berkasnya berisi ringkasan per unit induk, daftar pegawai dengan TK per bulan Januari-Desember (sel berwarna = ada TK), dan satu sheet per unit induk yang bisa dikirim ke unitnya. Tahun dan filter di halaman ikut dipakai, dan nama berkas memuat filter serta waktu pembuatan.</p>
   <div class="tips">Untuk PDF, buka laporannya, tekan <kbd>Ctrl</kbd>+<kbd>P</kbd>, lalu pilih "Simpan sebagai PDF".</div>
 </section>
 
@@ -187,7 +201,7 @@
   <h2>Menu yang jarang dipakai</h2>
   <div class="grid">
     <div class="kartu"><strong>Koreksi Pegawai</strong><br>Menetapkan tanggal mulai kerja (TMT) per NIP bila data SIMPEGA keliru. Dipakai Standarisasi dan validasi absensi.</div>
-    <div class="kartu"><strong>Unduh Excel Lengkap</strong><br>Di halaman Nominatif: semua kolom hasil standarisasi (jabatan, jabatan tambahan 1-3, dsb.). Tombol Excel di tabel hanya 9 kolom ringkas.</div>
+    <div class="kartu"><strong>Kamus Koreksi</strong><br>Dibuka dari halaman Standarisasi. Daftar pilihan Review yang pernah dibuat; menghapus entri tidak mengubah data yang sudah tersimpan.</div>
   </div>
 </section>
 
@@ -212,6 +226,8 @@
     <tr><td>Absensi pegawai ditolak "sebelum TMT"</td><td>Tanggal mulai kerja pegawai itu lebih akhir dari bulan rekapnya. Cek TMT-nya; bila data TMT keliru, pakai Koreksi Pegawai.</td></tr>
     <tr><td>Peringatan bulan tidak cocok</td><td>Bulan di berkas berbeda dari bulan yang dipilih. Pastikan pilihannya benar sebelum Simpan.</td></tr>
     <tr><td>Akun terkunci</td><td>Tunggu 15 menit. Jika lupa kata sandi, minta senior melakukan reset darurat.</td></tr>
+    <tr><td>Jabatan tendik masih "Pelaksana" padahal ada jabatan spesifik</td><td>Bulan itu belum distandarisasi ulang dengan berkas bersih terbaru (yang memuat kolom Jabatan Remunerasi). Bersihkan ulang lalu Standarisasi lagi.</td></tr>
+    <tr><td>Jumlah Akademisi Luar berbeda antar laporan</td><td>Dashboard Pegawai menghitung semuanya (termasuk yang unitnya belum diketahui). Laporan lain mengikuti aturannya sendiri; tanyakan ke senior bila ragu.</td></tr>
     <tr><td>Halaman terasa lambat pertama kali dibuka</td><td>Normal: layanan gratis "tidur" saat lama tidak dipakai dan butuh beberapa detik untuk bangun.</td></tr>
     <tr><td>Angka tidak sama dengan KDS2</td><td>Selama masa paralel, bandingkan keduanya. Beberapa selisih disengaja (mis. golongan Non-ASN yang sudah dikoreksi). Tanyakan ke senior sebelum menganggapnya salah.</td></tr>
   </table>
@@ -239,6 +255,11 @@
     <div class="item"><dt>Pembersih</dt><dd>Menu Bersihkan Berkas (atau perintah <code>npm run bersihkan</code>) yang membuang kolom sensitif dari berkas SIMPEGA di komputermu.</dd></div>
     <div class="item"><dt>Audit log</dt><dd>Catatan siapa mengubah apa untuk perubahan yang dilakukan manual (bukan unggahan massal).</dd></div>
     <div class="item"><dt>Non-ASN (PTNA/CPTNA)</dt><dd>Pegawai bukan ASN yang golongannya tetap dicatat bila ada.</dd></div>
+    <div class="item"><dt>Jabatan Remunerasi</dt><dd>Kolom SIMPEGA yang berisi jabatan sebenarnya untuk penghitungan remunerasi; dipakai untuk jabatan tendik yang di Jabatan Fungsional hanya tertulis "Pelaksana".</dd></div>
+    <div class="item"><dt>Fungsi Umum Pelaksana</dt><dd>Jabatan tendik non-fungsional tertentu (Pengolah Data dan Informasi, Pengadministrasi Perkantoran, dst.).</dd></div>
+    <div class="item"><dt>Jabatan Tambahan</dt><dd>Jabatan struktural atau penugasan (Kepala Seksi, Sub Koordinator, dst.), maksimal tiga per bulan.</dd></div>
+    <div class="item"><dt>Dasar Remunerasi</dt><dd>Jabatan yang dipakai sebagai dasar: Jabatan Tambahan pertama, lalu Jabatan Fungsional, lalu Fungsi Umum.</dd></div>
+    <div class="item"><dt>TK</dt><dd>Tanpa Keterangan: hari tidak hadir tanpa alasan resmi. Dasar laporan tindak lanjut.</dd></div>
     <div class="item"><dt>Arsip</dt><dd>Data historis yang dijaga rapi per bulan, bukan data kondisi terkini.</dd></div>
   </dl>
   <p id="kosong" class="sembunyi">Tidak ada istilah yang cocok.</p>
