@@ -46,7 +46,7 @@ function keDataMentah(row: RawNominatifRow): Prisma.InputJsonValue {
 }
 
 /** Membaca dan mengklasifikasi seluruh berkas di memori (tanpa menulis). */
-export async function klasifikasiBerkas(db: Db, berkas: Buffer, bulan: number, tahun: number, opsi: { tolakKolomLain?: boolean } = {}): Promise<HasilKlasifikasi> {
+export async function klasifikasiBerkas(db: Db, berkas: Uint8Array, bulan: number, tahun: number, opsi: { tolakKolomLain?: boolean } = {}): Promise<HasilKlasifikasi> {
   let parsed;
   try {
     parsed = await parseRawNominatif(berkas, { tolakKolomLain: opsi.tolakKolomLain });
@@ -155,7 +155,7 @@ async function ringkas(db: Db, h: HasilKlasifikasi, bulan: number, tahun: number
 export type OpsiStandarisasi = { bulan: number; tahun: number; tolakKolomLain?: boolean };
 
 /** Tahap PERIKSA: membaca dan mengklasifikasi tanpa menulis apa pun. */
-export async function periksaStandarisasi(prisma: PrismaClient, berkas: Buffer, opsi: OpsiStandarisasi): Promise<RingkasanStandarisasi> {
+export async function periksaStandarisasi(prisma: PrismaClient, berkas: Uint8Array, opsi: OpsiStandarisasi): Promise<RingkasanStandarisasi> {
   await periksaBerkas(berkas, null);
   return ringkas(prisma, await klasifikasiBerkas(prisma, berkas, opsi.bulan, opsi.tahun, { tolakKolomLain: opsi.tolakKolomLain }), opsi.bulan, opsi.tahun);
 }
@@ -165,7 +165,7 @@ const potong = <T>(a: T[], n: number): T[][] => Array.from({ length: Math.ceil(a
 /** Tahap SIMPAN: klasifikasi ulang di dalam transaksi lalu mengganti snapshot Nominatif bulan itu (semua atau tidak sama sekali). */
 export async function simpanStandarisasi(
   prisma: PrismaClient,
-  berkas: Buffer,
+  berkas: Uint8Array,
   namaFileAsli: string,
   opsi: OpsiStandarisasi,
   pengguna: { id: string | null; nama: string },

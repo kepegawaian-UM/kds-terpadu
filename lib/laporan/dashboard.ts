@@ -274,13 +274,13 @@ async function dashboardPegawai(db: Db, bulan: number, tahun: number) {
   };
 }
 
-async function dashboardKinerja(db: Db, tahun: number) {
+async function dashboardKinerja(db: Db, tahun: number, jenisDihitung: string[] = JENIS_KEHADIRAN) {
   const bulanAcuan = (await db.nominatifBulanan.aggregate({ where: { tahun }, _max: { bulan: true } }))._max.bulan;
   const snapshot =
     bulanAcuan === null
       ? []
       : await db.nominatifBulanan.findMany({
-          where: { tahun, bulan: bulanAcuan, jenisPegawaiKode: { in: JENIS_KEHADIRAN } },
+          where: { tahun, bulan: bulanAcuan, jenisPegawaiKode: { in: jenisDihitung } },
           select: { pegawaiNip: true, unitAsal: { select: { unitInduk: { select: { nama: true } } } } },
         });
   const unitPerNip = new Map(snapshot.map((s) => [s.pegawaiNip, s.unitAsal.unitInduk.nama]));
@@ -412,5 +412,7 @@ export async function dataDashboard(
     dashboardPegawai: bulanPegawai !== null && tahunPegawai !== null ? await dashboardPegawai(db, bulanPegawai, tahunPegawai) : null,
     tahunKinerja,
     dashboardKinerja: await dashboardKinerja(db, tahunKinerja),
+    /** Dashboard Kinerja yang sama, dipisah per jenis (hanya Dosen / hanya Tendik): tambahan Terpadu, tidak ada di KDS2. */
+    kinerjaPerJenis: { DSN: await dashboardKinerja(db, tahunKinerja, ["DSN"]), TDK: await dashboardKinerja(db, tahunKinerja, ["TDK"]) },
   };
 }

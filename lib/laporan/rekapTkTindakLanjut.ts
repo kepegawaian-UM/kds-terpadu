@@ -60,7 +60,15 @@ export function beriPeringkat<T>(terurut: readonly T[], nilai: (x: T) => number)
   });
 }
 
-export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number): Promise<LaporanTk> {
+/** "16-10-2026 08.34 WIB": titik (bukan titik dua) agar aman dipakai di nama berkas. */
+export function stempelWaktuWib(sekarang: Date): string {
+  const b = new Intl.DateTimeFormat("id-ID", { timeZone: "Asia/Jakarta", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+    .formatToParts(sekarang)
+    .reduce<Record<string, string>>((a, p) => ({ ...a, [p.type]: p.value }), {});
+  return `${b.day}-${b.month}-${b.year} ${b.hour}.${b.minute} WIB`;
+}
+
+export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number, sekarang: Date = new Date()): Promise<LaporanTk> {
   const nonaktif = await nipNonaktif(db, tahun);
   const ids = await idSnapshotTerakhir(db, tahun);
   const snapshot = await db.nominatifBulanan.findMany({
@@ -134,7 +142,7 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
     baris,
     ringkasan: ringkasanUrut,
     // nama mengikuti filter seperti laporan lain (jenis, status, keaktifan), mis. "Laporan TK Tahunan Tendik PNS-PPPK Aktif 2026 minimal 3 hari"
-    namaFile: buatNamaFile("Laporan TK Tahunan", filter.jenis, filter.status, `${tahun} minimal ${ambang} hari`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan)),
+    namaFile: `${buatNamaFile("Laporan TK Tahunan", filter.jenis, filter.status, `${tahun} minimal ${ambang} hari`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan))} - dibuat ${stempelWaktuWib(sekarang)}`,
   };
 }
 

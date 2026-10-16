@@ -24,7 +24,7 @@ const atribut = (tag: string, nama: string) => {
 
 const PESAN_RUSAK = "File Excel tidak bisa dibaca. Pastikan formatnya .xlsx dan tidak rusak.";
 
-export async function daftarSheet(berkas: Buffer): Promise<InfoSheet[]> {
+export async function daftarSheet(berkas: Uint8Array): Promise<InfoSheet[]> {
   if (berkas.length > MAKS_UKURAN_BERKAS) {
     throw new KesalahanUpload(`Berkas terlalu besar (maksimum ${MAKS_UKURAN_BERKAS / 1024 / 1024} MB).`);
   }
@@ -81,7 +81,7 @@ function periksaBaris(s: InfoSheet) {
  * @param namaSheet bila diisi, hanya sheet itu yang akan dibaca (berkas boleh banyak sheet)
  * @returns nama sheet persis seperti di berkas (huruf besar/kecil dinormalkan), atau null bila namaSheet kosong
  */
-export async function periksaBerkas(berkas: Buffer, namaSheet?: string | null): Promise<string | null> {
+export async function periksaBerkas(berkas: Uint8Array, namaSheet?: string | null): Promise<string | null> {
   const info = await daftarSheet(berkas);
   const diminta = (namaSheet ?? "").trim();
 

@@ -42,7 +42,7 @@ async function buatBerkas(opsi: { jumlah?: number; tanpaKolomWajib?: string; den
   return Buffer.from(await wb.xlsx.writeBuffer());
 }
 
-async function semuaIsi(berkas: Buffer): Promise<string> {
+async function semuaIsi(berkas: Uint8Array): Promise<string> {
   const zip = await JSZip.loadAsync(berkas);
   const bagian = await Promise.all(Object.values(zip.files).filter((f) => !f.dir).map((f) => f.async("string")));
   return bagian.join("\n");

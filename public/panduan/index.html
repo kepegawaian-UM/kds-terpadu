@@ -94,7 +94,7 @@
   <h2>Alur kerja satu bulan, sekilas</h2>
   <p>Menu di sisi kiri aplikasi sudah disusun mengikuti urutan ini, dari atas ke bawah.</p>
   <ol class="langkah">
-    <li><strong>Bersihkan berkas SIMPEGA</strong> di komputermu supaya data sensitif tidak ikut terunggah.</li>
+    <li><strong>Bersihkan berkas SIMPEGA</strong> lewat menu <strong>Bersihkan Berkas</strong> (di browser, dari komputer mana pun) supaya data sensitif tidak ikut terunggah.</li>
     <li><strong>Standarisasi</strong>: unggah berkas yang sudah bersih, periksa, simpan, lalu selesaikan antrean Review.</li>
     <li><strong>Bandingkan Batch</strong>: cek apa yang berubah dibanding bulan lalu.</li>
     <li><strong>Upload Absensi</strong>: unggah absensi bulan itu, lalu <strong>Koreksi Absensi</strong> bila perlu.</li>
@@ -106,16 +106,16 @@
 
 <section id="langkah0">
   <h2>Langkah 1: Bersihkan berkas SIMPEGA</h2>
-  <p>Berkas tarikan SIMPEGA (<code>REKAP_PEGAWAI.xlsx</code>) berisi sekitar 67 kolom, termasuk data pribadi seperti NIK, nama ibu kandung, alamat, email, dan nomor rekening. Data itu <strong>tidak boleh</strong> masuk ke aplikasi. Karena itu berkasnya dibersihkan dulu di komputermu sampai tinggal sekitar 18 kolom yang memang dipakai.</p>
+  <p>Berkas tarikan SIMPEGA (<code>REKAP_PEGAWAI.xlsx</code>) berisi sekitar 67 kolom, termasuk data pribadi seperti NIK, nama ibu kandung, alamat, email, dan nomor rekening. Data itu <strong>tidak boleh</strong> masuk ke aplikasi. Karena itu berkasnya dibersihkan dulu sampai tinggal sekitar 18 kolom yang memang dipakai.</p>
   <ol class="langkah">
     <li>Unduh berkas <strong>Rekap Pegawai</strong> dari SIMPEGA (bukan daftar pegawai biasa; yang dibutuhkan punya sekitar 67 kolom dan berukuran beberapa MB).</li>
-    <li>Buka terminal di folder proyek KDS Terpadu (komputer yang sudah disiapkan seniormu).</li>
-    <li>Jalankan perintah ini. Ganti jalurnya dengan lokasi berkasmu, dan pertahankan tanda kutip:
-<pre><code>npm run bersihkan -- "C:\Users\...\REKAP_PEGAWAI.xlsx"</code></pre></li>
-    <li>Di folder yang sama muncul berkas baru <code>REKAP_PEGAWAI_bersih.xlsx</code>. <strong>Itu yang diunggah.</strong></li>
+    <li>Di aplikasi, buka menu <strong>Bersihkan Berkas</strong> lalu pilih berkas tadi. Pembersihan berjalan <strong>di browser itu sendiri</strong>; berkas tidak dikirim ke server.</li>
+    <li>Setelah selesai tampil ringkasan (jumlah baris, kolom dipertahankan, kolom dibuang). Klik <strong>Unduh ..._bersih.xlsx</strong>.</li>
+    <li>Berkas <code>_bersih</code> itulah yang diunggah di <strong>Standarisasi</strong>.</li>
   </ol>
-  <div class="awas">Jangan pernah mengunggah berkas aslinya. Aplikasi akan menolaknya, dan berkas itu tidak boleh keluar dari komputermu. Setelah selesai, hapus berkas mentah dari folder Downloads.</div>
-  <div class="tips">Kalau pembersih menjawab "bukan format REKAP_PEGAWAI", berarti berkas yang diunduh keliru (mis. daftar pegawai dengan 8 kolom). Unduh ulang Rekap Pegawai yang benar.</div>
+  <div class="awas">Jangan pernah mengunggah berkas aslinya ke Standarisasi. Aplikasi akan menolaknya, dan berkas itu tidak boleh keluar dari komputermu. Setelah selesai, hapus berkas mentah dari folder Downloads.</div>
+  <div class="tips">Cara cadangan: di komputer kerja yang sudah disiapkan senior, perintah <code>npm run bersihkan -- "C:\Users\...\REKAP_PEGAWAI.xlsx"</code> menghasilkan berkas yang sama.</div>
+  <div class="tips">Kalau muncul pesan "bukan format REKAP_PEGAWAI", berkas yang dipilih salah (mis. daftar pegawai dengan 8 kolom). Unduh ulang Rekap Pegawai yang benar.</div>
 </section>
 
 <section id="standarisasi">
@@ -207,7 +207,7 @@
   <table>
     <tr><th>Yang terjadi</th><th>Artinya dan yang dilakukan</th></tr>
     <tr><td>"Berkas ini bukan format REKAP_PEGAWAI" saat membersihkan</td><td>Berkas yang diunduh salah. Unduh ulang Rekap Pegawai yang punya sekitar 67 kolom.</td></tr>
-    <tr><td>Aplikasi menolak berkas karena kolom lain</td><td>Berkas belum dibersihkan. Jalankan <code>npm run bersihkan</code> dulu dan unggah yang <code>_bersih</code>.</td></tr>
+    <tr><td>Aplikasi menolak berkas karena kolom lain</td><td>Berkas belum dibersihkan. Bersihkan dulu lewat menu Bersihkan Berkas dan unggah yang <code>_bersih</code>.</td></tr>
     <tr><td>Kolom bergeser / header tidak cocok (Upload Absensi)</td><td>Pakai template terbaru dan jangan menambah atau memindah kolom.</td></tr>
     <tr><td>Absensi pegawai ditolak "sebelum TMT"</td><td>Tanggal mulai kerja pegawai itu lebih akhir dari bulan rekapnya. Cek TMT-nya; bila data TMT keliru, pakai Koreksi Pegawai.</td></tr>
     <tr><td>Peringatan bulan tidak cocok</td><td>Bulan di berkas berbeda dari bulan yang dipilih. Pastikan pilihannya benar sebelum Simpan.</td></tr>
@@ -236,7 +236,7 @@
     <div class="item"><dt>Akademisi Luar</dt><dd>Pegawai dari luar UM yang tercatat di nominatif. Tidak masuk Absensi.</dd></div>
     <div class="item"><dt>Keaktifan</dt><dd>Filter laporan: Aktif, Non-aktif, atau Semua.</dd></div>
     <div class="item"><dt>Master</dt><dd>Daftar acuan resmi (unit, jabatan, golongan, status, dst.) yang dipakai untuk menyeragamkan nama.</dd></div>
-    <div class="item"><dt>Pembersih</dt><dd>Perintah <code>npm run bersihkan</code> yang membuang kolom sensitif dari berkas SIMPEGA di komputermu.</dd></div>
+    <div class="item"><dt>Pembersih</dt><dd>Menu Bersihkan Berkas (atau perintah <code>npm run bersihkan</code>) yang membuang kolom sensitif dari berkas SIMPEGA di komputermu.</dd></div>
     <div class="item"><dt>Audit log</dt><dd>Catatan siapa mengubah apa untuk perubahan yang dilakukan manual (bukan unggahan massal).</dd></div>
     <div class="item"><dt>Non-ASN (PTNA/CPTNA)</dt><dd>Pegawai bukan ASN yang golongannya tetap dicatat bila ada.</dd></div>
     <div class="item"><dt>Arsip</dt><dd>Data historis yang dijaga rapi per bulan, bukan data kondisi terkini.</dd></div>

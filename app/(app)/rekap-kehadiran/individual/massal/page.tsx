@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { KepalaHalaman } from "@/components/laporan/KepalaHalaman";
 import { BidangFilterRekap, BidangPeriode, FormLaporan } from "@/components/laporan/FormLaporan";
 import { PilihanMassal } from "@/components/rekap/PilihanMassal";
 import { prisma } from "@/lib/db";
@@ -20,14 +21,8 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Absensi Pegawai Massal</h1>
-        <p className="text-sm text-slate-500">
-          Pilih Dosen/Tendik berdasarkan kriteria (mis. TK setahun minimal 20 hari), lalu cetak semuanya sekaligus (satu dokumen per halaman) atau unduh Excel (satu sheet per pegawai).
-        </p>
-      </div>
-
-      <FormLaporan>
+      <KepalaHalaman judul="Absensi Pegawai Massal">
+        <FormLaporan>
         <BidangPeriode tahun={p.tahun} tahunTersedia={daftarTahun} />
         <BidangFilterRekap jenis={p.jenis} status={p.status} keaktifan={p.keaktifan} daftarStatus={daftarStatus} />
         <div>
@@ -35,6 +30,7 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
           <input id="min_tk" name="min_tk" type="number" min={0} max={366} defaultValue={p.minTk} className="w-28 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm" />
         </div>
       </FormLaporan>
+      </KepalaHalaman>
 
       <PilihanMassal key={`${p.tahun}-${p.minTk}-${p.keaktifan}-${p.jenis.join()}-${p.status.join()}`} kandidat={kandidat} maks={MAKS_PEGAWAI_MASSAL} tahun={p.tahun} minTk={p.minTk} keaktifan={p.keaktifan} jenis={p.jenis} status={p.status} />
 

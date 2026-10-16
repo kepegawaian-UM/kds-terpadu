@@ -3,6 +3,7 @@ import { GrafikBatang } from "@/components/dashboard/GrafikBatang";
 import { GrafikTren } from "@/components/dashboard/GrafikTren";
 import { Ikon, KartuKpi } from "@/components/dashboard/KartuKpi";
 import { TabBertingkat, TabUtama } from "@/components/dashboard/TabDashboard";
+import { FormOtomatis } from "@/components/laporan/FormOtomatis";
 import { prisma } from "@/lib/db";
 import { dataDashboard } from "@/lib/laporan/dashboard";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
@@ -51,19 +52,17 @@ export default async function RingkasanPage({
       label: "Total Akademisi Luar UM",
       nilai: d.jumlahPerJenis.AKL,
       ikon: "globe",
-      // Perilaku KDS2 yang sengaja dipertahankan (paritas): kartu memakai semua baris snapshot, grafik tidak.
-      catatan: 'Semua baris snapshot. Grafik "Kategori akademisi luar" tidak menghitung yang berunit "Unit Kerja Belum Diketahui", jadi jumlahnya lebih kecil.',
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-xl font-semibold text-slate-900">Ringkasan</h1>
         <p className="text-sm text-slate-500">
           {d.bulanTerbaru && d.tahunTerbaru ? (
             <>
-              Jumlah pegawai berdasarkan snapshot Nominatif terakhir:{" "}
+              Data Nominatif terakhir:{" "}
               <strong>
                 {namaBulan(d.bulanTerbaru)} {d.tahunTerbaru}
               </strong>
@@ -110,12 +109,12 @@ export default async function RingkasanPage({
         panelPegawai={
           d.dashboardPegawai && d.bulanPegawai && d.tahunPegawai ? (
             <div className="space-y-4">
-              <form method="get" className="tanpa-cetak flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-white p-4">
+              <FormOtomatis>
                 <input type="hidden" name="tab" value="pegawai" />
                 <input type="hidden" name="tahun_kinerja" value={d.tahunKinerja} />
-                <label className="text-xs font-medium text-slate-600">
+                <label className="flex items-center gap-1.5 text-sm text-slate-500">
                   Bulan
-                  <select name="bulan_pegawai" defaultValue={d.bulanPegawai} className={`${kotak} mt-1 block`}>
+                  <select name="bulan_pegawai" defaultValue={d.bulanPegawai} className={kotak}>
                     {NAMA_BULAN.slice(1).map((n, i) => (
                       <option key={n} value={i + 1}>
                         {n}
@@ -123,9 +122,9 @@ export default async function RingkasanPage({
                     ))}
                   </select>
                 </label>
-                <label className="text-xs font-medium text-slate-600">
+                <label className="flex items-center gap-1.5 text-sm text-slate-500">
                   Tahun
-                  <select name="tahun_pegawai" defaultValue={d.tahunPegawai} className={`${kotak} mt-1 block`}>
+                  <select name="tahun_pegawai" defaultValue={d.tahunPegawai} className={kotak}>
                     {tahunPilihan(d.tahunPegawai).map((t) => (
                       <option key={t} value={t}>
                         {t}
@@ -133,10 +132,7 @@ export default async function RingkasanPage({
                     ))}
                   </select>
                 </label>
-                <button type="submit" className="rounded-md bg-sidebar px-4 py-1.5 text-sm font-medium text-white hover:bg-sidebar-lighter">
-                  Terapkan
-                </button>
-              </form>
+              </FormOtomatis>
 
               <TabBertingkat
                 tab={JENIS.map((j) => {
@@ -169,7 +165,7 @@ export default async function RingkasanPage({
         }
         panelKinerja={
           <div className="space-y-4">
-            <form method="get" className="tanpa-cetak flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-white p-4">
+            <FormOtomatis>
               <input type="hidden" name="tab" value="kinerja" />
               {d.bulanPegawai && d.tahunPegawai && (
                 <>
@@ -177,9 +173,9 @@ export default async function RingkasanPage({
                   <input type="hidden" name="tahun_pegawai" value={d.tahunPegawai} />
                 </>
               )}
-              <label className="text-xs font-medium text-slate-600">
+              <label className="flex items-center gap-1.5 text-sm text-slate-500">
                 Tahun
-                <select name="tahun_kinerja" defaultValue={d.tahunKinerja} className={`${kotak} mt-1 block`}>
+                <select name="tahun_kinerja" defaultValue={d.tahunKinerja} className={kotak}>
                   {tahunPilihan(d.tahunKinerja).map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -187,23 +183,30 @@ export default async function RingkasanPage({
                   ))}
                 </select>
               </label>
-              <button type="submit" className="rounded-md bg-sidebar px-4 py-1.5 text-sm font-medium text-white hover:bg-sidebar-lighter">
-                Terapkan
-              </button>
-            </form>
+            </FormOtomatis>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {kinerja.kpi.map((k) => (
-                <KartuKpi key={k.label} kpi={k} />
-              ))}
-            </div>
-            <GrafikBatang judul={`Total per kategori izin (tahun ${d.tahunKinerja})`} labels={kinerja.chartKategoriIzin.labels} data={kinerja.chartKategoriIzin.data} warna={HIJAU} tinggi={320} />
-            <GrafikBatang judul="Unit dengan Tanpa Keterangan (TK) tertinggi" labels={kinerja.chartUnitTk.labels} data={kinerja.chartUnitTk.data} warna={MERAH} />
-            <GrafikTren bulanLabel={kinerja.chartTren.bulanLabel} series={kinerja.chartTren.series} />
-            <p className="text-xs text-slate-500">
-              Dashboard Kinerja hanya menghitung Dosen + Tendik yang masih aktif (ada di snapshot Nominatif bulan terbaru tahun itu);
-              Akademisi Luar UM tidak masuk Absensi.
-            </p>
+            <TabBertingkat
+              tab={[
+                { kode: "SEMUA", label: "Semua", k: kinerja },
+                { kode: "DSN", label: "Dosen", k: d.kinerjaPerJenis.DSN },
+                { kode: "TDK", label: "Tendik", k: d.kinerjaPerJenis.TDK },
+              ].map(({ kode, label, k }) => ({
+                kode,
+                label,
+                isi: (
+                  <>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                      {k.kpi.map((x) => (
+                        <KartuKpi key={x.label} kpi={x} />
+                      ))}
+                    </div>
+                    <GrafikBatang judul={`Total per kategori izin (tahun ${d.tahunKinerja})`} labels={k.chartKategoriIzin.labels} data={k.chartKategoriIzin.data} warna={HIJAU} tinggi={320} />
+                    <GrafikBatang judul="Unit dengan Tanpa Keterangan (TK) tertinggi" labels={k.chartUnitTk.labels} data={k.chartUnitTk.data} warna={MERAH} />
+                    <GrafikTren bulanLabel={k.chartTren.bulanLabel} series={k.chartTren.series} />
+                  </>
+                ),
+              }))}
+            />
           </div>
         }
       />

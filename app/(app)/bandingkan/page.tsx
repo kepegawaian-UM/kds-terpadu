@@ -38,7 +38,6 @@ export default async function BandingkanPage({ searchParams }: { searchParams: P
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Bandingkan Batch</h1>
-        <p className="text-sm text-slate-500">Cek penambahan, pengurangan, dan anomali NIP (ganda atau berubah) antara dua snapshot Nominatif, lalu catat alasannya.</p>
       </div>
 
       <form className="flex flex-wrap items-end gap-3 rounded-lg border border-slate-200 bg-white p-4">

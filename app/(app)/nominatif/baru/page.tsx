@@ -19,7 +19,6 @@ export default async function TambahPegawaiPage() {
     <div className="max-w-4xl space-y-5">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Tambah Pegawai (Manual)</h1>
-        <p className="text-sm text-slate-500">Menyisipkan langsung ke snapshot Nominatif bulan berjalan, untuk kasus mendesak.</p>
       </div>
       <p className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600">
         Untuk pegawai baru sebelum berkas Nominatif Bulanan resmi siap. Data masuk sebagai snapshot bulan berjalan (<b>{namaBulan(bulan)} {tahun}</b>).

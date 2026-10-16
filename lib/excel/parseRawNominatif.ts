@@ -121,7 +121,7 @@ function parseNominatifLama(workbook: ExcelJS.Workbook): ParseRawNominatifResult
  * tarikan ini generik "Worksheet"). Kalau dua-duanya tidak cocok, GAGAL KERAS dgn pesan jelas -
  * konsisten dgn kebijakan "tidak menebak diam-diam" utk perubahan format yang belum dikenali.
  */
-export async function parseRawNominatif(buffer: Buffer, opsi: { tolakKolomLain?: boolean } = {}): Promise<ParseRawNominatifResult> {
+export async function parseRawNominatif(buffer: Uint8Array, opsi: { tolakKolomLain?: boolean } = {}): Promise<ParseRawNominatifResult> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
 

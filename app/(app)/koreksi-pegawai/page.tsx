@@ -14,9 +14,6 @@ export default async function KoreksiPegawaiPage() {
     <div className="max-w-4xl space-y-5">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Koreksi Pegawai</h1>
-        <p className="text-sm text-slate-500">
-          Tanggal mulai kerja (TMT) yang benar menurut Anda tetapi berbeda dari berkas SIMPEGA. Setiap Standarisasi memakai tanggal ini untuk NIP tersebut, jadi koreksi manual tidak tertimpa lagi.
-        </p>
       </div>
 
       <FormTambahKoreksi />

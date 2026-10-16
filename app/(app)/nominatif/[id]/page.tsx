@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/db";
@@ -97,13 +96,6 @@ export default async function DetailNominatifPage({ params }: { params: Promise<
         )}
       </Kartu>
 
-      <p className="text-xs text-slate-500">
-        Ini adalah data historis bulan {d.periodeLabel}. Untuk melihat snapshot bulan lain, kembali ke{" "}
-        <Link href={`/nominatif?bulan=${d.bulan}&tahun=${d.tahun}`} className="text-accent-green underline">
-          daftar Nominatif
-        </Link>{" "}
-        dan ganti filter bulan/tahun.
-      </p>
     </div>
   );
 }

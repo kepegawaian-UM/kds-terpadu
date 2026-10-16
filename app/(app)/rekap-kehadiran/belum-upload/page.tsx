@@ -1,3 +1,4 @@
+import { KepalaHalaman } from "@/components/laporan/KepalaHalaman";
 import { BidangPeriode, FormLaporan } from "@/components/laporan/FormLaporan";
 import { TabelBelumUpload } from "@/components/laporan/TabelBelumUpload";
 import { prisma } from "@/lib/db";
@@ -28,17 +29,11 @@ export default async function BelumUploadPage({
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Pegawai Belum Ada Absensi</h1>
-        <p className="text-sm text-slate-500">
-          Selisih antara snapshot Nominatif dan Absensi Bulanan yang sudah diupload, bulan{" "}
-          {namaBulan(bulan)} {tahun}.
-        </p>
-      </div>
-
-      <FormLaporan>
+      <KepalaHalaman judul="Pegawai Belum Ada Absensi">
+        <FormLaporan>
         <BidangPeriode bulan={bulan} tahun={tahun} tahunTersedia={daftarTahun} />
       </FormLaporan>
+      </KepalaHalaman>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Kartu judul="Total Dosen + Tendik (Nominatif)" nilai={lap.totalNominatif} />
@@ -66,10 +61,6 @@ export default async function BelumUploadPage({
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-slate-500">
-            Kalau jumlahnya terkonsentrasi di 1-2 unit tertentu, kemungkinan besar presensi unit itu belum diupload
-            sama sekali - tinggal tanyakan ke unit tersebut, bukan cek satu-satu per orang.
-          </p>
         </section>
       )}
 

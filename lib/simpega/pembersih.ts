@@ -42,7 +42,8 @@ function nilaiBersih(v: ExcelJS.CellValue): string | number | Date | null {
   return t === "" ? null : t;
 }
 
-export async function bersihkanRekapPegawai(asli: Buffer): Promise<{ buffer: Buffer; laporan: LaporanPembersihan }> {
+/** Berjalan di Node (alat `npm run bersihkan`) maupun di browser (halaman Bersihkan Berkas): hanya memakai Uint8Array, tanpa API khusus Node. */
+export async function bersihkanRekapPegawai(asli: Uint8Array): Promise<{ buffer: Uint8Array; laporan: LaporanPembersihan }> {
   const wbAsli = new ExcelJS.Workbook();
   await wbAsli.xlsx.load(asli as unknown as ExcelJS.Buffer);
   const sheet = detectRekapPegawaiSheet(wbAsli);
@@ -75,7 +76,7 @@ export async function bersihkanRekapPegawai(asli: Buffer): Promise<{ buffer: Buf
   const kolomNipBaru = dipertahankan.findIndex((k) => k.nama === "NIP") + 1;
   ws.getColumn(kolomNipBaru).numFmt = "@"; // NIP 18 digit tetap teks
 
-  const buffer = Buffer.from(await wb.xlsx.writeBuffer());
+  const buffer = new Uint8Array(await wb.xlsx.writeBuffer());
   // Pemeriksaan sendiri atas HASIL (bukan atas niat): baca ulang dan pastikan tidak ada kolom di luar daftar putih.
   const wbCek = new ExcelJS.Workbook();
   await wbCek.xlsx.load(buffer as unknown as ExcelJS.Buffer);
@@ -89,7 +90,7 @@ export async function bersihkanRekapPegawai(asli: Buffer): Promise<{ buffer: Buf
 }
 
 /** Bukti bahwa pembersihan tidak mengubah apa yang dibaca aplikasi: baris hasil baca (tanpa tanggal lahir opsional yang sama) identik. */
-export async function hasilBacaIdentik(asli: Buffer, bersih: Buffer): Promise<{ identik: boolean; barisAsli: number; barisBersih: number }> {
+export async function hasilBacaIdentik(asli: Uint8Array, bersih: Uint8Array): Promise<{ identik: boolean; barisAsli: number; barisBersih: number }> {
   const [a, b] = await Promise.all([parseRawNominatif(asli), parseRawNominatif(bersih)]);
   return { identik: JSON.stringify(a.rows) === JSON.stringify(b.rows), barisAsli: a.rows.length, barisBersih: b.rows.length };
 }

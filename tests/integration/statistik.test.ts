@@ -7,6 +7,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "@prisma/client";
 
 import { statistikDosen, statistikTendik } from "@/lib/laporan/statistik";
+import { eksporStatistikDosen, eksporStatistikTendik } from "@/lib/laporan/statistikEkspor";
 
 import { kosongkanDomain } from "../../scripts/migrasi/migrasi";
 
@@ -111,5 +112,41 @@ describe.skipIf(!ada)("Statistik (sintetis)", () => {
     });
     const a = r.statistik.find((s) => s.unit === unitA.fakultas)!;
     expect(a).toMatchObject({ jumlah: 2, status_PNS_L: 1, status_PTT_P: 1 });
+  });
+
+  it("Ekspor Dosen: satu baris judul rata, baris fakultas + jurusan + total, angka berupa angka", async () => {
+    await tambah({ jenis: "DSN", unit: unitA.kode, jk: "L", golongan: "III/c", pendidikan: "S3" });
+    await tambah({ jenis: "DSN", unit: unitA.kode, jk: "P", golongan: "III/c", pendidikan: "S2" });
+    await tambah({ jenis: "DSN", unit: unitB.kode, jabatanDosen: jabatan.guruBesar, golongan: "IV/e", pendidikan: null });
+    const e = await eksporStatistikDosen(prisma, 9, 2026);
+    expect(e.namaFile).toBe("Statistik Dosen September 2026");
+    const r = await statistikDosen(prisma, 9, 2026);
+    expect(e.headings.slice(0, 2)).toEqual(["Fakultas", "Jurusan"]);
+    expect(e.headings).toContain("Jumlah");
+    expect(e.headings).toContain("Pendidikan S3");
+    expect(e.headings.filter((h) => / [LP]$/.test(h) && !h.startsWith("Pendidikan")).length).toBe(r.kolom.length * 2);
+    const total = e.rows[e.rows.length - 1];
+    expect(total[0]).toBe("TOTAL");
+    expect(total[e.headings.indexOf("Jumlah")]).toBe(3);
+    expect(total[e.headings.indexOf("Pendidikan S3")]).toBe(1);
+    expect(e.rows.every((row) => row.length === e.headings.length)).toBe(true);
+    expect(e.rows.filter((row) => row[1] === "(Jumlah fakultas)")).toHaveLength(2); // dua fakultas
+    expect(typeof total[2]).toBe("number");
+    expect((await eksporStatistikDosen(prisma, 1, 2020)).rows).toEqual([]); // tanpa data: hanya judul
+  });
+
+  it("Ekspor Tendik: baris per unit induk + total, isi sama dengan tabel", async () => {
+    await tambah({ jenis: "TDK", unit: unitA.kode, status: "PNS", jk: "L", golongan: "III/a", pendidikan: "S1" });
+    await tambah({ jenis: "TDK", unit: unitB.kode, status: "PTT", jk: "P", golongan: null, pendidikan: "SLTA" });
+    const e = await eksporStatistikTendik(prisma, 9, 2026);
+    expect(e.namaFile).toBe("Statistik Tendik September 2026");
+    expect(e.rows).toHaveLength(3); // dua unit induk + total
+    expect(e.rows.every((row) => row.length === e.headings.length)).toBe(true);
+    const total = e.rows[2];
+    expect(total[e.headings.indexOf("Jumlah")]).toBe(2);
+    expect(total[e.headings.indexOf("PNS L")]).toBe(1);
+    expect(total[e.headings.indexOf("PTT P")]).toBe(1);
+    expect(total[e.headings.indexOf("Golongan III/a")]).toBe(1);
+    expect(total[e.headings.indexOf("Golongan (kosong)")]).toBe(1);
   });
 });

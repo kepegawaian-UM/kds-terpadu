@@ -13,6 +13,7 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
   {
     label: "1. Masukkan data bulan baru",
     items: [
+      { href: "/bersihkan", label: "Bersihkan Berkas" },
       { href: "/standarisasi", label: "Standarisasi" },
       { href: "/bandingkan", label: "Bandingkan Batch" },
       { href: "/rekap-kehadiran/upload", label: "Upload Absensi" },

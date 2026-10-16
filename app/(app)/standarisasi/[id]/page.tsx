@@ -81,9 +81,6 @@ export default async function DetailStandarisasiPage({ params, searchParams }: {
 
       <div className="rounded-lg border border-slate-200 bg-white p-4">
         <p className="text-sm font-medium text-slate-700">Cari dan Kelola Pegawai (bulan ini)</p>
-        <p className="mt-1 text-xs text-slate-500">
-          Cari berdasarkan NIP atau nama untuk menghapus satu baris salah input/duplikat. Hanya menghapus dari {periode}; bulan lain tidak terpengaruh. Pegawai yang keluar cukup tidak dimasukkan lagi bulan berikutnya.
-        </p>
         <form method="GET" className="mt-3 flex gap-2">
           <input type="text" name="q" defaultValue={kataKunci} placeholder="NIP atau nama…" aria-label="Cari NIP atau nama" className="block w-full max-w-sm rounded-md border border-slate-300 px-3 py-2 text-sm" />
           <button type="submit" className="rounded-md bg-sidebar px-4 py-2 text-sm font-medium text-white hover:bg-sidebar-lighter">Cari</button>

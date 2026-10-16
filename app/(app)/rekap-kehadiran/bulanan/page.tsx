@@ -1,9 +1,9 @@
+import { KepalaHalaman } from "@/components/laporan/KepalaHalaman";
 import { BidangFilterRekap, BidangPeriode, FormLaporan } from "@/components/laporan/FormLaporan";
 import { TabelRekapBulanan } from "@/components/laporan/TabelRekapBulanan";
 import { prisma } from "@/lib/db";
 import { daftarStatusKepegawaian, jenisStatusDari, keaktifanDari } from "@/lib/laporan/filter";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
-import { namaBulan } from "@/lib/laporan/periode";
 import { laporanRekapBulanan, periodeBulanBerjalan } from "@/lib/laporan/rekapBulanan";
 
 
@@ -29,17 +29,12 @@ export default async function RekapBulananPage({
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900">Absensi Bulanan</h1>
-        <p className="text-sm text-slate-500">
-          Kehadiran per pegawai per bulan, dibaca dinamis dari komponen kehadiran.
-        </p>
-      </div>
-
-      <FormLaporan>
+      <KepalaHalaman judul="Absensi Bulanan">
+        <FormLaporan>
         <BidangPeriode bulan={bulan} tahun={tahun} tahunTersedia={daftarTahun} />
         <BidangFilterRekap jenis={jenis} status={status} keaktifan={keaktifan} daftarStatus={daftarStatus} />
       </FormLaporan>
+      </KepalaHalaman>
 
       <TabelRekapBulanan
         baris={lap.baris}
@@ -47,14 +42,6 @@ export default async function RekapBulananPage({
         namaFile={lap.namaFile}
         urlExcel={`/rekap-kehadiran/bulanan/export?${q.toString()}`}
       />
-
-      <p className="tanpa-cetak text-xs text-slate-500">
-        Daftar ini adalah pegawai yang aktif menurut snapshot Nominatif {namaBulan(bulan)} {tahun}, diurutkan dari TK
-        (Tanpa Keterangan) terbanyak sebagai default (bisa diurut ulang, klik judul kolom mana saja). Baris tanpa data
-        (&quot;-&quot;) berarti pegawai tersebut belum ada absensi yang di-upload untuk bulan/tahun ini. Sel
-        berlatar <span className="sel-koreksi px-1">kuning</span> adalah angka hasil koreksi manual (arahkan kursor untuk
-        melihat alasannya).
-      </p>
     </div>
   );
 }

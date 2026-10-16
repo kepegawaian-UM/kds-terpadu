@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { GET } from "@/app/(app)/rekap-kehadiran/tahunan/tk/route";
 import { laporanRekapTahunan } from "@/lib/laporan/rekapTahunan";
-import { ambangDari, beriPeringkat, laporanTkTindakLanjut, namaSheetUnik } from "@/lib/laporan/rekapTkTindakLanjut";
+import { ambangDari, beriPeringkat, laporanTkTindakLanjut, namaSheetUnik, stempelWaktuWib } from "@/lib/laporan/rekapTkTindakLanjut";
 
 import { kosongkanDomain } from "../../scripts/migrasi/migrasi";
 import { muatKeadaan } from "../support/keadaan";
@@ -54,7 +54,8 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
   });
 
   it("ambang: hanya yang total TK >= ambang; urut TK terbanyak; peringkat berbagi nilai sama; rincian bulan", async () => {
-    const lap = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3);
+    const SEKARANG = new Date("2026-10-16T01:34:00Z"); // 08.34 WIB
+    const lap = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG);
     expect(lap.jumlahPegawaiDiperiksa).toBe(5);
     expect(lap.baris.map((b) => [b.nip, b.total, b.peringkat])).toEqual([[C, 9, 1], [A, 6, 2], [D, 6, 2]]);
     const a = lap.baris.find((b) => b.nip === A)!;
@@ -62,10 +63,10 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     expect(a.jumlahBulan).toBe(3);
     expect(a.bulanTk).toBe("Jan (2), Mar (1), Jun (3)");
     expect(a.unitInduk).toBe(indukX);
-    expect(lap.namaFile).toBe("Laporan TK Tahunan Aktif 2026 minimal 3 hari");
+    expect(lap.namaFile).toBe("Laporan TK Tahunan Aktif 2026 minimal 3 hari - dibuat 16-10-2026 08.34 WIB");
     // nama file mengikuti filter jenis/status/keaktifan, seperti laporan lain
-    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["TDK"], status: [], keaktifan: "aktif" }, 3)).namaFile).toBe("Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari");
-    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["DSN", "TDK"], status: ["PNS", "PPPK"], keaktifan: "semua" }, 5)).namaFile).toBe("Laporan TK Tahunan Dosen dan Tendik PNS-PPPK 2026 minimal 5 hari");
+    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["TDK"], status: [], keaktifan: "aktif" }, 3, SEKARANG)).namaFile).toBe("Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari - dibuat 16-10-2026 08.34 WIB");
+    expect((await laporanTkTindakLanjut(prisma, 2026, { jenis: ["DSN", "TDK"], status: ["PNS", "PPPK"], keaktifan: "semua" }, 5, SEKARANG)).namaFile).toBe("Laporan TK Tahunan Dosen dan Tendik PNS-PPPK 2026 minimal 5 hari - dibuat 16-10-2026 08.34 WIB");
 
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 1)).baris.map((b) => b.nip).sort()).toEqual([A, B, C, D].sort()); // E (0 hari) tidak pernah masuk
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 10)).baris).toEqual([]);
@@ -91,6 +92,8 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
   it("pembantu: ambang dari parameter, peringkat, dan nama sheet unik", () => {
     expect([null, "", "0", "abc", "-2", "401", "5", " 7 "].map(ambangDari)).toEqual([3, 3, 3, 3, 3, 3, 5, 7]);
     expect(beriPeringkat([9, 6, 6, 4, 4, 1], (x) => x)).toEqual([1, 2, 2, 4, 4, 6]);
+    expect(stempelWaktuWib(new Date("2026-10-16T01:34:00Z"))).toBe("16-10-2026 08.34 WIB");
+    expect(stempelWaktuWib(new Date("2026-12-31T17:05:00Z"))).toBe("01-01-2027 00.05 WIB"); // lewat tengah malam WIB
     const terpakai = new Set<string>();
     expect(namaSheetUnik("Fakultas: Ilmu/Pendidikan [FIP] yang namanya sangat panjang sekali", terpakai).length).toBeLessThanOrEqual(31);
     expect(namaSheetUnik("Fakultas: Ilmu/Pendidikan [FIP] yang namanya sangat panjang sekali", terpakai)).not.toBe(namaSheetUnik("Fakultas: Ilmu/Pendidikan [FIP] yang namanya sangat panjang sekali", new Set()));
@@ -105,7 +108,7 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
 
     const res = await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=3"));
     expect(res.status).toBe(200);
-    expect(res.headers.get("Content-Disposition")).toContain("Laporan TK Tahunan Aktif 2026 minimal 3 hari.xlsx");
+    expect(res.headers.get("Content-Disposition")).toMatch(/filename="Laporan TK Tahunan Aktif 2026 minimal 3 hari - dibuat \d{2}-\d{2}-\d{4} \d{2}\.\d{2} WIB\.xlsx"/);
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
     expect(wb.worksheets.map((w) => w.name).slice(0, 2)).toEqual(["Ringkasan Unit", "Semua Pegawai"]);
@@ -127,7 +130,7 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     expect(String(ring.getRow(2).getCell(1).value)).toContain("minimal 3 hari");
 
     const tendik = await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=3&jenis=TDK"));
-    expect(tendik.headers.get("Content-Disposition")).toContain("Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari.xlsx");
+    expect(tendik.headers.get("Content-Disposition")).toMatch(/filename="Laporan TK Tahunan Tendik Aktif 2026 minimal 3 hari - dibuat \d{2}-\d{2}-\d{4} \d{2}\.\d{2} WIB\.xlsx"/);
 
     const longgar = new ExcelJS.Workbook();
     await longgar.xlsx.load(Buffer.from(await (await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1"))).arrayBuffer()) as unknown as ArrayBuffer);

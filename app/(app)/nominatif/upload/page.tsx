@@ -10,9 +10,6 @@ export default function UploadNominatifPage() {
     <div className="space-y-5">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Upload Nominatif Bulanan</h1>
-        <p className="text-sm text-slate-500">
-          Snapshot Nominatif satu bulan. Baris yang kolomnya tidak cocok dengan data master dilewati dan dilaporkan; mengunggah ulang bulan yang sama mengganti datanya.
-        </p>
       </div>
       <FormUploadNominatif bulanAwal={bulan} tahunAwal={tahun} />
     </div>

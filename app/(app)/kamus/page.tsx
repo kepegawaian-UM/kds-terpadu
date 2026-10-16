@@ -14,9 +14,6 @@ export default async function KamusPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Kamus Koreksi</h1>
-        <p className="text-sm text-slate-500">
-          Nilai mentah yang sudah pernah diselesaikan admin secara manual dipakai lagi otomatis untuk nilai mentah yang sama pada Standarisasi bulan berikutnya. Menghapus entri tidak mengubah snapshot yang sudah tersimpan.
-        </p>
       </div>
 
       {entri.length === 0 ? (

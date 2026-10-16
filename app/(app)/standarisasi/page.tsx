@@ -29,9 +29,6 @@ export default async function StandarisasiPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Standarisasi Nominatif</h1>
-        <p className="text-sm text-slate-500">
-          Mengubah berkas mentah tarikan data pegawai menjadi snapshot Nominatif bulanan yang baku. Cara lain: <Link href="/nominatif/upload" className="text-blue-700 underline">Upload Nominatif</Link> untuk berkas yang sudah sesuai template.
-        </p>
       </div>
 
       <FormUploadStandarisasi bulanAwal={bulan} tahunAwal={tahun} />

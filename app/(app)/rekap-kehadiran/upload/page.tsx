@@ -10,9 +10,6 @@ export default function UploadRekapPage() {
     <div className="space-y-5">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Upload Absensi Bulanan</h1>
-        <p className="text-sm text-slate-500">
-          Baris dengan NIP tidak dikenal dilewati otomatis dan dilaporkan; tidak menggagalkan seluruh berkas. Mengunggah ulang bulan yang sama mengganti datanya.
-        </p>
       </div>
       <FormUploadRekap bulanAwal={bulan} tahunAwal={tahun} />
     </div>

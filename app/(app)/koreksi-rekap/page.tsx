@@ -43,9 +43,6 @@ export default async function KoreksiRekapPage({ searchParams }: { searchParams:
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Koreksi Absensi</h1>
-        <p className="text-sm text-slate-500">
-          Koreksi manual absensi per pegawai yang tetap berlaku walau bulan itu di-upload ulang (mis. TK yang sebenarnya Tugas Belajar).
-        </p>
       </div>
       <FormKoreksiRekap komponen={komponen} awal={awal} />
       <ImporKoreksi />
