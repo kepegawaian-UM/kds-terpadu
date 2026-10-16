@@ -127,7 +127,7 @@ export async function parseRawNominatif(buffer: Uint8Array, opsi: { tolakKolomLa
 
   if (workbook.getWorksheet(SHEET_NAME)) {
     if (opsi.tolakKolomLain) {
-      throw new BerkasTidakBersihError("Berkas berformat Nominatif lama (memuat kolom di luar daftar yang diizinkan) tidak diterima lewat web. Gunakan tarikan REKAP_PEGAWAI yang sudah dibersihkan dengan perintah: npm run bersihkan.", []);
+      throw new BerkasTidakBersihError("Berkas berformat Nominatif lama (memuat kolom di luar daftar yang diizinkan) tidak diterima lewat web. Gunakan tarikan REKAP_PEGAWAI yang sudah dibersihkan lewat menu Bersihkan Berkas (atau perintah: npm run bersihkan).", []);
     }
     return parseNominatifLama(workbook);
   }
@@ -138,7 +138,7 @@ export async function parseRawNominatif(buffer: Uint8Array, opsi: { tolakKolomLa
       const lain = kolomDiLuarDaftar(sheetBaru);
       if (lain.length > 0) {
         throw new BerkasTidakBersihError(
-          `Berkas ini masih memuat ${lain.length} kolom di luar yang diperlukan (mis. ${lain.slice(0, 5).join(", ")}). Data pribadi yang sensitif tidak boleh diunggah. Bersihkan dulu di komputer Anda dengan perintah: npm run bersihkan -- "<berkas>" , lalu unggah berkas _bersih yang dihasilkan.`,
+          `Berkas ini masih memuat ${lain.length} kolom di luar yang diperlukan (mis. ${lain.slice(0, 5).join(", ")}). Data pribadi yang sensitif tidak boleh diunggah. Bersihkan dulu lewat menu Bersihkan Berkas (atau perintah: npm run bersihkan -- "<berkas>"), lalu unggah berkas _bersih yang dihasilkan.`,
           lain,
         );
       }
