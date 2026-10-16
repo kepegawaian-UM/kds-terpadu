@@ -16,9 +16,10 @@ describe.skipIf(!ada)("Dashboard Kinerja per jenis", () => {
     const nom = (nip: string, jenis: string) => ({ nip, bulan: 12, tahun: 2026, jenis, tmt: "2015-01-01" });
     const rek = (nip: string, bulan: number, TK: string, I = "0") => ({ nip, bulan, tahun: 2026, komponen: { TK, I, SIGMA_HARI: "20", JUMLAH_MASUK_NYATA: "18" } });
     await muatKeadaan(prisma, {
-      nominatif: [nom("900000000000000001", "DSN"), nom("900000000000000002", "DSN"), nom("900000000000000003", "TDK")],
+      nominatif: [nom("900000000000000001", "DSN"), nom("900000000000000002", "DSN"), nom("900000000000000003", "TDK"), nom("900000000000000004", "AKL"), nom("900000000000000005", "AKL")],
       rekap: [rek("900000000000000001", 1, "2"), rek("900000000000000002", 2, "3", "1"), rek("900000000000000003", 1, "5", "4"), rek("900000000000000003", 3, "1")],
     });
+    await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: "900000000000000005" }, data: { unitAsalKode: "UA-179" } }); // Akademisi Luar berunit "Belum Diketahui"
   });
   afterAll(async () => {
     await kosongkanDomain(prisma);
@@ -40,5 +41,14 @@ describe.skipIf(!ada)("Dashboard Kinerja per jenis", () => {
     expect(Object.values(izin(TDK)).reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
     expect(DSN.chartTren.series.find((s) => s.kode === "TK")!.data.slice(0, 3)).toEqual([2, 3, 0]);
     expect(TDK.chartTren.series.find((s) => s.kode === "TK")!.data.slice(0, 3)).toEqual([5, 0, 1]);
+  });
+
+  it("Dashboard Pegawai: Akademisi Luar menghitung SEMUA (termasuk unit Belum Diketahui); Dosen/Tendik tetap mengecualikannya", async () => {
+    const d = await dataDashboard(prisma, { bulan_pegawai: "12", tahun_pegawai: "2026" });
+    expect(d.jumlahPerJenis.AKL).toBe(2);
+    expect(d.dashboardPegawai!.AKL.total).toBe(2); // sebelumnya hanya yang berunit (1)
+    await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: "900000000000000003" }, data: { unitAsalKode: "UA-179" } });
+    const lagi = await dataDashboard(prisma, { bulan_pegawai: "12", tahun_pegawai: "2026" });
+    expect(lagi.dashboardPegawai!.TDK.total).toBe(0); // tendik berunit UA-179 tetap dikecualikan (perilaku KDS2)
   });
 });

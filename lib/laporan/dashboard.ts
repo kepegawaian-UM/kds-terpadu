@@ -4,7 +4,7 @@
  * Port dari DashboardController (KDS2); paritas di tests/paritas/dashboard.test.ts.
  *
  * Kebiasaan KDS2 yang dipertahankan:
- *  - kartu jumlah pegawai memakai SEMUA baris snapshot terbaru; dashboard pegawai mengecualikan unit UA-179;
+ *  - kartu jumlah pegawai memakai SEMUA baris snapshot terbaru; dashboard pegawai Dosen/Tendik mengecualikan unit UA-179 (Akademisi Luar TIDAK: lihat barisUntukJenis);
  *  - "Punya jabatan tambahan" dihitung dengan kueri terpisah (semua dosen snapshot itu, tanpa pengecualian UA-179);
  *  - Dashboard Kinerja hanya menghitung pegawai yang ada di snapshot bulan TERBARU tahun itu (yang pensiun/resign
  *    di tengah tahun tidak ikut), dan unit induk diambil dari snapshot itu;
@@ -188,9 +188,13 @@ type Db = Pick<
   | "$transaction"
 >;
 
-async function barisUntukJenis(db: Db, jenis: string, bulan: number, tahun: number): Promise<RowUmum[]> {
+/**
+ * `sertakanUnitBelumDiketahui`: Akademisi Luar memang banyak yang belum punya unit di SIMPEGA (Okt 2026: 431 dari 601), jadi grafiknya ikut menghitung semuanya
+ * (keputusan pengguna 16 Okt 2026, BEDA dari KDS2 yang membuangnya). Dosen dan Tendik tetap mengecualikan UA-179 seperti KDS2.
+ */
+async function barisUntukJenis(db: Db, jenis: string, bulan: number, tahun: number, sertakanUnitBelumDiketahui = false): Promise<RowUmum[]> {
   const rows = await db.nominatifBulanan.findMany({
-    where: { jenisPegawaiKode: jenis, unitAsalKode: { not: UNIT_PLACEHOLDER }, bulan, tahun },
+    where: { jenisPegawaiKode: jenis, ...(sertakanUnitBelumDiketahui ? {} : { unitAsalKode: { not: UNIT_PLACEHOLDER } }), bulan, tahun },
     orderBy: { id: "asc" },
     select: {
       golonganKode: true,
@@ -212,7 +216,7 @@ async function barisUntukJenis(db: Db, jenis: string, bulan: number, tahun: numb
 }
 
 async function dashboardPegawai(db: Db, bulan: number, tahun: number) {
-  const [dsn, tdk, akl] = await Promise.all(["DSN", "TDK", "AKL"].map((j) => barisUntukJenis(db, j, bulan, tahun)));
+  const [dsn, tdk, akl] = await Promise.all(["DSN", "TDK", "AKL"].map((j) => barisUntukJenis(db, j, bulan, tahun, j === "AKL")));
 
   // ---- Dosen
   const jabatanDosen = await db.jabatanFungsionalDosen.findMany({ orderBy: { urutanJenjang: "desc" } });

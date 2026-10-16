@@ -18,6 +18,23 @@ const JENIS = ["DSN", "TDK", "AKL"] as const;
 
 describe.skipIf(!jalan)("paritas Dashboard KDS2 <-> KDS Terpadu", () => {
   let db: PrismaClient;
+
+  type DashAkl = { total: number; chartDistribusiUtama: { labels: string[]; data: number[] } };
+  /**
+   * Akademisi Luar SENGAJA menyimpang dari KDS2 (keputusan pengguna 16 Okt 2026): Terpadu menghitung SEMUA (termasuk unit "Belum Diketahui"), KDS2 hanya yang berunit.
+   * Dibuktikan: KDS2 = jumlah yang berunit, Terpadu = jumlah semua, dan tiap kategori Terpadu >= KDS2.
+   */
+  async function bandingkanAkademisiLuar(a: DashAkl, b: DashAkl, bulan: number, tahun: number) {
+    const dasar = { jenisPegawaiKode: "AKL", bulan, tahun };
+    const [semua, berunit] = await Promise.all([db.nominatifBulanan.count({ where: dasar }), db.nominatifBulanan.count({ where: { ...dasar, unitAsalKode: { not: "UA-179" } } })]);
+    expect(b.total, `KDS2 AKL ${bulan}/${tahun} = hanya berunit`).toBe(berunit);
+    expect(a.total, `Terpadu AKL ${bulan}/${tahun} = semua`).toBe(semua);
+    b.chartDistribusiUtama.labels.forEach((label, i) => {
+      const j = a.chartDistribusiUtama.labels.indexOf(label);
+      expect(j, `kategori ${label}`).toBeGreaterThanOrEqual(0);
+      expect(a.chartDistribusiUtama.data[j]).toBeGreaterThanOrEqual(b.chartDistribusiUtama.data[i]);
+    });
+  }
   let periode: { bulan: number; tahun: number }[];
 
   beforeAll(async () => {
@@ -38,7 +55,11 @@ describe.skipIf(!jalan)("paritas Dashboard KDS2 <-> KDS Terpadu", () => {
       n: s.nominatifSudahUpload, nw: s.nominatifTerakhirDiupload, r: s.rekapSudahUpload, rw: s.rekapTerakhirDiupload,
     }).toEqual({ n: o.nominatifSudahUpload, nw: o.nominatifTerakhirDiupload, r: o.rekapSudahUpload, rw: o.rekapTerakhirDiupload });
     expect({ b: s.bulanPegawai, t: s.tahunPegawai, k: s.tahunKinerja }).toEqual({ b: o.bulanPegawai, t: o.tahunPegawai, k: o.tahunKinerja });
-    for (const j of JENIS) expect(s.dashboardPegawai![j], `pegawai ${j}`).toEqual(o.dashboardPegawai![j]);
+    for (const j of JENIS) {
+      if (j === "AKL") continue; // Akademisi Luar sengaja menyimpang (menghitung unit belum diketahui): dibuktikan di bawah
+      expect(s.dashboardPegawai![j], `pegawai ${j}`).toEqual(o.dashboardPegawai![j]);
+    }
+    await bandingkanAkademisiLuar(s.dashboardPegawai!.AKL, o.dashboardPegawai!.AKL, s.bulanPegawai!, s.tahunPegawai!);
     expect(s.dashboardKinerja).toEqual(o.dashboardKinerja);
   }, 120_000);
 
@@ -47,7 +68,9 @@ describe.skipIf(!jalan)("paritas Dashboard KDS2 <-> KDS Terpadu", () => {
     for (const p of periode) {
       const o = hasil<Oracle>(h, `m${p.bulan}`);
       const s = await dataDashboard(db, { bulan_pegawai: String(p.bulan), tahun_pegawai: String(p.tahun) });
+      await bandingkanAkademisiLuar(s.dashboardPegawai!.AKL, o.dashboardPegawai!.AKL, p.bulan, p.tahun);
       for (const j of JENIS) {
+        if (j === "AKL") continue; // lihat bandingkanAkademisiLuar
         const a = s.dashboardPegawai![j];
         const b = o.dashboardPegawai![j];
         expect(a.kpi, `KPI ${j} ${p.bulan}`).toEqual(b.kpi);
