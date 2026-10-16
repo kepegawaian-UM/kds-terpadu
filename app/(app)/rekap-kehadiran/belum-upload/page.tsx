@@ -24,14 +24,14 @@ export default async function BelumUploadPage({
   const sp = await searchParams;
   const [bulan, tahun] = await resolveBulanTahun(prisma, sp);
   const [lap, daftarTahun] = await Promise.all([laporanBelumUpload(prisma, bulan, tahun), tahunNominatif(prisma)]);
-  const namaFile = `Pegawai Belum Ada Rekap ${namaBulan(bulan)} ${tahun}`;
+  const namaFile = `Pegawai Belum Ada Absensi ${namaBulan(bulan)} ${tahun}`;
 
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Pegawai Belum Ada Rekap</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Pegawai Belum Ada Absensi</h1>
         <p className="text-sm text-slate-500">
-          Selisih antara snapshot Nominatif dan Rekap Kehadiran Bulanan yang sudah diupload, bulan{" "}
+          Selisih antara snapshot Nominatif dan Absensi Bulanan yang sudah diupload, bulan{" "}
           {namaBulan(bulan)} {tahun}.
         </p>
       </div>
@@ -42,7 +42,7 @@ export default async function BelumUploadPage({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Kartu judul="Total Dosen + Tendik (Nominatif)" nilai={lap.totalNominatif} />
-        <Kartu judul="Sudah Ada Rekap" nilai={lap.totalSudahRekap} kelas="text-accent-green" />
+        <Kartu judul="Sudah Ada Absensi" nilai={lap.totalSudahRekap} kelas="text-accent-green" />
         <div className="rounded-xl border border-t-4 border-slate-200 border-t-red-400 bg-white p-6">
           <div className="text-sm text-slate-500">Perlu Ditindaklanjuti</div>
           <div className="mt-1 text-3xl font-bold text-red-600">{lap.jumlahPerluTindakLanjut.toLocaleString("id-ID")}</div>

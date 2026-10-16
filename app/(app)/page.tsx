@@ -92,7 +92,7 @@ export default async function RingkasanPage({
           <div className="mb-2 text-sm text-slate-500">Status Upload Bulan Ini</div>
           {[
             { nama: "Nominatif", sudah: d.nominatifSudahUpload, waktu: d.nominatifTerakhirDiupload },
-            { nama: "Rekap Kehadiran", sudah: d.rekapSudahUpload, waktu: d.rekapTerakhirDiupload },
+            { nama: "Absensi", sudah: d.rekapSudahUpload, waktu: d.rekapTerakhirDiupload },
           ].map((u) => (
             <div key={u.nama} className="mb-1">
               <div className="flex items-center justify-between text-sm">
@@ -202,7 +202,7 @@ export default async function RingkasanPage({
             <GrafikTren bulanLabel={kinerja.chartTren.bulanLabel} series={kinerja.chartTren.series} />
             <p className="text-xs text-slate-500">
               Dashboard Kinerja hanya menghitung Dosen + Tendik yang masih aktif (ada di snapshot Nominatif bulan terbaru tahun itu);
-              Akademisi Luar UM tidak masuk Rekap Kehadiran.
+              Akademisi Luar UM tidak masuk Absensi.
             </p>
           </div>
         }

@@ -1,5 +1,5 @@
 /**
- * Rekap Kehadiran Tahunan dengan data SINTETIS di kds_test: SUM lintas bulan, snapshot terakhir lewat
+ * Absensi Tahunan dengan data SINTETIS di kds_test: SUM lintas bulan, snapshot terakhir lewat
  * MAX(id) (bukan bulan terbesar), CAST awalan-angka seperti MySQL, tahun yang terpisah, filter, serta
  * rute ekspor Excel (login, nama file, '0' untuk komponen teks kosong). Melengkapi paritas data asli.
  */
@@ -120,8 +120,8 @@ describe.skipIf(!ada)("Rekap Tahunan (sintetis)", () => {
   });
 
   it("nama file mengikuti tab, filter, keaktifan, dan tahun", async () => {
-    expect((await lap({ jenis: ["DSN"], status: ["PNS"], keaktifan: "aktif" })).namaFile).toBe("Rekap Kehadiran Tahunan Dosen PNS Aktif 2026");
-    expect((await lap()).namaFile).toBe("Rekap Kehadiran Tahunan 2026");
+    expect((await lap({ jenis: ["DSN"], status: ["PNS"], keaktifan: "aktif" })).namaFile).toBe("Absensi Tahunan Dosen PNS Aktif 2026");
+    expect((await lap()).namaFile).toBe("Absensi Tahunan 2026");
   });
 
   describe("GET /rekap-kehadiran/tahunan/export", () => {
@@ -140,7 +140,7 @@ describe.skipIf(!ada)("Rekap Tahunan (sintetis)", () => {
       await rekap(A, 8, 2026, { TK: "2" });
       await rekap(A, 9, 2026, { TK: "3" });
       const res = await GET(new Request("http://localhost/x?tahun=2026&jenis=DSN&status=PNS&keaktifan=semua"));
-      expect(res.headers.get("Content-Disposition")).toContain('filename="Rekap Kehadiran Tahunan Dosen PNS 2026.xlsx"');
+      expect(res.headers.get("Content-Disposition")).toContain('filename="Absensi Tahunan Dosen PNS 2026.xlsx"');
       const ws = await baca(res);
       expect(ws.getRow(1).getCell(5).value).toBe("Σ Hari");
       expect(ws.rowCount).toBe(4);

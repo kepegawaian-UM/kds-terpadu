@@ -734,6 +734,8 @@ function samakanEjaan(n: string): string {
  * sisa tidak cocok apa pun, kandidat itu ditolak dan dicoba kandidat role berikutnya - tetap
  * deterministik (exact/prefix-kata-utuh di kedua sisi), bukan tebakan posisi atau fuzzy.
  */
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 export function pisahJabatanTambahanRaw(
   raw: string,
   master: MasterCache
@@ -756,17 +758,28 @@ export function pisahJabatanTambahanRaw(
   // ke-alias (regresi yang sempat terjadi: Dekan/Wakil Dekan FMIPA jadi tidak ketemu master).
   const rawNorm = samakanEjaan(normalize(sisaTeks));
 
+  // Panjang awalan teks yang cocok dengan nama role (atau null). Selain awalan persis, koma di antara kata role di teks sumber diabaikan
+  // (16 Okt 2026): master menulis "Kepala Seksi Kinerja Disiplin dan Sistem Informasi Sumber Daya Manusia" tanpa koma, sedangkan SIMPEGA menulis
+  // "Kepala Seksi Kinerja, Disiplin, dan Sistem Informasi ..." - tanpa ini role panjang gagal cocok dan jatuh ke role pendek "Kepala Seksi Kinerja".
+  const panjangCocok = (namaRole: string): number | null => {
+    const roleNorm = normalize(namaRole);
+    let panjang: number | null = null;
+    if (rawNorm.startsWith(roleNorm)) panjang = roleNorm.length;
+    // Role bertanda ":" ("Pembina Asrama Putra: Asrama Mawar ...") menempelkan nama asrama di role; jalur lama (role umum + unit asrama, keputusan 14 Okt 2026) dipertahankan.
+    else if (!namaRole.includes(":")) {
+      const m = new RegExp(`^${roleNorm.split(" ").map(escapeRegex).join(",?\\s+")}`).exec(rawNorm);
+      if (m) panjang = m[0].length;
+    }
+    if (panjang === null) return null;
+    const sisa = rawNorm.slice(panjang);
+    return sisa === "" || sisa.startsWith(" ") || sisa.startsWith(",") || sisa.startsWith(":") ? panjang : null;
+  };
   const kandidatRole = master.jabatanTambahanRole
-    .filter((r) => {
-      const roleNorm = normalize(r.namaRole);
-      if (!rawNorm.startsWith(roleNorm)) return false;
-      const sisa = rawNorm.slice(roleNorm.length);
-      return sisa === "" || sisa.startsWith(" ") || sisa.startsWith(",") || sisa.startsWith(":");
-    })
+    .filter((r) => panjangCocok(r.namaRole) !== null)
     .sort((a, b) => b.namaRole.length - a.namaRole.length);
 
   for (const role of kandidatRole) {
-    let sisa = rawNorm.slice(normalize(role.namaRole).length).trim();
+    let sisa = rawNorm.slice(panjangCocok(role.namaRole)!).trim();
     if (sisa.startsWith(",") || sisa.startsWith("-") || sisa.startsWith(":")) sisa = sisa.slice(1).trim();
     // "Pembina Asrama Putra:"/"Pembina Asrama Putri:" - penanda jenis kelamin penghuni asrama,
     // bukan bagian dari nama unit asramanya sendiri.

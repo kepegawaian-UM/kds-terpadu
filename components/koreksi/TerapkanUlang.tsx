@@ -43,7 +43,7 @@ export function TerapkanUlang({ bulanAwal, tahunAwal }: { bulanAwal: number; tah
           {pesan.teks}
         </div>
       )}
-      <p className="text-xs text-slate-500">Koreksi sudah otomatis diterapkan setelah tiap upload Rekap Kehadiran. Tombol ini hanya untuk berjaga-jaga.</p>
+      <p className="text-xs text-slate-500">Koreksi sudah otomatis diterapkan setelah tiap upload Absensi. Tombol ini hanya untuk berjaga-jaga.</p>
     </section>
   );
 }

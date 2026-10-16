@@ -30,7 +30,7 @@ export default async function RekapBulananPage({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Rekap Kehadiran Bulanan</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Absensi Bulanan</h1>
         <p className="text-sm text-slate-500">
           Kehadiran per pegawai per bulan, dibaca dinamis dari komponen kehadiran.
         </p>
@@ -51,7 +51,7 @@ export default async function RekapBulananPage({
       <p className="tanpa-cetak text-xs text-slate-500">
         Daftar ini adalah pegawai yang aktif menurut snapshot Nominatif {namaBulan(bulan)} {tahun}, diurutkan dari TK
         (Tanpa Keterangan) terbanyak sebagai default (bisa diurut ulang, klik judul kolom mana saja). Baris tanpa data
-        (&quot;-&quot;) berarti pegawai tersebut belum ada rekap kehadiran yang di-upload untuk bulan/tahun ini. Sel
+        (&quot;-&quot;) berarti pegawai tersebut belum ada absensi yang di-upload untuk bulan/tahun ini. Sel
         berlatar <span className="sel-koreksi px-1">kuning</span> adalah angka hasil koreksi manual (arahkan kursor untuk
         melihat alasannya).
       </p>

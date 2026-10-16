@@ -17,5 +17,5 @@ export async function GET(request: Request) {
   const nip = sp.get("nip") ?? "";
   const laporan = /^\d{1,20}$/.test(nip) ? await bangunRekapIndividual(prisma, nip, tahun) : null;
   if (!laporan) return new Response("Data tidak ditemukan", { status: 404 });
-  return responXlsxBanyakSheet(buatNamaFile("Rekap Individual", [], [], `${laporan.identitas.nama} ${laporan.tahun}`, []), [{ judul: "Rekap Individual", baris: barisEksporIndividual(laporan) }]);
+  return responXlsxBanyakSheet(buatNamaFile("Absensi Pegawai", [], [], `${laporan.identitas.nama} ${laporan.tahun}`, []), [{ judul: "Absensi Pegawai", baris: barisEksporIndividual(laporan) }]);
 }

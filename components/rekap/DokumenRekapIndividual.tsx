@@ -67,7 +67,7 @@ export function DokumenRekapIndividual({ laporan, tanggalCetak }: { laporan: Lap
         </div>
       </div>
 
-      <h2 className="judul">REKAP KEHADIRAN INDIVIDUAL TAHUN {laporan.tahun}</h2>
+      <h2 className="judul">ABSENSI PEGAWAI TAHUN {laporan.tahun}</h2>
 
       <table className="id">
         <tbody>
@@ -77,7 +77,7 @@ export function DokumenRekapIndividual({ laporan, tanggalCetak }: { laporan: Lap
           <tr><td className="l">Gol. / Jabatan</td><td className="t">:</td><td>{id.golongan} / {id.jabatan}</td></tr>
           <tr><td className="l">Unit Kerja</td><td className="t">:</td><td>{id.unit}{id.unitInduk ? `, ${id.unitInduk}` : ""}</td></tr>
           {laporan.statusKeluar && <tr><td className="l">Keterangan</td><td className="t">:</td><td>{laporan.statusKeluar}</td></tr>}
-          <tr><td className="l">Tahun</td><td className="t">:</td><td>{laporan.tahun} (data rekap tersedia {laporan.bulanTerekam} dari 12 bulan)</td></tr>
+          <tr><td className="l">Tahun</td><td className="t">:</td><td>{laporan.tahun} (data absensi tersedia {laporan.bulanTerekam} dari 12 bulan)</td></tr>
         </tbody>
       </table>
 
@@ -96,7 +96,7 @@ export function DokumenRekapIndividual({ laporan, tanggalCetak }: { laporan: Lap
         <tbody>
           {baris.map(({ b, x }) =>
             !x.ada ? (
-              <tr key={b} className="abu"><td className="kiri">{x.nama}</td><td colSpan={3 + KOLOM_INDIVIDUAL.length} className="kiri it">Belum ada rekap kehadiran</td></tr>
+              <tr key={b} className="abu"><td className="kiri">{x.nama}</td><td colSpan={3 + KOLOM_INDIVIDUAL.length} className="kiri it">Belum ada absensi</td></tr>
             ) : (
               <tr key={b}>
                 <td className="kiri">{x.nama}</td><td>{x.sigma}</td><td>{x.masuk}</td><td>{x.persen}</td>

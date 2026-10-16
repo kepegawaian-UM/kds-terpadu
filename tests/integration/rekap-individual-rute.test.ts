@@ -42,12 +42,12 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
 
     const res = await eksporIndividual(req(`/x?nip=${nip(1)}&tahun=2026`));
     expect(res.status).toBe(200);
-    expect(res.headers.get("content-disposition")).toContain("Rekap Individual Pegawai 1 2026.xlsx");
+    expect(res.headers.get("content-disposition")).toContain("Absensi Pegawai Pegawai 1 2026.xlsx");
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
-    expect(wb.worksheets.map((w) => w.name)).toEqual(["Rekap Individual"]);
+    expect(wb.worksheets.map((w) => w.name)).toEqual(["Absensi Pegawai"]);
     const ws = wb.worksheets[0];
-    expect(ws.getCell("A1").value).toBe("REKAP KEHADIRAN INDIVIDUAL TAHUN 2026");
+    expect(ws.getCell("A1").value).toBe("ABSENSI PEGAWAI TAHUN 2026");
     expect(ws.getCell("B4").value).toBe(nip(1));
     const barisJumlah = (ws.getSheetValues() as unknown[][]).find((r) => typeof r?.[1] === "string" && (r[1] as string).startsWith("Jumlah (2 bulan)"))!;
     expect(barisJumlah.slice(2, 5)).toEqual([40, 34, "85,0%"]);
@@ -64,7 +64,7 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
 
     const res = await eksporMassal(req(`/x?tahun=2026&min_tk=0&nip=${nip(1)}&nip=${nip(2)}&nip=${nip(1)}&nip=${nip(9)}`));
     expect(res.status).toBe(200);
-    expect(decodeURIComponent(res.headers.get("content-disposition")!.split("filename*=UTF-8''")[1])).toBe("Rekap Individual Aktif TK min 0 2026.xlsx");
+    expect(decodeURIComponent(res.headers.get("content-disposition")!.split("filename*=UTF-8''")[1])).toBe("Absensi Pegawai Aktif TK min 0 2026.xlsx");
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
     expect(wb.worksheets.map((w) => w.name)).toEqual([`Pegawai 1 ${nip(1).slice(-6)}`, `Pegawai 2 ${nip(2).slice(-6)}`]);
@@ -90,7 +90,7 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
     expect((await bacaParamMassal(prisma, dariRecord({ tahun: "2025" }))).tahun).toBe(2025);
     const q = await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams("jenis[]=DSN&jenis[]=TDK&status=PNS&nip[]=1&nip=2&keaktifan=semua")));
     expect(q).toMatchObject({ jenis: ["DSN", "TDK"], status: ["PNS"], keaktifan: "semua", nip: ["2", "1"] });
-    expect(await namaFileMassal(prisma, { ...bawaan, tahun: 2026, minTk: 20 })).toBe("Rekap Individual Aktif TK min 20 2026");
+    expect(await namaFileMassal(prisma, { ...bawaan, tahun: 2026, minTk: 20 })).toBe("Absensi Pegawai Aktif TK min 20 2026");
   });
 
   it("kandidat massal: TK setahun >= batas, Akademisi Luar dan tanpa rekap tidak ikut, urut TK terbanyak", async () => {

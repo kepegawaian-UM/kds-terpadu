@@ -153,7 +153,7 @@ export async function laporanRekapTahunan(db: Db, tahun: number, filter: FilterR
 }
 
 export async function namaFileRekapTahunan(db: Pick<PrismaClient, "statusKepegawaian">, tahun: number, filter: FilterRekap): Promise<string> {
-  return buatNamaFile("Rekap Kehadiran Tahunan", filter.jenis, filter.status, String(tahun), await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan));
+  return buatNamaFile("Absensi Tahunan", filter.jenis, filter.status, String(tahun), await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan));
 }
 
 /** Ekspor Excel: urut nama (bukan TK); filter jenis/unit tambahan lewat parameter URL. */

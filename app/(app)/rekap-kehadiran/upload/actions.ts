@@ -29,7 +29,7 @@ function validasi(m: Masukan): GalatUpload | null {
 
 function galat(e: unknown): GalatUpload {
   if (e instanceof KesalahanUpload) return { ok: false, error: e.message, bidang: e.bidang };
-  console.error("Upload Rekap gagal:", e);
+  console.error("Upload Absensi gagal:", e);
   return { ok: false, error: "Terjadi kesalahan di server saat memproses berkas. Tidak ada data yang diubah." };
 }
 

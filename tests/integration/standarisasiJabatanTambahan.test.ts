@@ -36,4 +36,33 @@ describe.skipIf(!ada)("Jabatan Tambahan: kecocokan persis menang atas pemecahan 
     const h = resolveJabatanTambahan(baris(`${sekretaris.namaRole} ${unitA.nama} merangkap ${bendahara.namaRole} ${unitB.nama}`), master, new Map(), "Tendik");
     expect("slots" in h && h.slots.map((s) => s.jabatanTambahanRoleKode)).toEqual([sekretaris.kode, bendahara.kode]);
   });
+
+  it("koma di antara kata role pada teks sumber diabaikan: role panjang master menang atas role pendek (kasus Kepala Seksi Kinerja, 16 Okt 2026)", async () => {
+    const master = await loadMasterCache(prisma);
+    const panjang = master.jabatanTambahanRole.find((r) => r.namaRole === "Kepala Seksi Kinerja Disiplin dan Sistem Informasi Sumber Daya Manusia")!;
+    const direktorat = master.unitAsal.find((u) => u.nama === "Direktorat Sumber Daya Manusia dan Keuangan")!;
+    expect(panjang && direktorat).toBeTruthy();
+    const dgnKoma = "Kepala Seksi Kinerja, Disiplin, dan Sistem Informasi Sumber Daya Manusia, Direktorat Sumber Daya Manusia, dan Keuangan";
+    const tanpaKoma = "Kepala Seksi Kinerja Disiplin dan Sistem Informasi Sumber Daya Manusia Direktorat Sumber Daya Manusia dan Keuangan";
+    for (const teks of [dgnKoma, tanpaKoma]) {
+      expect(resolveJabatanTambahan(baris(teks), master, new Map(), "Tendik"), teks).toEqual({
+        slots: [{ jabatanTambahanRoleKode: panjang.kode, unitAsalKode: direktorat.kode, programStudiKode: null, statusPengangkatan: "Definitif" }],
+      });
+    }
+    // role pendek yang memang dimaksud tetap dikenali (tanpa sisa koma yang menyesatkan)
+    const pendek = master.jabatanTambahanRole.find((r) => r.namaRole === "Kepala Seksi Kinerja")!;
+    const h = resolveJabatanTambahan(baris("Kepala Seksi Kinerja, Direktorat Sumber Daya Manusia dan Keuangan"), master, new Map(), "Tendik");
+    expect("slots" in h && h.slots[0].jabatanTambahanRoleKode).toBe(pendek.kode);
+  });
+
+  it("role bertanda ':' (Pembina Asrama ...: <asrama>) tidak ikut toleransi koma: tetap role umum + unit asrama", async () => {
+    const master = await loadMasterCache(prisma);
+    const umum = master.jabatanTambahanRole.find((r) => r.namaRole === "Pembina Asrama")!;
+    const panjang = master.jabatanTambahanRole.find((r) => r.namaRole.startsWith("Pembina Asrama Putra: Asrama Mawar"));
+    if (!panjang) return; // master tes tanpa role ini: tidak ada yang dibandingkan
+    const h = resolveJabatanTambahan(baris("Pembina Asrama Putra: Asrama Mawar, Kampus III UM"), master, new Map(), "Tendik");
+    if ("slots" in h) expect(h.slots[0].jabatanTambahanRoleKode).not.toBe(panjang.kode);
+    else expect(h).toHaveProperty("issue"); // unit asrama hanya ada di salinan kerja lokal, bukan di master tes: tidak boleh berpindah ke role panjang
+    expect(umum).toBeTruthy();
+  });
 });

@@ -145,8 +145,8 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
       </div>
 
       <p className="text-sm text-slate-700">
-        <b>{angka(r.akanDiganti)}</b> pegawai sudah punya rekap {NAMA_BULAN[bulan]} {tahun} dan datanya akan <b>DIGANTI</b>; <b>{angka(r.akanBaru)}</b> pegawai ditambahkan baru.
-        Koreksi Rekap yang aktif diterapkan ulang otomatis setelah disimpan.
+        <b>{angka(r.akanDiganti)}</b> pegawai sudah punya absensi {NAMA_BULAN[bulan]} {tahun} dan datanya akan <b>DIGANTI</b>; <b>{angka(r.akanBaru)}</b> pegawai ditambahkan baru.
+        Koreksi Absensi yang aktif diterapkan ulang otomatis setelah disimpan.
       </p>
 
       {kegagalan.length > 0 && <TabelCatatan judul="Baris yang akan dilewati" baris={kegagalan} kelas="text-slate-800" />}

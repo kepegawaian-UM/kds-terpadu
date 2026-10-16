@@ -224,14 +224,14 @@ export type SelEkspor = string | number | null;
 export function barisEksporIndividual(l: LaporanIndividual): SelEkspor[][] {
   const id = l.identitas;
   const baris: SelEkspor[][] = [
-    [`REKAP KEHADIRAN INDIVIDUAL TAHUN ${l.tahun}`], [""], ["Nama", id.nama], ["NIP", id.nip], ["Jenis / Status", `${id.jenis} / ${id.status}`], ["Gol. / Jabatan", `${id.golongan} / ${id.jabatan}`],
+    [`ABSENSI PEGAWAI TAHUN ${l.tahun}`], [""], ["Nama", id.nama], ["NIP", id.nip], ["Jenis / Status", `${id.jenis} / ${id.status}`], ["Gol. / Jabatan", `${id.golongan} / ${id.jabatan}`],
     ["Unit Kerja", phpTrim(id.unit + (id.unitInduk ? `, ${id.unitInduk}` : ""))],
   ];
   if (l.statusKeluar) baris.push(["Keterangan", l.statusKeluar]);
   baris.push([""], ["Bulan", "Σ Hari", "Masuk Nyata", "Hadir", ...KOLOM_INDIVIDUAL]);
   for (let b = 1; b <= 12; b++) {
     const x = l.bulan[b];
-    if (!x.ada) baris.push([x.nama, "Belum ada rekap kehadiran"]);
+    if (!x.ada) baris.push([x.nama, "Belum ada absensi"]);
     else baris.push([x.nama, x.sigma, x.masuk, x.persen, ...KOLOM_INDIVIDUAL.map((k) => x.nilai[k] ?? 0)]);
   }
   baris.push([`Jumlah (${l.bulanTerekam} bulan)`, l.total.SIGMA_HARI, l.total.JUMLAH_MASUK_NYATA, l.persenTotal, ...KOLOM_INDIVIDUAL.map((k) => l.total[k])]);
@@ -290,7 +290,7 @@ export async function bacaParamMassal(db: Db, ambil: AmbilSemua, sekarang = new 
 }
 
 export async function namaFileMassal(db: Db, p: ParamMassal): Promise<string> {
-  return buatNamaFile("Rekap Individual", p.jenis, p.status, `TK min ${p.minTk} ${p.tahun}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
+  return buatNamaFile("Absensi Pegawai", p.jenis, p.status, `TK min ${p.minTk} ${p.tahun}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
 }
 
 /** Pegawai terpilih untuk cetak/unduh massal (1 sampai 200 NIP digit; duplikat dibuang; NIP tanpa data dilewati). */

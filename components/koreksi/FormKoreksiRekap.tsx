@@ -179,7 +179,7 @@ export function FormKoreksiRekap({ komponen, awal }: { komponen: { kode: string;
           </h3>
           {pratinjau.baris.length === 0 ? (
             <p className="text-sm text-slate-500">
-              NIP ini belum punya Rekap Kehadiran pada bulan yang tercakup. Koreksi tetap bisa disimpan dan akan berlaku saat rekap bulan itu diunggah.
+              NIP ini belum punya Absensi pada bulan yang tercakup. Koreksi tetap bisa disimpan dan akan berlaku saat absensi bulan itu diunggah.
             </p>
           ) : (
             <>

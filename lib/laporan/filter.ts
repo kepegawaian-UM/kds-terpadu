@@ -5,7 +5,7 @@ import { bandingkanNama } from "./urutNama";
 
 // ---- Jenis + Status -------------------------------------------------------------------------
 
-const JENIS_SAH = ["DSN", "TDK"]; // Akademisi Luar tidak masuk Rekap Kehadiran
+const JENIS_SAH = ["DSN", "TDK"]; // Akademisi Luar tidak masuk Absensi
 
 const bungkus = (v: Param): string[] => (v === undefined || v === null ? [] : Array.isArray(v) ? v : [v]);
 

@@ -20,7 +20,7 @@ export default async function StatistikTendikPage({
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Statistik Tendik</h1>
         <p className="text-sm text-slate-500">
-          Rekap Unit Kerja x Status Kepegawaian x Golongan x Pendidikan Terakhir, dari snapshot Nominatif{" "}
+          Ringkasan Unit Kerja x Status Kepegawaian x Golongan x Pendidikan Terakhir, dari snapshot Nominatif{" "}
           {namaBulan(bulan)} {tahun}.
         </p>
       </div>

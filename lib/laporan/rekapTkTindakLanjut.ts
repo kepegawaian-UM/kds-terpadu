@@ -176,7 +176,7 @@ export async function buatBerkasTk(lap: LaporanTk): Promise<Buffer> {
   ring.addRow([`Laporan TK (Tanpa Keterangan) untuk Tindak Lanjut - Tahun ${lap.tahun}`]).font = { bold: true, size: 13 };
   const aktif = lap.keaktifan === "aktif" ? "pegawai aktif saja" : lap.keaktifan === "nonaktif" ? "pegawai non-aktif saja" : "semua pegawai";
   ring.addRow([`Pegawai dengan total TK minimal ${lap.ambang} hari dalam setahun; ${aktif}. Dari ${lap.jumlahPegawaiDiperiksa} pegawai diperiksa, ${lap.baris.length} memenuhi ambang.`]);
-  ring.addRow(["Sumber: Rekap Kehadiran bulanan (sudah termasuk Koreksi Rekap); unit = Nominatif terakhir pegawai di tahun itu. Peringkat: nilai TK sama berbagi peringkat."]);
+  ring.addRow(["Sumber: Absensi bulanan (sudah termasuk Koreksi Absensi); unit = Nominatif terakhir pegawai di tahun itu. Peringkat: nilai TK sama berbagi peringkat."]);
   ring.addRow([]);
   ring.addRow(["Unit Induk", "Jumlah Pegawai", "Pegawai ber-TK", "% ber-TK", "Total Hari TK", "TK Tertinggi (1 orang)"]);
   for (const r of lap.ringkasan) ring.addRow([r.unitInduk, r.jumlahPegawai, r.pegawaiTk, r.persen, r.totalHari, r.maksPerOrang]);

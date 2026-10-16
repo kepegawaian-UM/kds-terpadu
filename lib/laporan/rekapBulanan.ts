@@ -135,7 +135,7 @@ export async function namaFileRekapBulanan(
   filter: FilterRekap
 ): Promise<string> {
   return buatNamaFile(
-    "Rekap Kehadiran Bulanan",
+    "Absensi Bulanan",
     filter.jenis,
     filter.status,
     `${namaBulan(bulan)} ${tahun}`,

@@ -30,11 +30,11 @@ export async function buatTemplateRekap(): Promise<Buffer> {
     ["Susunan kolom", `Sistem membaca kolom menurut POSISI, bukan teks judul; jangan menggeser atau menyisipkan kolom. Komponen yang dibaca: ${komponen}.`],
     ["NIP (kolom 21)", "Wajib, 18 digit, format kolom Teks. Baris tanpa NIP berisi digit murni dilewati. NIP yang tidak ada di Nominatif dilaporkan sebagai gagal."],
     ["BULAN (kolom 5)", "Nama bulan (Januari..Desember). Bila tidak cocok dengan bulan yang dipilih saat upload, hanya menjadi peringatan."],
-    ["Bulan sebelum TMT", "Baris ditolak bila bulan rekap lebih awal dari TMT pegawai; bulan TMT sendiri diterima."],
-    ["Akademisi Luar UM", "Tidak masuk Rekap Kehadiran; barisnya ditolak."],
+    ["Bulan sebelum TMT", "Baris ditolak bila bulan absensi lebih awal dari TMT pegawai; bulan TMT sendiri diterima."],
+    ["Akademisi Luar UM", "Tidak masuk Absensi; barisnya ditolak."],
     ["TOTAL dan JUMLAH MASUK NYATA", "Seharusnya sama; bila berbeda hanya menjadi peringatan."],
     ["NIP ganda", "Bila satu NIP muncul lebih dari sekali, baris TERAKHIR yang dipakai."],
-    ["Unggah ulang", "Mengunggah ulang bulan yang sama mengganti rekap bulan itu. Koreksi Rekap yang aktif diterapkan ulang otomatis."],
+    ["Unggah ulang", "Mengunggah ulang bulan yang sama mengganti absensi bulan itu. Koreksi Absensi yang aktif diterapkan ulang otomatis."],
   ].forEach((b, i) => {
     const baris = petunjuk.addRow(b);
     baris.getCell(2).alignment = { wrapText: true, vertical: "top" };

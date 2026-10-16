@@ -228,7 +228,7 @@ export async function simpanKoreksiImpor(prisma: PrismaClient, baris: BarisKorek
 
 /** Pesan ringkasan impor (sama dengan KoreksiRekapController::imporSimpan). */
 export function pesanImpor(h: HasilSimpanKoreksi): string {
-  let p = `Impor selesai: ${h.disimpan} koreksi disimpan, ${h.barisDiubah} baris rekap diubah, ${h.hariDipindah} hari dipindah.`;
+  let p = `Impor selesai: ${h.disimpan} koreksi disimpan, ${h.barisDiubah} baris absensi diubah, ${h.hariDipindah} hari dipindah.`;
   if (h.sebagian > 0) p += ` ${h.sebagian} bulan hanya sebagian masuk periode sehingga TIDAK diubah (perlu koreksi angka).`;
   if (h.kurang > 0) p += ` ${h.kurang} koreksi angka hanya terpenuhi sebagian (hari tersedia kurang).`;
   return p;

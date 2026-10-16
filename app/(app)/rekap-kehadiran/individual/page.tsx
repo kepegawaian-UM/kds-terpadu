@@ -36,13 +36,13 @@ export default async function RekapIndividualPage({ searchParams }: { searchPara
       pesan = `Tidak ada Dosen/Tendik dengan NIP atau nama tersebut pada Nominatif tahun ${tahun}.`;
     }
   }
-  const namaFile = laporan ? buatNamaFile("Rekap Individual", [], [], `${laporan.identitas.nama} ${laporan.tahun}`, []) : null;
+  const namaFile = laporan ? buatNamaFile("Absensi Pegawai", [], [], `${laporan.identitas.nama} ${laporan.tahun}`, []) : null;
 
   return (
     <div className="space-y-5">
       <div className="tanpa-cetak">
-        <h1 className="text-xl font-semibold text-slate-900">Rekap Individual</h1>
-        <p className="text-sm text-slate-500">Rekap kehadiran satu pegawai selama setahun (satu baris per bulan), siap dicetak atau disimpan sebagai PDF.</p>
+        <h1 className="text-xl font-semibold text-slate-900">Absensi Pegawai</h1>
+        <p className="text-sm text-slate-500">Absensi satu pegawai selama setahun (satu baris per bulan), siap dicetak atau disimpan sebagai PDF.</p>
       </div>
 
       <div className="tanpa-cetak flex justify-end">

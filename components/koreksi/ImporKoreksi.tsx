@@ -39,7 +39,7 @@ export function ImporKoreksi() {
   }
 
   function simpan(u: HasilUnggah, jumlah: number) {
-    if (!window.confirm(`Simpan ${jumlah} koreksi dan terapkan ke data rekap sekarang? Baris yang gagal atau duplikat dilewati.`)) return;
+    if (!window.confirm(`Simpan ${jumlah} koreksi dan terapkan ke data absensi sekarang? Baris yang gagal atau duplikat dilewati.`)) return;
     mulai(async () => {
       const h = await simpanImporKoreksi(masukan(u));
       if (h.ok) {

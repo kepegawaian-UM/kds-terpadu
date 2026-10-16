@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "KDS Terpadu",
   description:
-    "Arsip nominatif, rekap kehadiran, dan standarisasi data pegawai - Seksi Kinerja, Disiplin, dan Sistem Informasi, SDM UM",
+    "Arsip nominatif, absensi, dan standarisasi data pegawai - Seksi Kinerja, Disiplin, dan Sistem Informasi, SDM UM",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

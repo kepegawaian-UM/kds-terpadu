@@ -98,14 +98,14 @@ export function validasiRekap(baris: BarisSheet[], bulan: number, tahun: number,
     }
     if (!JENIS_PEGAWAI_DIIZINKAN.includes(snapshot.jenisPegawaiKode)) {
       hasil.gagal++;
-      catat(nomor, nip, "Akademisi Luar UM tidak masuk Rekap Kehadiran (aturan bisnis)");
+      catat(nomor, nip, "Akademisi Luar UM tidak masuk Absensi (aturan bisnis)");
       continue;
     }
     const tmtTahun = snapshot.tanggalMulaiKerja.getUTCFullYear();
     const tmtBulan = snapshot.tanggalMulaiKerja.getUTCMonth() + 1;
     if (tahun < tmtTahun || (tahun === tmtTahun && bulan < tmtBulan)) {
       hasil.gagal++;
-      catat(nomor, nip, `Bulan/tahun rekap (${bulan}/${tahun}) lebih awal dari TMT pegawai (${String(tmtBulan).padStart(2, "0")}/${String(tmtTahun).padStart(4, "0")})`);
+      catat(nomor, nip, `Bulan/tahun absensi (${bulan}/${tahun}) lebih awal dari TMT pegawai (${String(tmtBulan).padStart(2, "0")}/${String(tmtTahun).padStart(4, "0")})`);
       continue;
     }
 

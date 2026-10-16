@@ -139,7 +139,7 @@ describe.skipIf(!jalan)("paritas Rekap Individual KDS2 <-> KDS Terpadu", () => {
       if (!l) continue;
       diperiksa++;
       const o = hasil<{ judul: string; baris: unknown[][] }>(h, `e${i}`);
-      if (o.judul !== "Rekap Individual" || JSON.stringify(barisEksporIndividual(l)) !== JSON.stringify(o.baris)) beda.push(`ekspor#${i}`);
+      if (o.judul !== "Absensi Pegawai" || JSON.stringify(barisEksporIndividual(l)) !== JSON.stringify(o.baris)) beda.push(`ekspor#${i}`);
     }
     const laporan = (await Promise.all([...new Set([...sampel, ...sampel.slice(0, 3)])].map((n) => bangunRekapIndividual(db, n, 2026)))).filter((x): x is LaporanIndividual => x !== null);
     const sheets = hasil<{ judul: string; baris: unknown[][] }[]>(h, "massal");

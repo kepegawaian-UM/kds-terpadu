@@ -182,9 +182,9 @@ export function nilaiBulan(n: HasilNominatif, jt: HasilJabatanTambahan, r: Hasil
   if (n.nipBedaBaru.length > 0) alasan.push(`${n.nipBedaBaru.length} NIP Nominatif beda kolom (selisih baru)`);
   if (jt.bedaBaru.length > 0) alasan.push(`${jt.bedaBaru.length} NIP jabatan tambahan beda (selisih baru)`);
   if (r) {
-    if (r.hanyaKds2.length > 0) alasan.push(`${r.hanyaKds2.length} NIP Rekap hanya di KDS2`);
-    if (r.hanyaTerpadu.length > 0) alasan.push(`${r.hanyaTerpadu.length} NIP Rekap hanya di Terpadu`);
-    if (r.sel.beda > 0) alasan.push(`${r.sel.beda} sel Rekap beda`);
+    if (r.hanyaKds2.length > 0) alasan.push(`${r.hanyaKds2.length} NIP Absensi hanya di KDS2`);
+    if (r.hanyaTerpadu.length > 0) alasan.push(`${r.hanyaTerpadu.length} NIP Absensi hanya di Terpadu`);
+    if (r.sel.beda > 0) alasan.push(`${r.sel.beda} sel Absensi beda`);
   }
   return { bersih: alasan.length === 0, alasan };
 }

@@ -59,13 +59,13 @@ describe("DokumenRekapIndividual", () => {
 
   it("memuat kop surat, identitas, baris bulan (ada/tidak ada), jumlah, ringkasan, dan keterangan", () => {
     const { container } = render(<DokumenRekapIndividual laporan={laporan} tanggalCetak="13 Oktober 2026" />);
-    expect(screen.getByText("REKAP KEHADIRAN INDIVIDUAL TAHUN 2026")).toBeTruthy();
+    expect(screen.getByText("ABSENSI PEGAWAI TAHUN 2026")).toBeTruthy();
     expect(screen.getByText("UNIVERSITAS NEGERI MALANG (UM)")).toBeTruthy();
     expect(screen.getByAltText("Logo Universitas Negeri Malang")).toBeTruthy();
     expect(screen.getByText("Fakultas Ilmu Pendidikan, Fakultas")).toBeTruthy();
     expect(screen.getByText("Pensiun")).toBeTruthy(); // keterangan status keluar
-    expect(screen.getByText("2026 (data rekap tersedia 1 dari 12 bulan)")).toBeTruthy();
-    expect(screen.getAllByText("Belum ada rekap kehadiran")).toHaveLength(11);
+    expect(screen.getByText("2026 (data absensi tersedia 1 dari 12 bulan)")).toBeTruthy();
+    expect(screen.getAllByText("Belum ada absensi")).toHaveLength(11);
     const januari = screen.getByText("Januari").closest("tr")!;
     expect(within(januari).getByText("85,0%")).toBeTruthy();
     expect(within(januari).getAllByText("-").length).toBe(10); // 10 komponen bernilai 0 ditampilkan "-"

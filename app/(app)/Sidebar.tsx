@@ -15,23 +15,23 @@ const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
     items: [
       { href: "/standarisasi", label: "Standarisasi" },
       { href: "/bandingkan", label: "Bandingkan Batch" },
-      { href: "/rekap-kehadiran/upload", label: "Upload Rekap" },
-      { href: "/koreksi-rekap", label: "Koreksi Rekap" },
+      { href: "/rekap-kehadiran/upload", label: "Upload Absensi" },
+      { href: "/koreksi-rekap", label: "Koreksi Absensi" },
     ],
   },
   {
     label: "2. Periksa hasilnya",
     items: [
-      { href: "/rekap-kehadiran/belum-upload", label: "Belum Ada Rekap" },
+      { href: "/rekap-kehadiran/belum-upload", label: "Belum Ada Absensi" },
       { href: "/nominatif", label: "Nominatif" },
-      { href: "/rekap-kehadiran/bulanan", label: "Rekap Bulanan" },
+      { href: "/rekap-kehadiran/bulanan", label: "Absensi Bulanan" },
     ],
   },
   {
     label: "3. Laporan",
     items: [
-      { href: "/rekap-kehadiran/tahunan", label: "Rekap Tahunan" },
-      { href: "/rekap-kehadiran/individual", label: "Rekap Individual" },
+      { href: "/rekap-kehadiran/tahunan", label: "Absensi Tahunan" },
+      { href: "/rekap-kehadiran/individual", label: "Absensi Pegawai" },
       { href: "/statistik/dosen", label: "Statistik Dosen" },
       { href: "/statistik/tendik", label: "Statistik Tendik" },
     ],

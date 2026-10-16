@@ -26,7 +26,7 @@ export default async function CetakMassalPage({ searchParams }: { searchParams: 
   return (
     <div className="space-y-5">
       <div className="tanpa-cetak">
-        <h1 className="text-xl font-semibold text-slate-900">Cetak Massal Rekap Individual</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Cetak Massal Absensi Pegawai</h1>
         <p className="text-sm text-slate-500">{terpilih.daftar.length} dokumen, satu dokumen per halaman. Nama file PDF yang disarankan: {namaFile}</p>
       </div>
 

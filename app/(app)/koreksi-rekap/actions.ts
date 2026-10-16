@@ -22,7 +22,7 @@ async function pengguna(): Promise<string | null> {
 
 /** Pesan ringkasan penerapan (sama dengan KoreksiRekapController::ringkasan). */
 function ringkasan(h: HasilTerapan, awal: string): string {
-  let p = `${awal}: ${h.barisDiubah} baris rekap diubah, ${h.hariDipindah} hari dipindah.`;
+  let p = `${awal}: ${h.barisDiubah} baris absensi diubah, ${h.hariDipindah} hari dipindah.`;
   if (h.sebagian.length > 0) p += ` ${h.sebagian.length} bulan hanya sebagian masuk periode sehingga TIDAK diubah (perlu koreksi angka).`;
   if (h.kurang.length > 0) p += ` ${h.kurang.length} koreksi angka hanya terpenuhi sebagian karena hari yang tersedia di komponen asal kurang dari yang diminta.`;
   return p;

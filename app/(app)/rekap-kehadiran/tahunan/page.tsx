@@ -29,8 +29,8 @@ export default async function RekapTahunanPage({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Rekap Kehadiran Tahunan</h1>
-        <p className="text-sm text-slate-500">Agregat (SUM) kehadiran setahun, dihitung langsung dari rekap bulanan.</p>
+        <h1 className="text-xl font-semibold text-slate-900">Absensi Tahunan</h1>
+        <p className="text-sm text-slate-500">Agregat (SUM) kehadiran setahun, dihitung langsung dari absensi bulanan.</p>
       </div>
 
       <FormLaporan>
@@ -76,7 +76,7 @@ export default async function RekapTahunanPage({
       />
 
       <p className="tanpa-cetak text-xs text-slate-500">
-        Angka adalah total (SUM) selama setahun, dihitung langsung dari rekap bulanan yang sudah diupload - bukan tabel
+        Angka adalah total (SUM) selama setahun, dihitung langsung dari absensi bulanan yang sudah diupload - bukan tabel
         tersendiri. Diurutkan dari TK (Tanpa Keterangan) terbanyak sebagai default (bisa diurut ulang, klik judul kolom
         mana saja). Pegawai yang ditampilkan adalah yang punya minimal 1 snapshot Nominatif di tahun terpilih. Filter
         Keaktifan: <strong>Aktif saja</strong> (default) menyembunyikan pegawai yang sudah tidak ada di Nominatif bulan

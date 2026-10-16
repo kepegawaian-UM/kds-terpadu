@@ -49,7 +49,7 @@ describe.skipIf(!jalan)("paritas pembantu laporan KDS2 <-> KDS Terpadu", () => {
       }))
     );
     for (const k of kasus) {
-      expect(buatNamaFile("Rekap Kehadiran Tahunan", k.jenis, k.status, k.periode, urutanStatus, k.keaktifan), k.id).toBe(
+      expect(buatNamaFile("Absensi Tahunan", k.jenis, k.status, k.periode, urutanStatus, k.keaktifan), k.id).toBe(
         hasil<string>(h, k.id)
       );
     }

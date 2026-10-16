@@ -84,7 +84,7 @@ describe.skipIf(!ada)("Aksi Koreksi Rekap", () => {
 
   it("simpan menerapkan koreksi, melaporkan ringkasan, dan mencatat audit; batalkan tidak mengembalikan angka", async () => {
     const s = await simpanKoreksiAksi(form);
-    expect(s).toMatchObject({ ok: true, pesan: "Koreksi disimpan dan diterapkan: 2 baris rekap diubah, 8 hari dipindah." });
+    expect(s).toMatchObject({ ok: true, pesan: "Koreksi disimpan dan diterapkan: 2 baris absensi diubah, 8 hari dipindah." });
     expect(await nilaiTK(9)).toBe("0");
     expect(await prisma.auditLog.count({ where: { namaTabel: "koreksi_rekap", fieldDiubah: "nip" } })).toBe(1);
     expect(await prisma.auditLog.count({ where: { namaTabel: "rekap_kehadiran_detail" } })).toBeGreaterThan(2);
@@ -100,7 +100,7 @@ describe.skipIf(!ada)("Aksi Koreksi Rekap", () => {
     expect(await terapkanUlangAksi(13, 2026)).toMatchObject({ ok: false });
     expect(await terapkanUlangAksi(9, 1999)).toMatchObject({ ok: false });
     await prisma.koreksiRekap.create({ data: { nip: NIP, jenis: "periode", dariKomponen: "TK", keKomponen: "TB", tanggalMulai: new Date("2026-09-01T00:00:00Z"), alasan: "lama", dibuatOleh: "t", dibuatPada: new Date() } });
-    expect(await terapkanUlangAksi(9, 2026)).toMatchObject({ ok: true, pesan: "Koreksi diterapkan ulang: 1 baris rekap diubah, 6 hari dipindah." });
+    expect(await terapkanUlangAksi(9, 2026)).toMatchObject({ ok: true, pesan: "Koreksi diterapkan ulang: 1 baris absensi diubah, 6 hari dipindah." });
     expect(await nilaiTK(9)).toBe("0");
   });
 
@@ -109,7 +109,7 @@ describe.skipIf(!ada)("Aksi Koreksi Rekap", () => {
     expect((await unduhTemplate()).status).toBe(401);
     sesi.user = { id: "u1", name: "Admin Uji" };
     const res = await unduhTemplate();
-    expect(res.headers.get("content-disposition")).toContain("Template_Impor_Koreksi_Rekap.xlsx");
+    expect(res.headers.get("content-disposition")).toContain("Template_Impor_Koreksi_Absensi.xlsx");
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
     expect(wb.worksheets.map((w) => w.name)).toEqual(["Koreksi", "Petunjuk"]);

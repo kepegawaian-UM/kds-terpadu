@@ -31,7 +31,7 @@ export default async function HasilUploadRekapPage({
 
   return (
     <div className="max-w-4xl space-y-5">
-      <h1 className="text-xl font-semibold text-slate-900">Hasil Upload Rekap Kehadiran</h1>
+      <h1 className="text-xl font-semibold text-slate-900">Hasil Upload Absensi</h1>
 
       <section className="rounded-xl border border-slate-200 bg-white p-6">
         <dl className="mb-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-5">
@@ -55,7 +55,7 @@ export default async function HasilUploadRekapPage({
 
       {(diubah > 0 || sebagian > 0 || kurang > 0) && (
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-          Koreksi manual otomatis diterapkan setelah upload: {angka(diubah)} baris rekap diubah, {angka(hari)} hari dipindah.
+          Koreksi manual otomatis diterapkan setelah upload: {angka(diubah)} baris absensi diubah, {angka(hari)} hari dipindah.
           {sebagian > 0 && <> {angka(sebagian)} pegawai hanya sebagian bulan masuk periode koreksi sehingga TIDAK diubah.</>}
           {kurang > 0 && <> {angka(kurang)} koreksi angka hanya terpenuhi sebagian.</>}
         </div>
@@ -69,7 +69,7 @@ export default async function HasilUploadRekapPage({
         {batch.bulan && batch.tahun && (
           <>
             {" · "}
-            <Link href={`/rekap-kehadiran/bulanan?bulan=${batch.bulan}&tahun=${batch.tahun}`} className="text-blue-700 underline">Lihat Rekap Bulanan</Link>
+            <Link href={`/rekap-kehadiran/bulanan?bulan=${batch.bulan}&tahun=${batch.tahun}`} className="text-blue-700 underline">Lihat Absensi Bulanan</Link>
           </>
         )}
       </p>

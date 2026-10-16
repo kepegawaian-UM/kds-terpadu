@@ -20,7 +20,7 @@ export default async function StatistikDosenPage({
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Statistik Dosen</h1>
         <p className="text-sm text-slate-500">
-          Rekap Fakultas/Jurusan x Jabatan Fungsional x Golongan x Jenis Kelamin x Pendidikan, dari snapshot Nominatif{" "}
+          Ringkasan Fakultas/Jurusan x Jabatan Fungsional x Golongan x Jenis Kelamin x Pendidikan, dari snapshot Nominatif{" "}
           {namaBulan(bulan)} {tahun}.
         </p>
       </div>

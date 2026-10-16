@@ -137,7 +137,7 @@ describe.skipIf(!ada)("Aksi Upload Rekap", () => {
     expect((await unduhTemplate()).status).toBe(401);
     sesi.user = { id: "u1", name: "Admin Uji" };
     const res = await unduhTemplate();
-    expect(res.headers.get("content-disposition")).toContain("Template_Upload_Rekap_Kehadiran_Bulanan.xlsx");
+    expect(res.headers.get("content-disposition")).toContain("Template_Upload_Absensi_Bulanan.xlsx");
     const berkas = Buffer.from(await res.arrayBuffer());
     expect(await periksaBerkas(berkas)).toBeNull();
     const baris = await bacaBarisRekap(berkas, null);

@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 
+import { petakanIstilah } from "./istilah";
 import { KDS2_PATH } from "./oracle";
 
 const execFileAsync = promisify(execFile);
@@ -80,7 +81,7 @@ async function jalankanSkrip<T>(skrip: string, kasus: unknown[], master?: Record
   try {
     writeFileSync(masuk, JSON.stringify({ kasus, master }));
     await execFileAsync(PHP, [skrip, masuk, keluar], { timeout: 10 * 60_000, maxBuffer: 16 * 1024 * 1024, env: { ...process.env, KDS2_PATH } });
-    return JSON.parse(readFileSync(keluar, "utf8"));
+    return petakanIstilah(JSON.parse(readFileSync(keluar, "utf8")));
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

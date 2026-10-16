@@ -9,7 +9,7 @@ export async function GET(): Promise<Response> {
   return new Response(new Uint8Array(berkas), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": 'attachment; filename="Template_Impor_Koreksi_Rekap.xlsx"',
+      "Content-Disposition": 'attachment; filename="Template_Impor_Koreksi_Absensi.xlsx"',
       "Cache-Control": "no-store",
     },
   });

@@ -9,6 +9,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 
+import { petakanIstilah } from "./istilah";
+
 const execFileAsync = promisify(execFile);
 
 export type PermintaanOracle = { id: string; laporan: string; params?: Record<string, unknown> };
@@ -39,7 +41,7 @@ export async function tanyaOracle(permintaan: PermintaanOracle[]): Promise<Hasil
       maxBuffer: 16 * 1024 * 1024,
       env: { ...process.env, KDS2_PATH },
     });
-    return JSON.parse(readFileSync(keluar, "utf8")) as HasilOracle;
+    return petakanIstilah(JSON.parse(readFileSync(keluar, "utf8")) as HasilOracle);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

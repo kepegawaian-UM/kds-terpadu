@@ -1,5 +1,5 @@
 /**
- * Rekap Kehadiran Bulanan dengan data SINTETIS di kds_test: urutan TK, sel koreksi berwarna
+ * Absensi Bulanan dengan data SINTETIS di kds_test: urutan TK, sel koreksi berwarna
  * (periode penuh, angka mengalahkan periode, dibatalkan, "dihapus"), lencana status, filter
  * Keaktifan, dan rute ekspor Excel (login, nama file, isi). Melengkapi paritas data asli.
  */
@@ -135,8 +135,8 @@ describe.skipIf(!ada)("Rekap Bulanan (sintetis)", () => {
   });
 
   it("nama file mengikuti tab, filter, keaktifan, dan periode", async () => {
-    expect((await lap({ jenis: ["DSN"], status: ["PNS"] })).namaFile).toBe("Rekap Kehadiran Bulanan Dosen PNS Aktif September 2026");
-    expect((await lap({ keaktifan: "semua" })).namaFile).toBe("Rekap Kehadiran Bulanan September 2026");
+    expect((await lap({ jenis: ["DSN"], status: ["PNS"] })).namaFile).toBe("Absensi Bulanan Dosen PNS Aktif September 2026");
+    expect((await lap({ keaktifan: "semua" })).namaFile).toBe("Absensi Bulanan September 2026");
   });
 });
 
@@ -184,7 +184,7 @@ describe.skipIf(!ada)("GET /rekap-kehadiran/bulanan/export (sintetis)", () => {
 
   it("xlsx: nama file sesuai filter, judul memuat nama komponen, urut nama, sel tanpa rekap kosong", async () => {
     const res = await GET(new Request("http://localhost/x?bulan=9&tahun=2026&jenis=DSN&jenis[]=TDK&status=PNS&keaktifan=semua"));
-    expect(res.headers.get("Content-Disposition")).toContain('filename="Rekap Kehadiran Bulanan Dosen dan Tendik PNS September 2026.xlsx"');
+    expect(res.headers.get("Content-Disposition")).toContain('filename="Absensi Bulanan Dosen dan Tendik PNS September 2026.xlsx"');
     const ws = await baca(res);
     expect(ws.getRow(1).getCell(1).value).toBe("NIP");
     expect(ws.getRow(1).getCell(5).value).toBe("Σ Hari");

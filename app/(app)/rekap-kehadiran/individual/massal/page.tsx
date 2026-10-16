@@ -21,7 +21,7 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Rekap Individual Massal</h1>
+        <h1 className="text-xl font-semibold text-slate-900">Absensi Pegawai Massal</h1>
         <p className="text-sm text-slate-500">
           Pilih Dosen/Tendik berdasarkan kriteria (mis. TK setahun minimal 20 hari), lalu cetak semuanya sekaligus (satu dokumen per halaman) atau unduh Excel (satu sheet per pegawai).
         </p>
@@ -39,7 +39,7 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
       <PilihanMassal key={`${p.tahun}-${p.minTk}-${p.keaktifan}-${p.jenis.join()}-${p.status.join()}`} kandidat={kandidat} maks={MAKS_PEGAWAI_MASSAL} tahun={p.tahun} minTk={p.minTk} keaktifan={p.keaktifan} jenis={p.jenis} status={p.status} />
 
       <p className="text-sm">
-        <Link href={`/rekap-kehadiran/individual?tahun=${p.tahun}`} className="text-blue-700 underline">&larr; Rekap Individual satu pegawai</Link>
+        <Link href={`/rekap-kehadiran/individual?tahun=${p.tahun}`} className="text-blue-700 underline">&larr; Absensi satu pegawai</Link>
       </p>
     </div>
   );

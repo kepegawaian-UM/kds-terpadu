@@ -124,7 +124,7 @@ describe("nilaiBulan", () => {
     expect(h.bersih).toBe(false);
     expect(h.alasan).toEqual([
       "2 NIP Nominatif hanya di KDS2", "1 NIP Nominatif hanya di Terpadu", "1 NIP Nominatif beda kolom (selisih baru)", "2 NIP jabatan tambahan beda (selisih baru)",
-      "1 NIP Rekap hanya di KDS2", "1 NIP Rekap hanya di Terpadu", "1 sel Rekap beda",
+      "1 NIP Absensi hanya di KDS2", "1 NIP Absensi hanya di Terpadu", "1 sel Absensi beda",
     ]);
   });
 });

@@ -254,7 +254,7 @@ async function dashboardPegawai(db: Db, bulan: number, tahun: number) {
     { label: "Total akademisi luar", value: akl.length, icon: "users" },
     { label: "Kategori terbanyak", value: terbanyak ? (kategoriNama.get(terbanyak) ?? "") : "-", icon: "star", teks: true },
     {
-      label: "Tercover rekap kehadiran",
+      label: "Tercover absensi",
       value: persen(akl.filter((r) => r.kategoriKode !== null && kategoriMasukRekap.has(r.kategoriKode)).length, akl.length),
       suffix: "%",
       icon: "calendar",
@@ -348,7 +348,7 @@ async function dashboardKinerja(db: Db, tahun: number) {
 
   return {
     kpi: [
-      { label: "Pegawai tercover rekap", value: Number(ringkasan.tercover), icon: "users" },
+      { label: "Pegawai tercover absensi", value: Number(ringkasan.tercover), icon: "users" },
       { label: "Rata-rata kehadiran", value: sigmaHari > 0 ? persen(masukNyata, sigmaHari) : 0, suffix: "%", icon: "check" },
       { label: "Total TK setahun", value: Number(ringkasan.tk ?? 0), icon: "alert-triangle" },
       { label: "Kelengkapan upload", value: `${Number(ringkasan.bulan_upload)}/12 bulan`, icon: "upload", teks: true },
