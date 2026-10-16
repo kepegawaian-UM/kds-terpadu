@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { PrismaClient } from "@prisma/client";
 
 import { GET } from "@/app/(app)/rekap-kehadiran/tahunan/tk/route";
+import { laporanRekapBulanan } from "@/lib/laporan/rekapBulanan";
 import { laporanRekapTahunan } from "@/lib/laporan/rekapTahunan";
 import { ambangDari, beriPeringkat, laporanTkTindakLanjut, namaSheetUnik, stempelWaktuWib } from "@/lib/laporan/rekapTkTindakLanjut";
 
@@ -25,6 +26,7 @@ const B = "900000000000000002"; // Feb 1, Mar 1 -> 2 (di bawah ambang 3) (unit X
 const C = "900000000000000003"; // Mar 5, Apr 4 -> 9 (unit Y)
 const D = "900000000000000004"; // Jan 6 -> 6 (unit Y, kembar dengan A)
 const E = "900000000000000005"; // tanpa TK (unit Y)
+const F = "900000000000000006"; // Akademisi Luar (unit Y): tidak pernah masuk laporan Absensi
 
 describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
   let unitX = "";
@@ -41,10 +43,10 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     const nom = (nip: string, jenis: string) => ({ nip, bulan: 12, tahun: 2026, jenis, tmt: "2015-01-01" });
     const rek = (nip: string, bulan: number, TK: string) => ({ nip, bulan, tahun: 2026, komponen: { TK, I: "0" } });
     await muatKeadaan(prisma, {
-      nominatif: [nom(A, "DSN"), nom(B, "TDK"), nom(C, "TDK"), nom(D, "DSN"), nom(E, "TDK")],
+      nominatif: [nom(A, "DSN"), nom(B, "TDK"), nom(C, "TDK"), nom(D, "DSN"), nom(E, "TDK"), nom(F, "AKL")],
       rekap: [rek(A, 1, "2"), rek(A, 3, "1"), rek(A, 6, "3"), rek(B, 2, "1"), rek(B, 3, "1"), rek(C, 3, "5"), rek(C, 4, "4"), rek(D, 1, "6"), rek(E, 5, "0")],
     });
-    for (const [nip, unitKode] of [[A, unitX], [B, unitX], [C, unitY], [D, unitY], [E, unitY]] as const) {
+    for (const [nip, unitKode] of [[A, unitX], [B, unitX], [C, unitY], [D, unitY], [E, unitY], [F, unitY]] as const) {
       await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: nip }, data: { unitAsalKode: unitKode } });
     }
   });
@@ -135,5 +137,14 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     const longgar = new ExcelJS.Workbook();
     await longgar.xlsx.load(Buffer.from(await (await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1"))).arrayBuffer()) as unknown as ArrayBuffer);
     expect(longgar.getWorksheet("Semua Pegawai")!.rowCount).toBe(5); // judul + A, B, C, D
+  });
+
+  it("Akademisi Luar tidak ikut laporan Absensi bila filter Jenis kosong (Tahunan, Bulanan, dan laporan TK); Dosen/Tendik tetap lengkap", async () => {
+    const tahunan = await laporanRekapTahunan(prisma, 2026, FILTER);
+    expect(tahunan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E].sort());
+    const bulanan = await laporanRekapBulanan(prisma, 12, 2026, FILTER);
+    expect(bulanan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E].sort());
+    const tk = await laporanTkTindakLanjut(prisma, 2026, FILTER, 1);
+    expect(tk.jumlahPegawaiDiperiksa).toBe(5); // penyebut persentase unit tidak memuat Akademisi Luar
   });
 });

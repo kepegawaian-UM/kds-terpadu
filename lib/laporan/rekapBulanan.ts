@@ -113,7 +113,8 @@ export async function komponenTerurut(db: Pick<PrismaClient, "komponenKehadiran"
 /** Filter Keaktifan + Jenis/Status pada query snapshot nominatif (nonaktif = hasil nipNonaktif). */
 export function kondisiNominatif(f: FilterRekap, nonaktif: string[]) {
   return {
-    ...(f.jenis.length ? { jenisPegawaiKode: { in: f.jenis } } : {}),
+    // Akademisi Luar tidak masuk Absensi: "Semua" jenis berarti Dosen + Tendik (BEDA dari KDS2, yang ikut menampilkan Akademisi Luar bila filter jenis kosong; keputusan pengguna 16 Okt 2026)
+    jenisPegawaiKode: { in: f.jenis.length ? f.jenis : ["DSN", "TDK"] },
     ...(f.status.length ? { statusKepegawaianKode: { in: f.status } } : {}),
     ...(f.keaktifan === "aktif" ? { pegawaiNip: { notIn: nonaktif } } : f.keaktifan === "nonaktif" ? { pegawaiNip: { in: nonaktif } } : {}),
   };

@@ -197,7 +197,7 @@ export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: str
   const ids = g.map((x) => x._max.id!).sort((a, b) => a - b);
 
   const diurutId = await db.nominatifBulanan.findMany({
-    where: { id: { in: ids }, jenisPegawaiKode: { in: ["DSN", "TDK"] }, ...kondisiNominatif({ ...filter }, nonaktif) },
+    where: { id: { in: ids }, ...kondisiNominatif({ ...filter }, nonaktif) },
     orderBy: { id: "asc" },
     include: { jenisPegawai: { select: { nama: true } }, statusKepegawaian: { select: { nama: true } }, unitAsal: { select: { nama: true } } },
   });

@@ -9,7 +9,7 @@ import { PrismaClient } from "@prisma/client";
 import { eksporRekapBulanan, koreksiBerlaku, periodeBulanBerjalan } from "@/lib/laporan/rekapBulanan";
 import type { Keaktifan } from "@/lib/laporan/filter";
 
-import { bandingkanRekapBulanan, type FilterUji, type OracleBulanan as Oracle } from "../support/bandingkanRekap";
+import { bandingkanRekapBulanan, type FilterUji, type OracleBulanan as Oracle, tanpaAkademisiLuarEkspor } from "../support/bandingkanRekap";
 import { hasil, oracleTersedia, tanyaOracle } from "../support/oracle";
 
 const url = process.env.KDS2_SALINAN_DATABASE_URL;
@@ -114,7 +114,7 @@ describe.skipIf(!jalan)("paritas Rekap Kehadiran Bulanan KDS2 <-> KDS Terpadu", 
     ];
     const h = await tanyaOracle(kasus.map((k) => ({ id: k.id, laporan: "rekap.bulanan.export", params: k.params })));
     for (const k of kasus) {
-      const o = hasil<{ headings: string[]; rows: unknown[][] }>(h, k.id);
+      const o = tanpaAkademisiLuarEkspor(hasil<{ headings: string[]; rows: unknown[][] }>(h, k.id));
       const p = k.params as { bulan: number; tahun: number };
       const s = await eksporRekapBulanan(db, p.bulan, p.tahun, k.filter, k.ekstra);
       expect(s.headings, `judul ${k.id}`).toEqual(o.headings);

@@ -41,9 +41,25 @@ export type OracleTahunan = {
   baris: { id: number; nip: string; nama: string; badge: [string, string] | null; sel: string[] }[];
 };
 
+/**
+ * KDS Terpadu tidak menampilkan Akademisi Luar di laporan Absensi bila filter Jenis kosong (keputusan pengguna 16 Okt 2026); KDS2 menampilkannya.
+ * Baris Akademisi Luar dibuang dari keluaran oracle KDS2 sebelum dibandingkan, sehingga yang dibuktikan tetap: semua baris Dosen/Tendik identik.
+ */
+async function tanpaAkademisiLuar<T extends { id: number }>(db: PrismaClient, baris: T[]): Promise<T[]> {
+  const akl = new Set((await db.nominatifBulanan.findMany({ where: { id: { in: baris.map((b) => b.id) }, jenisPegawaiKode: "AKL" }, select: { id: true } })).map((x) => x.id));
+  return baris.filter((b) => !akl.has(b.id));
+}
+
+/** Padanan untuk keluaran ekspor (kolom "Jenis Pegawai" berisi nama jenisnya). */
+export function tanpaAkademisiLuarEkspor<T extends { headings: string[]; rows: unknown[][] }>(o: T): T {
+  const k = o.headings.indexOf("Jenis Pegawai");
+  return k < 0 ? o : { ...o, rows: o.rows.filter((r) => r[k] !== "Akademisi Luar UM") };
+}
+
 const entri = (o: Record<string, string> | null | undefined) => JSON.stringify(Object.entries(o ?? {}).sort());
 
-export async function bandingkanRekapBulanan(db: PrismaClient, id: string, o: OracleBulanan, filter: FilterUji, bulan: number, tahun: number) {
+export async function bandingkanRekapBulanan(db: PrismaClient, id: string, oAsli: OracleBulanan, filter: FilterUji, bulan: number, tahun: number) {
+  const o = { ...oAsli, baris: await tanpaAkademisiLuar(db, oAsli.baris) };
   const s = await laporanRekapBulanan(db, bulan, tahun, filter);
   expect(s.namaFile, `namaFile ${id}`).toBe(o.namaFile);
   expect({ jenis: s.jenis, status: s.status, keaktifan: s.keaktifan }, `filter ${id}`).toEqual({
@@ -70,7 +86,8 @@ export async function bandingkanRekapBulanan(db: PrismaClient, id: string, o: Or
   expect(beda.slice(0, 5), `baris berbeda ${id}: ${beda.length}`).toEqual([]);
 }
 
-export async function bandingkanRekapTahunan(db: PrismaClient, id: string, o: OracleTahunan, filter: FilterUji, tahun: number) {
+export async function bandingkanRekapTahunan(db: PrismaClient, id: string, oAsli: OracleTahunan, filter: FilterUji, tahun: number) {
+  const o = { ...oAsli, baris: await tanpaAkademisiLuar(db, oAsli.baris) };
   const s = await laporanRekapTahunan(db, tahun, filter);
   expect(s.namaFile, `namaFile ${id}`).toBe(o.namaFile);
   expect({ jenis: s.jenis, status: s.status, keaktifan: s.keaktifan }, `filter ${id}`).toEqual({
@@ -113,7 +130,8 @@ export function normalisasiSeri(rows: unknown[][]): unknown[][] {
 }
 
 /** Bandingkan hasil ekspor (judul + baris) dengan oracle; urutan antar-nama kembar tidak dipersoalkan. */
-export function bandingkanEkspor(id: string, o: { headings: string[]; rows: unknown[][] }, s: { headings: string[]; rows: unknown[][] }) {
+export function bandingkanEkspor(id: string, oAsli: { headings: string[]; rows: unknown[][] }, s: { headings: string[]; rows: unknown[][] }) {
+  const o = tanpaAkademisiLuarEkspor(oAsli);
   expect(s.headings, `judul ${id}`).toEqual(o.headings);
   expect(s.rows.length, `jumlah baris ekspor ${id}`).toBe(o.rows.length);
   const no = normalisasiSeri(o.rows);
