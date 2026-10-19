@@ -12,11 +12,12 @@ type Masukan = { uploadId: string; totalPotongan: number; bulan: number; tahun: 
 export type GalatUpload = { ok: false; error: string; bidang?: "file" | "nama_sheet" | "bulan" | "tahun" };
 
 /** Ringkasan untuk layar: daftar catatan dipotong agar respons tetap kecil; jumlah sebenarnya tetap ikut. */
-export type RingkasanLayar = Omit<RingkasanRekap, "catatan"> & { catatan: Catatan[]; catatanTotal: number };
+export type RingkasanLayar = Omit<RingkasanRekap, "catatan"> & { catatan: Catatan[]; catatanTotal: number; anomaliTotal: number };
 export type HasilPeriksa = { ok: true; ringkasan: RingkasanLayar } | GalatUpload;
 export type HasilSimpan = { ok: true; batchId: number; koreksi: { barisDiubah: number; hariDipindah: number; sebagian: number; kurang: number } } | GalatUpload;
 
 const BATAS_CATATAN_LAYAR = 300;
+const BATAS_ANOMALI_LAYAR = 500; // urut penting, sedang, info: yang terpotong hanya yang paling ringan
 
 function validasi(m: Masukan): GalatUpload | null {
   if (!uploadIdValid(m.uploadId)) return { ok: false, error: "Unggahan tidak valid. Silakan pilih berkasnya lagi." };
@@ -42,7 +43,7 @@ export async function periksaUploadRekap(m: Masukan): Promise<HasilPeriksa> {
   try {
     const berkas = await rakitBerkas(prisma, m.uploadId, m.totalPotongan);
     const r = await periksaRekap(prisma, berkas, { bulan: m.bulan, tahun: m.tahun, namaSheet: m.namaSheet });
-    return { ok: true, ringkasan: { ...r, catatanTotal: r.catatan.length, catatan: r.catatan.slice(0, BATAS_CATATAN_LAYAR) } };
+    return { ok: true, ringkasan: { ...r, catatanTotal: r.catatan.length, catatan: r.catatan.slice(0, BATAS_CATATAN_LAYAR), anomaliTotal: r.anomali.length, anomali: r.anomali.slice(0, BATAS_ANOMALI_LAYAR) } };
   } catch (e) {
     return galat(e);
   }

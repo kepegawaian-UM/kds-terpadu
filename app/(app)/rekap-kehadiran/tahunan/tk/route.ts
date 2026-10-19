@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const { jenis, status } = jenisStatusDari({ jenis: semuaNilai(sp, "jenis"), status: semuaNilai(sp, "status") }, daftarStatus.map((s) => s.kode));
   const filter = { jenis, status, keaktifan: keaktifanDari(sp.get("keaktifan")) };
 
-  const lap = await laporanTkTindakLanjut(prisma, tahun, filter, ambangDari(sp.get("min_tk")));
+  const lap = await laporanTkTindakLanjut(prisma, tahun, filter, ambangDari(sp.get("min_tk")), new Date(), sp.get("shift") === "1");
   const isi = await buatBerkasTk(lap);
   return new Response(new Uint8Array(isi), {
     headers: { "Content-Type": MIME_XLSX, "Content-Disposition": headerUnduhan(lap.namaFile, "xlsx"), "Cache-Control": "no-store" },

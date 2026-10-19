@@ -17,6 +17,7 @@ import { periksaBerkas } from "@/lib/upload/penjagaBerkas";
 
 import { terapkanUntukBulan, type HasilTerapan } from "@/lib/koreksi/layanan";
 
+import { type Anomali, deteksiAnomali, muatKonteksAnomali } from "./anomaliAbsensi";
 import { phpLtrim, phpSamaTanpaHuruf, phpTrim, strLimit } from "./phpString";
 
 import { CONFIG_REKAP } from "./konfigRekap";
@@ -47,6 +48,8 @@ export type HasilValidasiRekap = {
   /** NIP -> komponen -> nilai; urutan sisipan = urutan kemunculan pertama NIP (sama dengan array PHP) */
   valid: Map<string, Record<string, string>>;
   catatan: Catatan[];
+  /** NIP -> nomor baris berkas yang dipakai (baris terakhir bila NIP ganda); untuk peringatan anomali */
+  nomorBaris: Map<string, number>;
 };
 
 /** Selisih nilai sel menjadi string seperti `(string) $nilai` PHP untuk jenis sel yang mungkin muncul. */
@@ -70,7 +73,7 @@ function formatNilai(v: NilaiSel): string | null {
 
 export function validasiRekap(baris: BarisSheet[], bulan: number, tahun: number, ctx: KonteksRekap): HasilValidasiRekap {
   const { kolomHeaderRows, kolomBulan, kolomNip, kolomKomponen, namaBulan } = CONFIG_REKAP;
-  const hasil: HasilValidasiRekap = { totalBaris: 0, berhasil: 0, gagal: 0, valid: new Map(), catatan: [] };
+  const hasil: HasilValidasiRekap = { totalBaris: 0, berhasil: 0, gagal: 0, valid: new Map(), catatan: [], nomorBaris: new Map() };
   const nomorBarisValid = new Map<string, number>();
 
   const catat = (nomorBaris: number, nip: string, alasan: string) =>
@@ -131,6 +134,7 @@ export function validasiRekap(baris: BarisSheet[], bulan: number, tahun: number,
     }
     hasil.valid.set(nip, nilai);
     nomorBarisValid.set(nip, nomor);
+    hasil.nomorBaris.set(nip, nomor);
 
     for (const p of peringatan) catat(nomor, nip, AWALAN_PERINGATAN + p);
     hasil.berhasil++;
@@ -193,6 +197,8 @@ export type RingkasanRekap = {
   akanBaru: number;
   /** teks BULAN yang paling sering muncul di berkas (untuk membantu admin menangkap salah bulan), null bila kosong */
   bulanDiBerkas: string | null;
+  /** peringatan anomali bertingkat (tambahan Terpadu; hanya diisi pada tahap Periksa) */
+  anomali: Anomali[];
 };
 
 function ringkas(h: HasilValidasiRekap, ctx: KonteksRekap, baris: BarisSheet[]): RingkasanRekap {
@@ -213,6 +219,7 @@ function ringkas(h: HasilValidasiRekap, ctx: KonteksRekap, baris: BarisSheet[]):
     akanDiganti,
     akanBaru: h.valid.size - akanDiganti,
     bulanDiBerkas,
+    anomali: [],
   };
 }
 
@@ -221,7 +228,10 @@ export async function periksaRekap(prisma: PrismaClient, berkas: Buffer, opsi: O
   const namaSheet = await periksaBerkas(berkas, opsi.namaSheet);
   const baris = await bacaBarisRekap(berkas, namaSheet);
   const ctx = await muatKonteksRekap(prisma, baris, opsi.bulan, opsi.tahun);
-  return ringkas(validasiRekap(baris, opsi.bulan, opsi.tahun, ctx), ctx, baris);
+  const h = validasiRekap(baris, opsi.bulan, opsi.tahun, ctx);
+  const ringkasan = ringkas(h, ctx, baris);
+  ringkasan.anomali = deteksiAnomali(h.valid, h.nomorBaris, await muatKonteksAnomali(prisma, [...h.valid.keys()], opsi.bulan, opsi.tahun));
+  return ringkasan;
 }
 
 export type PenggunaUpload = { id: string | null; nama: string };

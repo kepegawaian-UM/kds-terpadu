@@ -43,6 +43,10 @@ export default async function RekapTahunanPage({
             <input type="number" name="min_tk" min={1} max={400} defaultValue={3} className="w-16 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800" />
             hari
           </label>
+          <label className="flex items-center gap-1.5 text-sm text-slate-500">
+            <input type="checkbox" name="shift" value="1" />
+            Sertakan Satpam/bershift
+          </label>
           <button type="submit" className={tombolSekunder}>
             Excel TK
           </button>

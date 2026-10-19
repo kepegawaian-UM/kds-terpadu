@@ -27,6 +27,7 @@ const C = "900000000000000003"; // Mar 5, Apr 4 -> 9 (unit Y)
 const D = "900000000000000004"; // Jan 6 -> 6 (unit Y, kembar dengan A)
 const E = "900000000000000005"; // tanpa TK (unit Y)
 const F = "900000000000000006"; // Akademisi Luar (unit Y): tidak pernah masuk laporan Absensi
+const G = "900000000000000007"; // Satpam bershift (unit Y), TK 10 hari di Januari: dikeluarkan dari analisis TK kecuali diminta
 
 describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
   let unitX = "";
@@ -43,10 +44,10 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     const nom = (nip: string, jenis: string) => ({ nip, bulan: 12, tahun: 2026, jenis, tmt: "2015-01-01" });
     const rek = (nip: string, bulan: number, TK: string) => ({ nip, bulan, tahun: 2026, komponen: { TK, I: "0" } });
     await muatKeadaan(prisma, {
-      nominatif: [nom(A, "DSN"), nom(B, "TDK"), nom(C, "TDK"), nom(D, "DSN"), nom(E, "TDK"), nom(F, "AKL")],
-      rekap: [rek(A, 1, "2"), rek(A, 3, "1"), rek(A, 6, "3"), rek(B, 2, "1"), rek(B, 3, "1"), rek(C, 3, "5"), rek(C, 4, "4"), rek(D, 1, "6"), rek(E, 5, "0")],
+      nominatif: [nom(A, "DSN"), nom(B, "TDK"), nom(C, "TDK"), nom(D, "DSN"), nom(E, "TDK"), nom(F, "AKL"), nom(G, "TDK")],
+      rekap: [rek(A, 1, "2"), rek(A, 3, "1"), rek(A, 6, "3"), rek(B, 2, "1"), rek(B, 3, "1"), rek(C, 3, "5"), rek(C, 4, "4"), rek(D, 1, "6"), rek(E, 5, "0"), { nip: G, bulan: 1, tahun: 2026, komponen: { TK: "10", I: "0", JENIS_SHIFT: "Satpam 3 Shift" } }],
     });
-    for (const [nip, unitKode] of [[A, unitX], [B, unitX], [C, unitY], [D, unitY], [E, unitY], [F, unitY]] as const) {
+    for (const [nip, unitKode] of [[A, unitX], [B, unitX], [C, unitY], [D, unitY], [E, unitY], [F, unitY], [G, unitY]] as const) {
       await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: nip }, data: { unitAsalKode: unitKode } });
     }
   });
@@ -141,10 +142,36 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
 
   it("Akademisi Luar tidak ikut laporan Absensi bila filter Jenis kosong (Tahunan, Bulanan, dan laporan TK); Dosen/Tendik tetap lengkap", async () => {
     const tahunan = await laporanRekapTahunan(prisma, 2026, FILTER);
-    expect(tahunan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E].sort());
+    expect(tahunan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E, G].sort());
     const bulanan = await laporanRekapBulanan(prisma, 12, 2026, FILTER);
-    expect(bulanan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E].sort());
+    expect(bulanan.baris.map((b) => b.nip).sort()).toEqual([A, B, C, D, E, G].sort());
     const tk = await laporanTkTindakLanjut(prisma, 2026, FILTER, 1);
     expect(tk.jumlahPegawaiDiperiksa).toBe(5); // penyebut persentase unit tidak memuat Akademisi Luar
+  });
+
+  it("pegawai bershift (Satpam) dikeluarkan dari Laporan TK secara bawaan (juga dari penyebut unit) dan ikut bila diminta; Absensi biasa tetap menampilkannya", async () => {
+    const bawaan = await laporanTkTindakLanjut(prisma, 2026, FILTER, 1);
+    expect(bawaan.baris.map((b) => b.nip)).not.toContain(G);
+    expect(bawaan.bershiftDikeluarkan).toBe(1);
+    expect(bawaan.sertakanBershift).toBe(false);
+    expect(bawaan.jumlahPegawaiDiperiksa).toBe(5);
+
+    const dengan = await laporanTkTindakLanjut(prisma, 2026, FILTER, 1, new Date(), true);
+    expect(dengan.baris.map((b) => b.nip)).toContain(G);
+    expect(dengan.bershiftDikeluarkan).toBe(0);
+    expect(dengan.jumlahPegawaiDiperiksa).toBe(6);
+    expect(dengan.ringkasan.find((r) => r.unitInduk === indukY)!.jumlahPegawai).toBe(bawaan.ringkasan.find((r) => r.unitInduk === indukY)!.jumlahPegawai + 1);
+
+    const hitungBaris = async (url: string) => {
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(Buffer.from(await (await GET(new Request(url))).arrayBuffer()) as unknown as ArrayBuffer);
+      return wb.getWorksheet("Semua Pegawai")!.rowCount;
+    };
+    expect(await hitungBaris("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1")).toBe(5);
+    expect(await hitungBaris("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1&shift=1")).toBe(6);
+    const ket = new ExcelJS.Workbook();
+    await ket.xlsx.load(Buffer.from(await (await GET(new Request("http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=1"))).arrayBuffer()) as unknown as ArrayBuffer);
+    const teks = ket.getWorksheet("Ringkasan Unit")!.getSheetValues().flat().map(String).join(" ");
+    expect(teks).toContain("1 pegawai bershift");
   });
 });

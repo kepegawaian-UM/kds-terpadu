@@ -8,6 +8,7 @@ import type { RingkasanLayar } from "@/app/(app)/rekap-kehadiran/upload/actions"
 import type { HasilUnggah } from "@/lib/upload/klien";
 
 import { Angka, AWALAN_PERINGATAN, TabelCatatan } from "./bagian";
+import { PanelAnomali, perluKonfirmasi } from "./PanelAnomali";
 import { UnggahBerkas } from "./UnggahBerkas";
 
 const NAMA_BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -23,12 +24,14 @@ export function FormUploadRekap({ bulanAwal, tahunAwal }: { bulanAwal: number; t
   const [namaSheet, setNamaSheet] = useState("");
   const [tahap, setTahap] = useState<Tahap>({ jenis: "isi" });
   const [galat, setGalat] = useState<string | null>(null);
+  const [konfirmasi, setKonfirmasi] = useState(false);
   const [sibuk, mulai] = useTransition();
 
   const masukan = (u: HasilUnggah) => ({ uploadId: u.uploadId, totalPotongan: u.totalPotongan, namaFile: u.namaFile, bulan, tahun, namaSheet: namaSheet.trim() });
 
   function periksa(u: HasilUnggah) {
     setGalat(null);
+    setKonfirmasi(false);
     setTahap({ jenis: "periksa", unggahan: u });
     mulai(async () => {
       const h = await periksaUploadRekap(masukan(u));
@@ -113,16 +116,17 @@ export function FormUploadRekap({ bulanAwal, tahunAwal }: { bulanAwal: number; t
 
       {tahap.jenis === "periksa" && <p role="status" className="text-sm text-slate-600">Memeriksa berkas…</p>}
 
-      {tahap.jenis === "tinjau" && <Tinjauan r={tahap.ringkasan} bulan={bulan} tahun={tahun} sibuk={sibuk} saatSimpan={() => simpan(tahap.unggahan)} saatBatal={() => batal(tahap.unggahan)} />}
+      {tahap.jenis === "tinjau" && <Tinjauan r={tahap.ringkasan} bulan={bulan} tahun={tahun} sibuk={sibuk} konfirmasi={konfirmasi} saatKonfirmasi={setKonfirmasi} namaFile={tahap.unggahan.namaFile} saatSimpan={() => simpan(tahap.unggahan)} saatBatal={() => batal(tahap.unggahan)} />}
     </div>
   );
 }
 
-function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: RingkasanLayar; bulan: number; tahun: number; sibuk: boolean; saatSimpan: () => void; saatBatal: () => void }) {
+function Tinjauan({ r, bulan, tahun, sibuk, konfirmasi, saatKonfirmasi, namaFile, saatSimpan, saatBatal }: { r: RingkasanLayar; bulan: number; tahun: number; sibuk: boolean; konfirmasi: boolean; saatKonfirmasi: (b: boolean) => void; namaFile: string; saatSimpan: () => void; saatBatal: () => void }) {
   const salahBulan = r.bulanDiBerkas !== null && r.bulanDiBerkas.toLowerCase() !== NAMA_BULAN[bulan].toLowerCase();
   const kegagalan = r.catatan.filter((c) => !c.alasan.startsWith(AWALAN_PERINGATAN));
   const peringatan = r.catatan.filter((c) => c.alasan.startsWith(AWALAN_PERINGATAN));
   const gagalTotal = r.gagal;
+  const tertahan = perluKonfirmasi(r.anomali) && !konfirmasi;
 
   return (
     <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-6" aria-label="Hasil pemeriksaan">
@@ -149,6 +153,8 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
         Koreksi Absensi yang aktif diterapkan ulang otomatis setelah disimpan.
       </p>
 
+      <PanelAnomali anomali={r.anomali} total={r.anomaliTotal} dikonfirmasi={konfirmasi} saatKonfirmasi={saatKonfirmasi} namaBerkas={namaFile} />
+
       {kegagalan.length > 0 && <TabelCatatan judul="Baris yang akan dilewati" baris={kegagalan} kelas="text-slate-800" />}
       {peringatan.length > 0 && <TabelCatatan judul="Peringatan (baris tetap diproses)" baris={peringatan} kelas="text-amber-700" potongAwalan />}
       {r.catatanTotal > r.catatan.length && (
@@ -156,13 +162,14 @@ function Tinjauan({ r, bulan, tahun, sibuk, saatSimpan, saatBatal }: { r: Ringka
       )}
 
       <div className="flex items-center gap-3 pt-2">
-        <button type="button" onClick={saatSimpan} disabled={sibuk || r.berhasil === 0} className="rounded-md bg-sidebar px-4 py-2 text-sm font-medium text-white hover:bg-sidebar-lighter disabled:opacity-50">
+        <button type="button" onClick={saatSimpan} disabled={sibuk || r.berhasil === 0 || tertahan} className="rounded-md bg-sidebar px-4 py-2 text-sm font-medium text-white hover:bg-sidebar-lighter disabled:opacity-50">
           {sibuk ? "Menyimpan…" : "Simpan"}
         </button>
         <button type="button" onClick={saatBatal} disabled={sibuk} className="rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 disabled:opacity-50">
           Batal
         </button>
         {r.berhasil === 0 && <span className="text-sm text-red-700">Tidak ada baris yang dapat diproses.</span>}
+        {tertahan && <span className="text-sm text-red-700">Centang konfirmasi peringatan penting dulu.</span>}
       </div>
     </section>
   );

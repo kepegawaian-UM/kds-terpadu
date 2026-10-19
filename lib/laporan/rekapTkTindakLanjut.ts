@@ -40,6 +40,9 @@ export type LaporanTk = {
   ambang: number;
   keaktifan: FilterRekap["keaktifan"];
   jumlahPegawaiDiperiksa: number;
+  /** pegawai bershift (Satpam, dst.) yang TIDAK diikutkan; 0 bila diikutkan atau tidak ada */
+  bershiftDikeluarkan: number;
+  sertakanBershift: boolean;
   baris: BarisTk[];
   ringkasan: RingkasanUnitTk[];
   namaFile: string;
@@ -68,13 +71,29 @@ export function stempelWaktuWib(sekarang: Date): string {
   return `${b.day}-${b.month}-${b.year} ${b.hour}.${b.minute} WIB`;
 }
 
-export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number, sekarang: Date = new Date()): Promise<LaporanTk> {
+/** NIP (dari daftar) yang punya JENIS_SHIFT terisi pada bulan mana pun di tahun itu. */
+async function nipBershift(db: Pick<PrismaClient, "$transaction">, tahun: number, nips: string[]): Promise<Set<string>> {
+  if (nips.length === 0) return new Set();
+  const rows = await kueriRencanaKustom<{ nip: string }[]>(
+    db,
+    `SELECT DISTINCT r."nip" AS nip FROM "rekap_kehadiran_detail" d JOIN "rekap_kehadiran_bulanan" r ON r."id" = d."rekapKehadiranBulananId"
+      WHERE r."tahun" = $1 AND d."komponenKode" = 'JENIS_SHIFT' AND btrim(d."nilai") NOT IN ('', '-', '0') AND r."nip" = ANY($2::text[])`,
+    tahun,
+    nips,
+  );
+  return new Set(rows.map((r) => r.nip));
+}
+
+export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number, sekarang: Date = new Date(), sertakanBershift = false): Promise<LaporanTk> {
   const nonaktif = await nipNonaktif(db, tahun);
   const ids = await idSnapshotTerakhir(db, tahun);
-  const snapshot = await db.nominatifBulanan.findMany({
+  const semuaSnapshot = await db.nominatifBulanan.findMany({
     where: { id: { in: ids }, ...kondisiNominatif(filter, nonaktif) },
     select: { id: true, pegawaiNip: true, nama: true, jenisPegawai: { select: { nama: true } }, unitAsal: { select: { nama: true, unitInduk: { select: { nama: true } } } } },
   });
+  // Satpam dan pegawai bershift lain punya hari kerja berbeda: dikeluarkan dari analisis TK kecuali diminta
+  const bershift = sertakanBershift ? new Set<string>() : await nipBershift(db, tahun, semuaSnapshot.map((s) => s.pegawaiNip));
+  const snapshot = semuaSnapshot.filter((s) => !bershift.has(s.pegawaiNip));
   const nips = snapshot.map((s) => s.pegawaiNip);
 
   // hari TK per NIP per bulan: awalan angka dipakai, nilai bukan angka dihitung 0 (sama dengan totalPerNip Rekap Tahunan)
@@ -139,6 +158,8 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
     ambang,
     keaktifan: filter.keaktifan,
     jumlahPegawaiDiperiksa: kandidat.length,
+    bershiftDikeluarkan: bershift.size,
+    sertakanBershift,
     baris,
     ringkasan: ringkasanUrut,
     // nama mengikuti filter seperti laporan lain (jenis, status, keaktifan), mis. "Laporan TK Tahunan Tendik PNS-PPPK Aktif 2026 minimal 3 hari"
@@ -184,13 +205,14 @@ export async function buatBerkasTk(lap: LaporanTk): Promise<Buffer> {
   ring.addRow([`Laporan TK (Tanpa Keterangan) untuk Tindak Lanjut - Tahun ${lap.tahun}`]).font = { bold: true, size: 13 };
   const aktif = lap.keaktifan === "aktif" ? "pegawai aktif saja" : lap.keaktifan === "nonaktif" ? "pegawai non-aktif saja" : "semua pegawai";
   ring.addRow([`Pegawai dengan total TK minimal ${lap.ambang} hari dalam setahun; ${aktif}. Dari ${lap.jumlahPegawaiDiperiksa} pegawai diperiksa, ${lap.baris.length} memenuhi ambang.`]);
+  if (lap.bershiftDikeluarkan > 0) ring.addRow([`${lap.bershiftDikeluarkan} pegawai bershift (Satpam, dst.) TIDAK diikutkan karena hari kerjanya berbeda; sertakan lewat opsi "Sertakan Satpam/bershift".`]);
   ring.addRow(["Sumber: Absensi bulanan (sudah termasuk Koreksi Absensi); unit = Nominatif terakhir pegawai di tahun itu. Peringkat: nilai TK sama berbagi peringkat."]);
   ring.addRow([]);
-  ring.addRow(["Unit Induk", "Jumlah Pegawai", "Pegawai ber-TK", "% ber-TK", "Total Hari TK", "TK Tertinggi (1 orang)"]);
+  const barisJudulRingkasan = ring.addRow(["Unit Induk", "Jumlah Pegawai", "Pegawai ber-TK", "% ber-TK", "Total Hari TK", "TK Tertinggi (1 orang)"]).number;
   for (const r of lap.ringkasan) ring.addRow([r.unitInduk, r.jumlahPegawai, r.pegawaiTk, r.persen, r.totalHari, r.maksPerOrang]);
   const jumlah = ring.addRow(["JUMLAH", lap.ringkasan.reduce((a, r) => a + r.jumlahPegawai, 0), lap.ringkasan.reduce((a, r) => a + r.pegawaiTk, 0), null, lap.ringkasan.reduce((a, r) => a + r.totalHari, 0), null]);
   jumlah.font = { bold: true };
-  gayaTabel(ring, 5, 99, [44, 16, 16, 12, 16, 22]);
+  gayaTabel(ring, barisJudulRingkasan, 99, [44, 16, 16, 12, 16, 22]);
 
   const semua = wb.addWorksheet(namaSheetUnik("Semua Pegawai", terpakai));
   semua.addRow(JUDUL_PEGAWAI);
