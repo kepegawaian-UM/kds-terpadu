@@ -7,7 +7,7 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 
 import { parseTanggalNominatif } from "@/lib/impor/tanggal";
 
-import { komponenTersedia, type InputKoreksi } from "./layanan";
+import { komponenTersedia, TUJUAN_MASUK, type InputKoreksi } from "./layanan";
 
 type Db = PrismaClient | Prisma.TransactionClient;
 
@@ -62,7 +62,7 @@ export async function validasiKoreksi(db: Db, mentah: FormKoreksi): Promise<{ in
   else if (!kode.includes(d.dari_komponen)) tambah("dari_komponen", "Komponen asal yang dipilih tidak valid.");
 
   if (d.ke_komponen !== null) {
-    if (!kode.includes(d.ke_komponen)) tambah("ke_komponen", "Komponen tujuan yang dipilih tidak valid.");
+    if (!kode.includes(d.ke_komponen) && d.ke_komponen !== TUJUAN_MASUK) tambah("ke_komponen", "Komponen tujuan yang dipilih tidak valid.");
     if (d.ke_komponen === d.dari_komponen) tambah("ke_komponen", PESAN_KOREKSI.tujuanSama);
   }
 

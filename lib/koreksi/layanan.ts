@@ -23,6 +23,18 @@ export const DI_LUAR = "di_luar";
 export const DIGANTIKAN = "digantikan";
 export const ANGKA = "angka";
 
+/**
+ * Tujuan tambahan Terpadu (tidak ada di KDS2): "Masuk". Memindahkan hari ke Jumlah Masuk Nyata, dan TOTAL ikut bertambah sama banyak
+ * (TOTAL = hari kerja dikurangi ketidakhadiran/cuti/penugasan, jadi berubah bersama masuk nyata). Hanya sebagai TUJUAN, bukan asal.
+ */
+export const TUJUAN_MASUK = "JUMLAH_MASUK_NYATA";
+export const NAMA_TUJUAN_MASUK = "Masuk (Jumlah Masuk Nyata)";
+
+/** Daftar pilihan komponen TUJUAN: komponen biasa ditambah "Masuk". */
+export async function tujuanTersedia(db: Db): Promise<{ kode: string; nama: string }[]> {
+  return [...(await komponenTersedia(db)), { kode: TUJUAN_MASUK, nama: NAMA_TUJUAN_MASUK }];
+}
+
 export type DataKoreksi = {
   nip: string;
   jenis: "periode" | "angka";
@@ -148,7 +160,7 @@ async function catat(db: Db, idDetail: number, field: string, lama: string | nul
 }
 
 async function pindahkan(db: Db, k: KoreksiRekap, headerId: number, pengguna: string, maks: number | null = null): Promise<number> {
-  const kode = [k.dariKomponen, k.keKomponen].filter((x): x is string => !!x);
+  const kode = [k.dariKomponen, k.keKomponen, ...(k.keKomponen === TUJUAN_MASUK ? ["TOTAL"] : [])].filter((x): x is string => !!x);
   const baris = new Map((await db.rekapKehadiranDetail.findMany({ where: { rekapKehadiranBulananId: headerId, komponenKode: { in: kode } }, orderBy: { id: "asc" } })).map((d) => [d.komponenKode, d]));
 
   const dari = baris.get(k.dariKomponen);
@@ -169,6 +181,18 @@ async function pindahkan(db: Db, k: KoreksiRekap, headerId: number, pengguna: st
     } else {
       const dibuat = await db.rekapKehadiranDetail.create({ data: { rekapKehadiranBulananId: headerId, komponenKode: k.keKomponen, nilai: String(jumlah) } });
       await catat(db, dibuat.id, `nilai:${k.keKomponen}`, null, String(jumlah), "INSERT", k.id, pengguna);
+    }
+    if (k.keKomponen === TUJUAN_MASUK) {
+      // TOTAL ikut bertambah sebanyak hari yang dipindah ke masuk
+      const total = baris.get("TOTAL");
+      if (total) {
+        const baru = String(phpInt(total.nilai) + jumlah);
+        await db.rekapKehadiranDetail.update({ where: { id: total.id }, data: { nilai: baru } });
+        await catat(db, total.id, "nilai:TOTAL", total.nilai, baru, "UPDATE", k.id, pengguna);
+      } else {
+        const dibuat = await db.rekapKehadiranDetail.create({ data: { rekapKehadiranBulananId: headerId, komponenKode: "TOTAL", nilai: String(jumlah) } });
+        await catat(db, dibuat.id, "nilai:TOTAL", null, String(jumlah), "INSERT", k.id, pengguna);
+      }
     }
   }
   return jumlah;

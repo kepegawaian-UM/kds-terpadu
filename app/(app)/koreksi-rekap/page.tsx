@@ -3,7 +3,7 @@ import { FormKoreksiRekap } from "@/components/koreksi/FormKoreksiRekap";
 import { ImporKoreksi } from "@/components/koreksi/ImporKoreksi";
 import { TerapkanUlang } from "@/components/koreksi/TerapkanUlang";
 import { prisma } from "@/lib/db";
-import { komponenTersedia } from "@/lib/koreksi/layanan";
+import { komponenTersedia, tujuanTersedia } from "@/lib/koreksi/layanan";
 import { bulanTahunSekarang } from "@/lib/laporan/periode";
 
 export const maxDuration = 300;
@@ -17,7 +17,7 @@ const satu = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)
 export default async function KoreksiRekapPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   const [bulanIni, tahunIni] = bulanTahunSekarang(new Date());
-  const [komponen, koreksi] = await Promise.all([komponenTersedia(prisma), prisma.koreksiRekap.findMany({ orderBy: { id: "desc" } })]);
+  const [komponen, tujuan, koreksi] = await Promise.all([komponenTersedia(prisma), tujuanTersedia(prisma), prisma.koreksiRekap.findMany({ orderBy: { id: "desc" } })]);
 
   // nama dari snapshot Nominatif terbaru per NIP (KDS2: pluck terakhir menimpa)
   const nips = [...new Set(koreksi.map((k) => k.nip))];
@@ -44,7 +44,7 @@ export default async function KoreksiRekapPage({ searchParams }: { searchParams:
       <div>
         <h1 className="text-xl font-semibold text-slate-900">Koreksi Absensi</h1>
       </div>
-      <FormKoreksiRekap komponen={komponen} awal={awal} />
+      <FormKoreksiRekap komponen={komponen} tujuan={tujuan} awal={awal} />
       <ImporKoreksi />
       <TerapkanUlang bulanAwal={bulanIni} tahunAwal={tahunIni} />
       <DaftarKoreksi baris={baris} />

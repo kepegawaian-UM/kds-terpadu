@@ -9,7 +9,7 @@ import { phpTrim } from "@/lib/impor/phpString";
 import { type BarisSheet, bacaSheet, type NilaiSel } from "@/lib/upload/bacaSheet";
 import { periksaBerkas } from "@/lib/upload/penjagaBerkas";
 
-import { type DataKoreksi, type Db, komponenTersedia, pratinjauKoreksi, simpanDanTerapkanKoreksi } from "./layanan";
+import { type DataKoreksi, type Db, komponenTersedia, pratinjauKoreksi, simpanDanTerapkanKoreksi, TUJUAN_MASUK } from "./layanan";
 
 export const MAKS_BARIS_KOREKSI = 2000;
 export const HEADER_KOREKSI = ["NIP", "Jenis", "Dari Komponen", "Ke Komponen", "Tanggal Mulai", "Tanggal Selesai", "Bulan", "Tahun", "Jumlah Hari", "Alasan", "Sumber"];
@@ -89,7 +89,8 @@ function bacaBaris(row: BarisSheet, kolom: Map<string, number>, komponen: string
   const jenis = jenisMentah === "" || jenisMentah === "0" ? "periode" : jenisMentah;
   const dari = bigU(teks("darikomponen"));
   const keMentah = bigU(teks("kekomponen"));
-  const ke = ["", "-", "HAPUS", "TIDAK DIHITUNG"].includes(keMentah) ? null : keMentah;
+  // "MASUK" = tujuan tambahan Terpadu (Jumlah Masuk Nyata); kode aslinya JUMLAH_MASUK_NYATA juga diterima
+  const ke = ["", "-", "HAPUS", "TIDAK DIHITUNG"].includes(keMentah) ? null : keMentah === "MASUK" ? TUJUAN_MASUK : keMentah;
   const alasan = teks("alasan");
   const sumber = teks("sumber");
 
@@ -99,7 +100,7 @@ function bacaBaris(row: BarisSheet, kolom: Map<string, number>, komponen: string
   if (!nipTerdaftar.has(nip)) return [data, "NIP tidak ditemukan di data pegawai (cek format kolom NIP = Teks)."];
   if (jenis !== "periode" && jenis !== "angka") return [data, 'Jenis harus kosong, "periode", atau "angka".'];
   if (!komponen.includes(dari)) return [data, `Dari Komponen "${dari}" tidak dikenal.`];
-  if (ke !== null && !komponen.includes(ke)) return [data, `Ke Komponen "${ke}" tidak dikenal.`];
+  if (ke !== null && !komponen.includes(ke) && ke !== TUJUAN_MASUK) return [data, `Ke Komponen "${ke}" tidak dikenal.`];
   if (ke === dari) return [data, "Komponen tujuan harus berbeda dari komponen asal."];
   const panjang = (s: string) => Array.from(s).length;
   if (alasan === "" || panjang(alasan) > 255) return [data, "Alasan wajib diisi (maks 255 karakter)."];

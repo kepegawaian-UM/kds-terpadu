@@ -25,7 +25,7 @@ export async function buatTemplateKoreksi(db: Db): Promise<Buffer> {
     ["NIP", "Wajib. Format kolom Teks supaya 18 digit tidak berubah. NIP harus sudah ada di data pegawai."],
     ["Jenis", 'Kosong atau "periode" = berlaku untuk semua bulan yang SELURUHNYA masuk rentang tanggal. "angka" = pindahkan sejumlah hari pada SATU bulan (isi Bulan, Tahun, Jumlah Hari).'],
     ["Dari Komponen", `Wajib. Kode: ${komponen}`],
-    ["Ke Komponen", 'Kode komponen tujuan. Kosongkan (atau tulis HAPUS) untuk "tidak dihitung" (pensiun/resign/meninggal).'],
+    ["Ke Komponen", 'Kode komponen tujuan. Kosongkan (atau tulis HAPUS) untuk "tidak dihitung" (pensiun/resign/meninggal). Tulis MASUK untuk memindahkan hari ke Jumlah Masuk Nyata (TOTAL ikut bertambah), mis. TK yang ternyata masuk.'],
     ["Tanggal Mulai", "Wajib untuk jenis periode. Format tanggal (yyyy-mm-dd atau dd-mm-yyyy)."],
     ["Tanggal Selesai", "Boleh kosong = tanpa batas akhir. Tidak boleh sebelum Tanggal Mulai."],
     ["Bulan / Tahun / Jumlah Hari", "Hanya untuk jenis angka. Bulan 1-12, Jumlah Hari 1-31."],

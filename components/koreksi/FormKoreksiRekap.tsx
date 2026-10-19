@@ -19,7 +19,7 @@ const LABEL_CAKUPAN: Record<string, [string, string]> = {
 
 type Pratinjau = { nama: string | null; baris: BarisPratinjau[]; form: FormKoreksi };
 
-export function FormKoreksiRekap({ komponen, awal }: { komponen: { kode: string; nama: string }[]; awal: { jenis: string; nip: string; bulan: string; tahun: string } }) {
+export function FormKoreksiRekap({ komponen, tujuan, awal }: { komponen: { kode: string; nama: string }[]; tujuan?: { kode: string; nama: string }[]; awal: { jenis: string; nip: string; bulan: string; tahun: string } }) {
   const router = useRouter();
   const [nilai, setNilai] = useState<Record<KolomKoreksi, string>>({
     jenis: awal.jenis, nip: awal.nip, dari_komponen: "TK", ke_komponen: "TB", tanggal_mulai: "", tanggal_selesai: "", bulan: awal.bulan, tahun: awal.tahun, jumlah_hari: "", alasan: "", sumber: "",
@@ -77,7 +77,8 @@ export function FormKoreksiRekap({ komponen, awal }: { komponen: { kode: string;
     });
   }
 
-  const namaKomp = (k: string | null) => (k ? `${k} - ${komponen.find((c) => c.kode === k)?.nama ?? k}` : "Tidak dihitung (dihapus)");
+  const daftarTujuan = tujuan ?? komponen;
+  const namaKomp = (k: string | null) => (k ? `${k} - ${daftarTujuan.find((c) => c.kode === k)?.nama ?? k}` : "Tidak dihitung (dihapus)");
 
   return (
     <section className="space-y-5 rounded-xl border border-slate-200 bg-white p-6" aria-label="Tambah koreksi">
@@ -115,7 +116,7 @@ export function FormKoreksiRekap({ komponen, awal }: { komponen: { kode: string;
           {label("ke_komponen", "Ke komponen")}
           <select id="k-ke_komponen" className={kotak} value={nilai.ke_komponen} onChange={ubah("ke_komponen")}>
             <option value="">Tidak dihitung (dihapus) - untuk pensiun/resign/meninggal</option>
-            {komponen.map((c) => (
+            {daftarTujuan.map((c) => (
               <option key={c.kode} value={c.kode}>{c.kode} - {c.nama}</option>
             ))}
           </select>

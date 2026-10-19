@@ -81,6 +81,7 @@ export function hitungTandai(koreksi: KoreksiBerlaku[], nilai: Record<string, st
     const info = `Dikoreksi: ${k.alasan} (${k.dari} → ${k.ke ?? "dihapus"})`;
     if (k.ke === null || keInt(nilai?.[k.dari]) > 0) tandai[k.dari] = info;
     if (k.ke !== null && keInt(nilai?.[k.ke]) > 0) tandai[k.ke] = info;
+    if (k.ke === "JUMLAH_MASUK_NYATA" && keInt(nilai?.TOTAL) > 0) tandai.TOTAL = info; // tujuan "Masuk": TOTAL ikut berubah
   }
   return tandai;
 }
