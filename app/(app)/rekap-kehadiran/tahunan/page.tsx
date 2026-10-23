@@ -4,6 +4,7 @@ import { TabelRekapTahunan } from "@/components/laporan/TabelRekapTahunan";
 import { prisma } from "@/lib/db";
 import { daftarStatusKepegawaian, jenisStatusDari, keaktifanDari } from "@/lib/laporan/filter";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
+import { KATEGORI_TK } from "@/lib/laporan/rekapTkTindakLanjut";
 import { laporanRekapTahunan, periodeTahunBerjalan } from "@/lib/laporan/rekapTahunan";
 
 
@@ -18,9 +19,10 @@ export default async function RekapTahunanPage({
   const { jenis, status } = jenisStatusDari(sp, daftarStatus.map((s) => s.kode));
   const keaktifan = keaktifanDari(sp.keaktifan);
 
-  const [lap, daftarTahun] = await Promise.all([
+  const [lap, daftarTahun, daftarUnitInduk] = await Promise.all([
     laporanRekapTahunan(prisma, tahun, { jenis, status, keaktifan }),
     tahunNominatif(prisma),
+    prisma.unitInduk.findMany({ orderBy: { nama: "asc" }, select: { kode: true, nama: true } }),
   ]);
 
   const q = new URLSearchParams({ tahun: String(tahun), keaktifan });
@@ -39,9 +41,25 @@ export default async function RekapTahunanPage({
             <input key={`${k}-${i}`} type="hidden" name={k} value={v} />
           ))}
           <label className="flex items-center gap-1.5 text-sm text-slate-500">
-            TK minimal
-            <input type="number" name="min_tk" min={1} max={400} defaultValue={3} className="w-16 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800" />
-            hari
+            Kategori TK
+            <select name="kategori" defaultValue="semua" className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800">
+              {Object.entries(KATEGORI_TK).map(([kode, k]) => (
+                <option key={kode} value={kode}>
+                  {k.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-1.5 text-sm text-slate-500">
+            Unit Induk
+            <select name="unit_induk" defaultValue="" className="max-w-56 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800">
+              <option value="">Semua unit induk</option>
+              {daftarUnitInduk.map((u) => (
+                <option key={u.kode} value={u.kode}>
+                  {u.nama}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="flex items-center gap-1.5 text-sm text-slate-500">
             <input type="checkbox" name="shift" value="1" />

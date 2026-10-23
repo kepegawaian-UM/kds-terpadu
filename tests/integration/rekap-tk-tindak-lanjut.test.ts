@@ -9,7 +9,7 @@ import { PrismaClient } from "@prisma/client";
 import { GET } from "@/app/(app)/rekap-kehadiran/tahunan/tk/route";
 import { laporanRekapBulanan } from "@/lib/laporan/rekapBulanan";
 import { laporanRekapTahunan } from "@/lib/laporan/rekapTahunan";
-import { ambangDari, beriPeringkat, laporanTkTindakLanjut, namaSheetUnik, stempelWaktuWib } from "@/lib/laporan/rekapTkTindakLanjut";
+import { KATEGORI_TK, ambangDari, beriPeringkat, kategoriDari, laporanTkTindakLanjut, namaSheetUnik, stempelWaktuWib } from "@/lib/laporan/rekapTkTindakLanjut";
 
 import { kosongkanDomain } from "../../scripts/migrasi/migrasi";
 import { muatKeadaan } from "../support/keadaan";
@@ -76,6 +76,57 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     // batas tepat: B punya TK 2 hari -> masuk pada ambang 2 (>=), tidak masuk pada ambang 3
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 2)).baris.map((b) => b.nip)).toContain(B);
     expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 3)).baris.map((b) => b.nip)).not.toContain(B);
+  });
+
+  it("kategori TK: batas bawah dan atas sama-sama termasuk; ringkasan unit dan nama berkas mengikuti; rute menerima kategori (menang atas min_tk)", async () => {
+    const SEKARANG = new Date("2026-10-16T01:34:00Z");
+    const nip = async (min: number, maks: number | null) => (await laporanTkTindakLanjut(prisma, 2026, FILTER, min, SEKARANG, false, { maks, nama: null })).baris.map((b) => b.nip).sort();
+    expect(await nip(3, 6)).toEqual([A, D].sort()); // batas atas 6 ikut (A dan D tepat 6), C (9) keluar
+    expect(await nip(3, 5)).toEqual([]);
+    expect(await nip(7, 9)).toEqual([C]); // 9 tepat di batas atas
+    expect(await nip(3, 8)).toEqual([A, D].sort());
+
+    const ringan = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG, false, { maks: 6, nama: "TK Ringan" });
+    expect(ringan.namaFile).toBe("Laporan TK Tahunan Aktif 2026 TK Ringan - dibuat 16-10-2026 08.34 WIB");
+    expect(ringan.ringkasan.find((r) => r.unitInduk === indukY)).toMatchObject({ jumlahPegawai: 3, pegawaiTk: 1, totalHari: 6, maksPerOrang: 6 }); // hanya D; C di luar rentang
+
+    expect(kategoriDari("berat")).toBe("berat");
+    expect([null, "", "BERAT", "toString", "x"].map(kategoriDari)).toEqual([null, null, null, null, null]);
+    expect(Object.values(KATEGORI_TK).map((k) => [k.min, k.maks])).toEqual([[3, null], [3, 10], [11, 20], [21, null]]);
+
+    const jumlahBaris = async (kueri: string) => {
+      const res = await GET(new Request(`http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&${kueri}`));
+      expect(res.status).toBe(200);
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
+      return { baris: wb.getWorksheet("Semua Pegawai")!.rowCount - 1, nama: res.headers.get("Content-Disposition")! };
+    };
+    expect((await jumlahBaris("kategori=ringan")).baris).toBe(3);
+    expect((await jumlahBaris("kategori=ringan")).nama).toContain("2026 TK Ringan - dibuat");
+    expect((await jumlahBaris("kategori=sedang")).baris).toBe(0);
+    expect((await jumlahBaris("kategori=berat")).baris).toBe(0);
+    expect((await jumlahBaris("kategori=berat&min_tk=1")).baris).toBe(0); // kategori menang atas min_tk
+    expect((await jumlahBaris("kategori=tidak-ada&min_tk=3")).baris).toBe(3); // kategori tak dikenal: kembali ke min_tk
+  });
+
+  it("filter unit induk: hanya pegawai unit itu; penyebut ringkasan ikut menyempit; nama berkas dan rute memuat unit; kode tak dikenal = tanpa hasil", async () => {
+    const SEKARANG = new Date("2026-10-16T01:34:00Z");
+    const [kodeX, kodeY] = [(await prisma.unitAsal.findUniqueOrThrow({ where: { kode: unitX } })).unitIndukKode, (await prisma.unitAsal.findUniqueOrThrow({ where: { kode: unitY } })).unitIndukKode];
+    const x = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG, false, { maks: null, nama: null, unitIndukKode: kodeX });
+    expect(x.baris.map((b) => b.nip)).toEqual([A]);
+    expect(x.jumlahPegawaiDiperiksa).toBe(2); // A dan B (unit induk lain tidak ikut diperiksa)
+    expect(x.ringkasan).toEqual([{ unitInduk: indukX, jumlahPegawai: 2, pegawaiTk: 1, persen: 50, totalHari: 6, maksPerOrang: 6 }]);
+    expect(x.unitIndukDipilih).toBe(indukX);
+    expect(x.namaFile).toBe(`Laporan TK Tahunan Aktif 2026 minimal 3 hari - ${indukX} - dibuat 16-10-2026 08.34 WIB`);
+    const y = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG, false, { maks: null, nama: null, unitIndukKode: kodeY });
+    expect(y.baris.map((b) => b.nip).sort()).toEqual([C, D].sort());
+    expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG, false, { maks: null, nama: null, unitIndukKode: "" })).baris).toHaveLength(3); // kosong = semua
+    expect((await laporanTkTindakLanjut(prisma, 2026, FILTER, 3, SEKARANG, false, { maks: null, nama: null, unitIndukKode: "TIDAK-ADA" })).baris).toHaveLength(3); // kode tak dikenal diabaikan, bukan menyembunyikan data
+
+    const res = await GET(new Request(`http://localhost/rekap-kehadiran/tahunan/tk?tahun=2026&min_tk=3&unit_induk=${encodeURIComponent(kodeX)}`));
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(Buffer.from(await res.arrayBuffer()) as unknown as ArrayBuffer);
+    expect(wb.getWorksheet("Semua Pegawai")!.rowCount).toBe(2); // judul + A
   });
 
   it("ringkasan per unit induk: penyebut = semua pegawai yang diperiksa, pembilang = yang memenuhi ambang", async () => {

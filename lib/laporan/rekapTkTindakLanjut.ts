@@ -13,10 +13,25 @@ import { buatNamaFile } from "./namaFile";
 import { idSnapshotTerakhir } from "./rekapTahunan";
 import { urutkanMenurutNama } from "./urutNama";
 
-type Db = Pick<PrismaClient, "nominatifBulanan" | "catatanStatusPegawai" | "statusKepegawaian" | "$transaction">;
+type Db = Pick<PrismaClient, "nominatifBulanan" | "catatanStatusPegawai" | "statusKepegawaian" | "unitInduk" | "$transaction">;
 
 export const BULAN_SINGKAT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"] as const;
 export const AMBANG_TK_BAWAAN = 3;
+
+/** Kategori TK pada dropdown Laporan TK: rentang total hari TK setahun (maks null = tanpa batas atas). */
+export const KATEGORI_TK = {
+  semua: { label: "Semua (3 hari ke atas)", min: 3, maks: null, nama: null },
+  ringan: { label: "TK Ringan (3-10 hari)", min: 3, maks: 10, nama: "TK Ringan" },
+  sedang: { label: "TK Sedang (11-20 hari)", min: 11, maks: 20, nama: "TK Sedang" },
+  berat: { label: "TK Berat (lebih dari 20 hari)", min: 21, maks: null, nama: "TK Berat" },
+} as const satisfies Record<string, { label: string; min: number; maks: number | null; nama: string | null }>;
+export type KategoriTk = keyof typeof KATEGORI_TK;
+
+/** Kategori dari parameter URL; null bila tidak dikenal (pemanggil lalu memakai min_tk). */
+export function kategoriDari(nilai: string | null | undefined): KategoriTk | null {
+  const k = String(nilai ?? "").trim();
+  return Object.hasOwn(KATEGORI_TK, k) ? (k as KategoriTk) : null;
+}
 
 export type BarisTk = {
   peringkat: number;
@@ -38,6 +53,12 @@ export type RingkasanUnitTk = { unitInduk: string; jumlahPegawai: number; pegawa
 export type LaporanTk = {
   tahun: number;
   ambang: number;
+  /** batas atas total TK (termasuk); null = tanpa batas atas */
+  maks: number | null;
+  /** nama unit induk bila laporan dibatasi pada satu unit induk; null = semua unit induk */
+  unitIndukDipilih: string | null;
+  /** "TK Berat" dsb. bila memakai kategori; null bila memakai ambang biasa */
+  namaKategori: string | null;
   keaktifan: FilterRekap["keaktifan"];
   jumlahPegawaiDiperiksa: number;
   /** pegawai bershift (Satpam, dst.) yang TIDAK diikutkan; 0 bila diikutkan atau tidak ada */
@@ -84,11 +105,13 @@ async function nipBershift(db: Pick<PrismaClient, "$transaction">, tahun: number
   return new Set(rows.map((r) => r.nip));
 }
 
-export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number, sekarang: Date = new Date(), sertakanBershift = false): Promise<LaporanTk> {
+export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: FilterRekap, ambang: number, sekarang: Date = new Date(), sertakanBershift = false, rentang: { maks: number | null; nama: string | null; unitIndukKode?: string | null } = { maks: null, nama: null }): Promise<LaporanTk> {
+  const dalamRentang = (total: number) => total >= ambang && (rentang.maks === null || total <= rentang.maks);
   const nonaktif = await nipNonaktif(db, tahun);
+  const unitInduk = rentang.unitIndukKode ? await db.unitInduk.findUnique({ where: { kode: rentang.unitIndukKode }, select: { nama: true } }) : null;
   const ids = await idSnapshotTerakhir(db, tahun);
   const semuaSnapshot = await db.nominatifBulanan.findMany({
-    where: { id: { in: ids }, ...kondisiNominatif(filter, nonaktif) },
+    where: { id: { in: ids }, ...kondisiNominatif(filter, nonaktif), ...(unitInduk ? { unitAsal: { unitIndukKode: rentang.unitIndukKode! } } : {}) },
     select: { id: true, pegawaiNip: true, nama: true, jenisPegawai: { select: { nama: true } }, unitAsal: { select: { nama: true, unitInduk: { select: { nama: true } } } } },
   });
   // Satpam dan pegawai bershift lain punya hari kerja berbeda: dikeluarkan dari analisis TK kecuali diminta
@@ -134,7 +157,7 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
       };
     });
 
-  const terpilih = kandidat.filter((k) => k.total >= ambang).sort((a, b) => b.total - a.total); // urutan nama dipertahankan untuk TK sama (sort stabil)
+  const terpilih = kandidat.filter((k) => dalamRentang(k.total)).sort((a, b) => b.total - a.total); // urutan nama dipertahankan untuk TK sama (sort stabil)
   const peringkat = beriPeringkat(terpilih, (k) => k.total);
   const baris: BarisTk[] = terpilih.map((k, i) => ({ peringkat: peringkat[i], ...k }));
 
@@ -142,7 +165,7 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
   for (const k of kandidat) {
     const r = ringkasan.get(k.unitInduk) ?? { unitInduk: k.unitInduk, jumlahPegawai: 0, pegawaiTk: 0, persen: 0, totalHari: 0, maksPerOrang: 0 };
     r.jumlahPegawai++;
-    if (k.total >= ambang) {
+    if (dalamRentang(k.total)) {
       r.pegawaiTk++;
       r.totalHari += k.total;
       r.maksPerOrang = Math.max(r.maksPerOrang, k.total);
@@ -156,6 +179,9 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
   return {
     tahun,
     ambang,
+    maks: rentang.maks,
+    namaKategori: rentang.nama,
+    unitIndukDipilih: unitInduk?.nama ?? null,
     keaktifan: filter.keaktifan,
     jumlahPegawaiDiperiksa: kandidat.length,
     bershiftDikeluarkan: bershift.size,
@@ -163,7 +189,7 @@ export async function laporanTkTindakLanjut(db: Db, tahun: number, filter: Filte
     baris,
     ringkasan: ringkasanUrut,
     // nama mengikuti filter seperti laporan lain (jenis, status, keaktifan), mis. "Laporan TK Tahunan Tendik PNS-PPPK Aktif 2026 minimal 3 hari"
-    namaFile: `${buatNamaFile("Laporan TK Tahunan", filter.jenis, filter.status, `${tahun} minimal ${ambang} hari`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan))} - dibuat ${stempelWaktuWib(sekarang)}`,
+    namaFile: `${buatNamaFile("Laporan TK Tahunan", filter.jenis, filter.status, `${tahun} ${rentang.nama ?? `minimal ${ambang} hari`}${unitInduk ? ` - ${unitInduk.nama}` : ""}`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan))} - dibuat ${stempelWaktuWib(sekarang)}`,
   };
 }
 
@@ -195,6 +221,11 @@ function gayaTabel(ws: ExcelJS.Worksheet, barisJudul: number, kolomBulanAwal: nu
   }
 }
 
+function teksRentang(lap: LaporanTk): string {
+  const hari = lap.maks === null ? `minimal ${lap.ambang} hari` : `${lap.ambang}-${lap.maks} hari`;
+  return lap.namaKategori ? `${hari} (${lap.namaKategori})` : hari;
+}
+
 /** Berkas Excel: Ringkasan per unit induk, Semua Pegawai (matriks 12 bulan), lalu satu sheet per unit induk yang punya pegawai ber-TK. */
 export async function buatBerkasTk(lap: LaporanTk): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
@@ -204,7 +235,7 @@ export async function buatBerkasTk(lap: LaporanTk): Promise<Buffer> {
   const ring = wb.addWorksheet(namaSheetUnik("Ringkasan Unit", terpakai));
   ring.addRow([`Laporan TK (Tanpa Keterangan) untuk Tindak Lanjut - Tahun ${lap.tahun}`]).font = { bold: true, size: 13 };
   const aktif = lap.keaktifan === "aktif" ? "pegawai aktif saja" : lap.keaktifan === "nonaktif" ? "pegawai non-aktif saja" : "semua pegawai";
-  ring.addRow([`Pegawai dengan total TK minimal ${lap.ambang} hari dalam setahun; ${aktif}. Dari ${lap.jumlahPegawaiDiperiksa} pegawai diperiksa, ${lap.baris.length} memenuhi ambang.`]);
+  ring.addRow([`Pegawai dengan total TK ${teksRentang(lap)} dalam setahun; ${aktif}${lap.unitIndukDipilih ? `; hanya ${lap.unitIndukDipilih}` : ""}. Dari ${lap.jumlahPegawaiDiperiksa} pegawai diperiksa, ${lap.baris.length} memenuhi ambang.`]);
   if (lap.bershiftDikeluarkan > 0) ring.addRow([`${lap.bershiftDikeluarkan} pegawai bershift (Satpam, dst.) TIDAK diikutkan karena hari kerjanya berbeda; sertakan lewat opsi "Sertakan Satpam/bershift".`]);
   ring.addRow(["Sumber: Absensi bulanan (sudah termasuk Koreksi Absensi); unit = Nominatif terakhir pegawai di tahun itu. Peringkat: nilai TK sama berbagi peringkat."]);
   ring.addRow([]);

@@ -93,7 +93,24 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
     expect(await namaFileMassal(prisma, { ...bawaan, tahun: 2026, minTk: 20 })).toBe("Absensi Pegawai Aktif TK min 20 2026");
   });
 
-  it("kandidat massal: TK setahun >= batas, Akademisi Luar dan tanpa rekap tidak ikut, urut TK terbanyak", async () => {
+  it("filter unit induk massal: kandidat menyempit, kode tak dikenal diabaikan, nama berkas memuat unit, parameter terbaca dari URL", async () => {
+    const unit = await prisma.unitAsal.findMany({ include: { unitInduk: true }, orderBy: { kode: "asc" } });
+    const x = unit[0];
+    const y = unit.find((u) => u.unitIndukKode !== x.unitIndukKode)!;
+    await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: nip(1) }, data: { unitAsalKode: x.kode } });
+    await prisma.nominatifBulanan.updateMany({ where: { pegawaiNip: nip(2) }, data: { unitAsalKode: y.kode } });
+    const semua = { jenis: [], status: [], keaktifan: "semua" as const };
+    expect((await kandidatMassal(prisma, 2026, semua, 0, x.unitIndukKode)).map((k) => k.nama)).toEqual(["Pegawai 1"]);
+    expect((await kandidatMassal(prisma, 2026, semua, 0, y.unitIndukKode)).map((k) => k.nama)).toEqual(["Pegawai 2"]);
+    expect((await kandidatMassal(prisma, 2026, semua, 0, "")).map((k) => k.nama)).toEqual(["Pegawai 2", "Pegawai 1"]);
+
+    const p = await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams(`unit_induk=${encodeURIComponent(x.unitIndukKode)}`)));
+    expect(p.unitInduk).toBe(x.unitIndukKode);
+    expect((await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams("unit_induk=TIDAK-ADA")))).unitInduk).toBe(""); // kode tak dikenal = semua
+    expect(await namaFileMassal(prisma, { ...p, tahun: 2026, minTk: 20 })).toBe(`Absensi Pegawai Aktif TK min 20 2026 - ${x.unitInduk.nama}`);
+  });
+
+  it("kandidat massal: TK setahun >= batas,Akademisi Luar dan tanpa rekap tidak ikut, urut TK terbanyak", async () => {
     const k = await kandidatMassal(prisma, 2026, { jenis: [], status: [], keaktifan: "semua" }, 0);
     expect(k.map((x) => [x.nama, x.tk, x.sigma, x.persen])).toEqual([["Pegawai 2", 30, 20, "150,0%"], ["Pegawai 1", 7, 40, "17,5%"]]);
     expect((await kandidatMassal(prisma, 2026, { jenis: [], status: [], keaktifan: "semua" }, 8)).map((x) => x.nama)).toEqual(["Pegawai 2"]);

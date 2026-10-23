@@ -191,13 +191,13 @@ export const MAKS_PEGAWAI_MASSAL = 200;
 export type KandidatMassal = { nip: string; nama: string; jenis: string | null; status: string | null; unit: string | null; tk: number; sigma: number; persen: string };
 
 /** Dosen/Tendik pada snapshot terakhir (MAX(id)) tahun itu dengan total TK setahun >= minTk, urut TK terbanyak. */
-export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: string[]; status: string[]; keaktifan: Keaktifan }, minTk: number): Promise<KandidatMassal[]> {
+export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: string[]; status: string[]; keaktifan: Keaktifan }, minTk: number, unitIndukKode = ""): Promise<KandidatMassal[]> {
   const nonaktif = await nipNonaktif(db, tahun);
   const g = await db.nominatifBulanan.groupBy({ by: ["pegawaiNip"], where: { tahun }, _max: { id: true } });
   const ids = g.map((x) => x._max.id!).sort((a, b) => a - b);
 
   const diurutId = await db.nominatifBulanan.findMany({
-    where: { id: { in: ids }, ...kondisiNominatif({ ...filter }, nonaktif) },
+    where: { id: { in: ids }, ...kondisiNominatif({ ...filter }, nonaktif), ...(unitIndukKode ? { unitAsal: { unitIndukKode } } : {}) },
     orderBy: { id: "asc" },
     include: { jenisPegawai: { select: { nama: true } }, statusKepegawaian: { select: { nama: true } }, unitAsal: { select: { nama: true } } },
   });
@@ -265,7 +265,7 @@ export function tanggalCetakWib(sekarang = new Date()): string {
 }
 
 // ---------- parameter massal (halaman, cetak, Excel memakai aturan yang sama) ----------
-export type ParamMassal = { tahun: number; minTk: number; jenis: string[]; status: string[]; keaktifan: Keaktifan; nip: string[] };
+export type ParamMassal = { tahun: number; minTk: number; jenis: string[]; status: string[]; keaktifan: Keaktifan; nip: string[]; /** kode unit induk; "" = semua */ unitInduk: string };
 
 /** Nilai berulang ?x=a&x=b dan ?x[]=a (bentuk KDS2). */
 export type AmbilSemua = (kunci: string) => string[];
@@ -282,15 +282,18 @@ export async function bacaParamMassal(db: Db, ambil: AmbilSemua, sekarang = new 
   const m = ambil("min_tk")[0];
   const daftarStatus = await daftarStatusKepegawaian(db);
   const { jenis, status } = jenisStatusDari({ jenis: ambil("jenis"), status: ambil("status") }, daftarStatus.map((s) => s.kode));
+  const unitMentah = (ambil("unit_induk")[0] ?? "").trim();
+  const unitInduk = unitMentah && (await db.unitInduk.findUnique({ where: { kode: unitMentah }, select: { kode: true } })) ? unitMentah : ""; // kode tak dikenal diabaikan
   return {
     tahun: tahunMentah >= 2020 && tahunMentah <= 2100 ? tahunMentah : tahunIni,
     minTk: Math.max(0, Math.min(366, m === undefined ? 20 : keInt(m))),
-    jenis, status, keaktifan: keaktifanDari(ambil("keaktifan")[0]), nip: ambil("nip"),
+    jenis, status, keaktifan: keaktifanDari(ambil("keaktifan")[0]), nip: ambil("nip"), unitInduk,
   };
 }
 
 export async function namaFileMassal(db: Db, p: ParamMassal): Promise<string> {
-  return buatNamaFile("Absensi Pegawai", p.jenis, p.status, `TK min ${p.minTk} ${p.tahun}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
+  const unit = p.unitInduk ? await db.unitInduk.findUnique({ where: { kode: p.unitInduk }, select: { nama: true } }) : null;
+  return buatNamaFile("Absensi Pegawai", p.jenis, p.status, `TK min ${p.minTk} ${p.tahun}${unit ? ` - ${unit.nama}` : ""}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
 }
 
 /** Pegawai terpilih untuk cetak/unduh massal (1 sampai 200 NIP digit; duplikat dibuang; NIP tanpa data dilewati). */
