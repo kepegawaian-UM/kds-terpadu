@@ -4,7 +4,7 @@ import { TabelRekapTahunan } from "@/components/laporan/TabelRekapTahunan";
 import { prisma } from "@/lib/db";
 import { daftarStatusKepegawaian, jenisStatusDari, keaktifanDari } from "@/lib/laporan/filter";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
-import { KATEGORI_TK } from "@/lib/laporan/rekapTkTindakLanjut";
+import { KATEGORI_TK, kategoriDari } from "@/lib/laporan/kategoriTk";
 import { laporanRekapTahunan, periodeTahunBerjalan } from "@/lib/laporan/rekapTahunan";
 
 
@@ -18,14 +18,17 @@ export default async function RekapTahunanPage({
   const daftarStatus = await daftarStatusKepegawaian(prisma);
   const { jenis, status } = jenisStatusDari(sp, daftarStatus.map((s) => s.kode));
   const keaktifan = keaktifanDari(sp.keaktifan);
+  const kategori = kategoriDari(typeof sp.kategori === "string" ? sp.kategori : null) ?? "semua";
+  const unitIndukKode = typeof sp.unit_induk === "string" ? sp.unit_induk.trim() : "";
 
   const [lap, daftarTahun, daftarUnitInduk] = await Promise.all([
-    laporanRekapTahunan(prisma, tahun, { jenis, status, keaktifan }),
+    laporanRekapTahunan(prisma, tahun, { jenis, status, keaktifan }, { kategori, unitIndukKode }),
     tahunNominatif(prisma),
     prisma.unitInduk.findMany({ orderBy: { nama: "asc" }, select: { kode: true, nama: true } }),
   ]);
 
-  const q = new URLSearchParams({ tahun: String(tahun), keaktifan });
+  const q = new URLSearchParams({ tahun: String(tahun), keaktifan, kategori });
+  if (unitIndukKode) q.set("unit_induk", unitIndukKode);
   jenis.forEach((j) => q.append("jenis", j));
   status.forEach((s) => q.append("status", s));
 
@@ -35,14 +38,9 @@ export default async function RekapTahunanPage({
         <FormLaporan>
           <BidangPeriode tahun={tahun} tahunTersedia={daftarTahun} />
           <BidangFilterRekap jenis={jenis} status={status} keaktifan={keaktifan} daftarStatus={daftarStatus} />
-        </FormLaporan>
-        <form method="get" action="/rekap-kehadiran/tahunan/tk" className="flex items-center gap-2">
-          {[...q.entries()].map(([k, v], i) => (
-            <input key={`${k}-${i}`} type="hidden" name={k} value={v} />
-          ))}
           <label className="flex items-center gap-1.5 text-sm text-slate-500">
             Kategori TK
-            <select name="kategori" defaultValue="semua" className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800">
+            <select name="kategori" defaultValue={kategori} className="rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800">
               {Object.entries(KATEGORI_TK).map(([kode, k]) => (
                 <option key={kode} value={kode}>
                   {k.label}
@@ -52,7 +50,7 @@ export default async function RekapTahunanPage({
           </label>
           <label className="flex items-center gap-1.5 text-sm text-slate-500">
             Unit Induk
-            <select name="unit_induk" defaultValue="" className="max-w-56 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800">
+            <select name="unit_induk" defaultValue={unitIndukKode} className="max-w-56 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800">
               <option value="">Semua unit induk</option>
               {daftarUnitInduk.map((u) => (
                 <option key={u.kode} value={u.kode}>
@@ -61,6 +59,11 @@ export default async function RekapTahunanPage({
               ))}
             </select>
           </label>
+        </FormLaporan>
+        <form method="get" action="/rekap-kehadiran/tahunan/tk" className="flex items-center gap-2">
+          {[...q.entries()].map(([k, v], i) => (
+            <input key={`${k}-${i}`} type="hidden" name={k} value={v} />
+          ))}
           <label className="flex items-center gap-1.5 text-sm text-slate-500">
             <input type="checkbox" name="shift" value="1" />
             Sertakan Satpam/bershift

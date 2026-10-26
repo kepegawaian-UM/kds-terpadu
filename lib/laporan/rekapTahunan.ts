@@ -9,6 +9,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { labelFileKeaktifan, nipNonaktif, urutanKodeStatus } from "./filter";
+import { dalamKategoriTk, type FilterTambahanTahunan, KATEGORI_TK } from "./kategoriTk";
 import { kueriRencanaKustom } from "./kueri";
 import { KOLOM_KOMPONEN } from "./komponen";
 import { buatNamaFile } from "./namaFile";
@@ -28,6 +29,7 @@ type Db = Pick<
   | "catatanStatusPegawai"
   | "komponenKehadiran"
   | "statusKepegawaian"
+  | "unitInduk"
   | "$transaction"
 >;
 
@@ -105,12 +107,19 @@ export async function totalPerNip(
   return hasil;
 }
 
-export async function laporanRekapTahunan(db: Db, tahun: number, filter: FilterRekap): Promise<LaporanRekapTahunan> {
+/** Unit induk dari kode (null bila kosong/tidak dikenal: filter diabaikan, bukan menyembunyikan data). */
+async function unitIndukDari(db: Pick<PrismaClient, "unitInduk">, kode: string | null | undefined): Promise<{ kode: string; nama: string } | null> {
+  const k = (kode ?? "").trim();
+  return k ? db.unitInduk.findUnique({ where: { kode: k }, select: { kode: true, nama: true } }) : null;
+}
+
+export async function laporanRekapTahunan(db: Db, tahun: number, filter: FilterRekap, tambahan: FilterTambahanTahunan = {}): Promise<LaporanRekapTahunan> {
   const nonaktif = await nipNonaktif(db, tahun);
   const ids = await idSnapshotTerakhir(db, tahun);
+  const unitInduk = await unitIndukDari(db, tambahan.unitIndukKode);
 
   const diurutId = await db.nominatifBulanan.findMany({
-    where: { id: { in: ids }, ...kondisiNominatif(filter, nonaktif) },
+    where: { id: { in: ids }, ...kondisiNominatif(filter, nonaktif), ...(unitInduk ? { unitAsal: { unitIndukKode: unitInduk.kode } } : {}) },
     orderBy: { id: "asc" },
     select: { id: true, pegawaiNip: true, nama: true },
   });
@@ -128,7 +137,7 @@ export async function laporanRekapTahunan(db: Db, tahun: number, filter: FilterR
   const catatan = new Map((await db.catatanStatusPegawai.findMany({ select: { nip: true, alasan: true } })).map((c) => [c.nip, c.alasan]));
   const nonaktifTampil = new Set(filter.keaktifan === "aktif" ? [] : nonaktif);
 
-  const baris: BarisRekapTahunan[] = urutkanTkTerbanyak(snapshot, (s) => tk(s.pegawaiNip)).map((s) => {
+  const baris: BarisRekapTahunan[] = urutkanTkTerbanyak(snapshot.filter((s) => dalamKategoriTk(tk(s.pegawaiNip), tambahan.kategori)), (s) => tk(s.pegawaiNip)).map((s) => {
     const t = total.get(s.pegawaiNip) ?? {};
     const alasan = catatan.get(s.pegawaiNip);
     return {
@@ -146,14 +155,16 @@ export async function laporanRekapTahunan(db: Db, tahun: number, filter: FilterR
     jenis: filter.jenis,
     status: filter.status,
     keaktifan: filter.keaktifan,
-    namaFile: await namaFileRekapTahunan(db, tahun, filter),
+    namaFile: await namaFileRekapTahunan(db, tahun, filter, tambahan),
     komponen: komponen.map((k) => ({ kode: k.kode, nama: k.nama, tipeNilai: k.tipeNilai })),
     baris,
   };
 }
 
-export async function namaFileRekapTahunan(db: Pick<PrismaClient, "statusKepegawaian">, tahun: number, filter: FilterRekap): Promise<string> {
-  return buatNamaFile("Absensi Tahunan", filter.jenis, filter.status, String(tahun), await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan));
+export async function namaFileRekapTahunan(db: Pick<PrismaClient, "statusKepegawaian" | "unitInduk">, tahun: number, filter: FilterRekap, tambahan: FilterTambahanTahunan = {}): Promise<string> {
+  const unit = await unitIndukDari(db, tambahan.unitIndukKode);
+  const kategori = tambahan.kategori && tambahan.kategori !== "semua" ? KATEGORI_TK[tambahan.kategori].nama : null;
+  return buatNamaFile("Absensi Tahunan", filter.jenis, filter.status, `${tahun}${kategori ? ` ${kategori}` : ""}${unit ? ` - ${unit.nama}` : ""}`, await urutanKodeStatus(db), labelFileKeaktifan(filter.keaktifan));
 }
 
 /** Ekspor Excel: urut nama (bukan TK); filter jenis/unit tambahan lewat parameter URL. */
@@ -161,14 +172,17 @@ export async function eksporRekapTahunan(
   db: Db,
   tahun: number,
   filter: FilterRekap,
-  ekstra: { jenisPegawaiKode?: string | null; unitAsalKode?: string | null } = {}
+  ekstra: { jenisPegawaiKode?: string | null; unitAsalKode?: string | null } = {},
+  tambahan: FilterTambahanTahunan = {}
 ): Promise<{ headings: string[]; rows: (string | null)[][] }> {
   const nonaktif = await nipNonaktif(db, tahun);
   const ids = await idSnapshotTerakhir(db, tahun);
-  const snapshot = await db.nominatifBulanan.findMany({
+  const unitInduk = await unitIndukDari(db, tambahan.unitIndukKode);
+  const semuaSnapshot = await db.nominatifBulanan.findMany({
     where: {
       id: { in: ids },
       ...kondisiNominatif(filter, nonaktif),
+      ...(unitInduk ? { unitAsal: { unitIndukKode: unitInduk.kode } } : {}),
       ...(ekstra.jenisPegawaiKode ? { jenisPegawaiKode: ekstra.jenisPegawaiKode } : {}),
       ...(ekstra.unitAsalKode ? { unitAsalKode: ekstra.unitAsalKode } : {}),
     },
@@ -176,7 +190,8 @@ export async function eksporRekapTahunan(
   });
   const komponen = await komponenTerurut(db);
   const kodeAngka = komponen.filter((k) => k.tipeNilai === "integer").map((k) => k.kode);
-  const total = await totalPerNip(db, tahun, snapshot.map((s) => s.pegawaiNip), kodeAngka);
+  const total = await totalPerNip(db, tahun, semuaSnapshot.map((s) => s.pegawaiNip), kodeAngka);
+  const snapshot = semuaSnapshot.filter((s) => dalamKategoriTk(keInt(total.get(s.pegawaiNip)?.TK), tambahan.kategori));
   const nama = new Map(komponen.map((k) => [k.kode, k.nama]));
 
   return {

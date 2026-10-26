@@ -8,7 +8,7 @@ import type { KandidatMassal } from "@/lib/laporan/rekapIndividual";
  * Daftar kandidat cetak/unduh massal dengan kotak centang. Tombol membuka halaman cetak (tab baru) atau mengunduh Excel lewat
  * alamat GET yang memuat NIP terpilih (maks 200). Filter (jenis/status/keaktifan/min TK/unit induk) ikut dibawa untuk nama berkas.
  */
-export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, status, unitInduk = "" }: { kandidat: KandidatMassal[]; maks: number; tahun: number; minTk: number; keaktifan: string; jenis: string[]; status: string[]; unitInduk?: string }) {
+export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, status, unitInduk = "", kategori = "" }: { kandidat: KandidatMassal[]; maks: number; tahun: number; minTk: number; keaktifan: string; jenis: string[]; status: string[]; unitInduk?: string; kategori?: string }) {
   const [dipilih, setDipilih] = useState<Set<string>>(() => new Set(kandidat.slice(0, maks).map((k) => k.nip)));
   const n = dipilih.size;
   const terlalu = n > maks;
@@ -17,10 +17,11 @@ export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, 
     const q = new URLSearchParams({ tahun: String(tahun), min_tk: String(minTk), keaktifan });
     jenis.forEach((j) => q.append("jenis", j));
     status.forEach((s) => q.append("status", s));
+    if (kategori) q.set("kategori", kategori); // hanya untuk nama berkas
     if (unitInduk) q.set("unit_induk", unitInduk); // hanya untuk nama berkas; daftar NIP sudah menentukan isinya
     kandidat.filter((k) => dipilih.has(k.nip)).forEach((k) => q.append("nip", k.nip));
     return q.toString();
-  }, [dipilih, kandidat, tahun, minTk, keaktifan, jenis, status, unitInduk]);
+  }, [dipilih, kandidat, tahun, minTk, keaktifan, jenis, status, unitInduk, kategori]);
 
   const ubah = (nip: string, centang: boolean) =>
     setDipilih((s) => {

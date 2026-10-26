@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { daftarStatusKepegawaian, jenisStatusDari, keaktifanDari } from "@/lib/laporan/filter";
+import { kategoriDari } from "@/lib/laporan/kategoriTk";
 import { eksporRekapTahunan, namaFileRekapTahunan, periodeTahunBerjalan } from "@/lib/laporan/rekapTahunan";
 import { responXlsx } from "@/lib/laporan/xlsx";
 
@@ -22,9 +23,10 @@ export async function GET(request: Request) {
   );
   const filter = { jenis, status, keaktifan: keaktifanDari(sp.get("keaktifan")) };
 
+  const tambahan = { kategori: kategoriDari(sp.get("kategori")), unitIndukKode: sp.get("unit_induk") };
   const { headings, rows } = await eksporRekapTahunan(prisma, tahun, filter, {
     jenisPegawaiKode: sp.get("jenis_pegawai_kode"),
     unitAsalKode: sp.get("unit_asal_kode"),
-  });
-  return responXlsx(await namaFileRekapTahunan(prisma, tahun, filter), headings, rows);
+  }, tambahan);
+  return responXlsx(await namaFileRekapTahunan(prisma, tahun, filter, tambahan), headings, rows);
 }

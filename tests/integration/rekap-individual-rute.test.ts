@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { GET as eksporIndividual } from "@/app/(app)/rekap-kehadiran/individual/export/route";
 import { GET as eksporMassal } from "@/app/(app)/rekap-kehadiran/individual/massal/excel/route";
-import { bacaParamMassal, dariRecord, dariUrlSearchParams, kandidatMassal, laporanTerpilih, MAKS_PEGAWAI_MASSAL, namaFileMassal } from "@/lib/laporan/rekapIndividual";
+import { bacaParamMassal, dariRecord, dariUrlSearchParams, kandidatMassal, laporanTerpilih, MAKS_PEGAWAI_MASSAL, namaFileMassal, rentangTkMassal } from "@/lib/laporan/rekapIndividual";
 
 import { kosongkanDomain } from "../../scripts/migrasi/migrasi";
 import { muatKeadaan } from "../support/keadaan";
@@ -108,6 +108,25 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
     expect(p.unitInduk).toBe(x.unitIndukKode);
     expect((await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams("unit_induk=TIDAK-ADA")))).unitInduk).toBe(""); // kode tak dikenal = semua
     expect(await namaFileMassal(prisma, { ...p, tahun: 2026, minTk: 20 })).toBe(`Absensi Pegawai Aktif TK min 20 2026 - ${x.unitInduk.nama}`);
+  });
+
+  it("kategori TK massal: menggantikan batas minimal; rentang tepat; kategori tak dikenal/semua = pakai batas minimal; nama berkas memuat kategori", async () => {
+    const semua = { jenis: [], status: [], keaktifan: "semua" as const };
+    const kat = async (kueri: string) => {
+      const p = await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams(kueri)));
+      const r = rentangTkMassal(p);
+      return { p, nama: (await kandidatMassal(prisma, 2026, semua, r.min, p.unitInduk, r.maks)).map((k) => k.nama) };
+    };
+    expect((await kat("kategori=berat")).nama).toEqual(["Pegawai 2"]); // TK 30 (> 20); Pegawai 1 (7) bukan
+    expect((await kat("kategori=ringan")).nama).toEqual(["Pegawai 1"]); // TK 7 (3-10)
+    expect((await kat("kategori=sedang")).nama).toEqual([]);
+    expect((await kat("kategori=berat&min_tk=0")).nama).toEqual(["Pegawai 2"]); // kategori menang atas min_tk
+    expect((await kat("kategori=semua&min_tk=0")).p.kategori).toBeNull();
+    expect((await kat("kategori=ngawur&min_tk=8")).nama).toEqual(["Pegawai 2"]); // jatuh ke batas minimal
+    expect(rentangTkMassal({ minTk: 20, kategori: "sedang" })).toEqual({ min: 11, maks: 20 });
+    expect(rentangTkMassal({ minTk: 5, kategori: null })).toEqual({ min: 5, maks: null });
+    const berat = (await kat("kategori=berat")).p;
+    expect(await namaFileMassal(prisma, { ...berat, tahun: 2026 })).toBe("Absensi Pegawai Aktif TK Berat 2026");
   });
 
   it("kandidat massal: TK setahun >= batas,Akademisi Luar dan tanpa rekap tidak ikut, urut TK terbanyak", async () => {

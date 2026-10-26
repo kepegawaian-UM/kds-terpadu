@@ -6,6 +6,7 @@
 import ExcelJS from "exceljs";
 import type { PrismaClient } from "@prisma/client";
 
+import { KATEGORI_TK, type KategoriTk, kategoriDari } from "./kategoriTk";
 import { labelFileKeaktifan, nipNonaktif, urutanKodeStatus } from "./filter";
 import { kueriRencanaKustom } from "./kueri";
 import { type FilterRekap, kondisiNominatif } from "./rekapBulanan";
@@ -18,20 +19,7 @@ type Db = Pick<PrismaClient, "nominatifBulanan" | "catatanStatusPegawai" | "stat
 export const BULAN_SINGKAT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"] as const;
 export const AMBANG_TK_BAWAAN = 3;
 
-/** Kategori TK pada dropdown Laporan TK: rentang total hari TK setahun (maks null = tanpa batas atas). */
-export const KATEGORI_TK = {
-  semua: { label: "Semua (3 hari ke atas)", min: 3, maks: null, nama: null },
-  ringan: { label: "TK Ringan (3-10 hari)", min: 3, maks: 10, nama: "TK Ringan" },
-  sedang: { label: "TK Sedang (11-20 hari)", min: 11, maks: 20, nama: "TK Sedang" },
-  berat: { label: "TK Berat (lebih dari 20 hari)", min: 21, maks: null, nama: "TK Berat" },
-} as const satisfies Record<string, { label: string; min: number; maks: number | null; nama: string | null }>;
-export type KategoriTk = keyof typeof KATEGORI_TK;
-
-/** Kategori dari parameter URL; null bila tidak dikenal (pemanggil lalu memakai min_tk). */
-export function kategoriDari(nilai: string | null | undefined): KategoriTk | null {
-  const k = String(nilai ?? "").trim();
-  return Object.hasOwn(KATEGORI_TK, k) ? (k as KategoriTk) : null;
-}
+export { KATEGORI_TK, type KategoriTk, kategoriDari };
 
 export type BarisTk = {
   peringkat: number;

@@ -129,6 +129,32 @@ describe.skipIf(!ada)("laporan TK untuk tindak lanjut", () => {
     expect(wb.getWorksheet("Semua Pegawai")!.rowCount).toBe(2); // judul + A
   });
 
+  it("tabel Absensi Tahunan dan Excel-nya ikut kategori TK dan unit induk (sama dengan Excel TK); tanpa filter tetap semua pegawai", async () => {
+    const nipTabel = async (kategori: "semua" | "ringan" | "sedang" | "berat" | null, unitIndukKode?: string) =>
+      (await laporanRekapTahunan(prisma, 2026, FILTER, { kategori, unitIndukKode })).baris.map((b) => b.nip).sort();
+    const kodeX = (await prisma.unitAsal.findUniqueOrThrow({ where: { kode: unitX } })).unitIndukKode;
+    expect(await nipTabel(null)).toEqual([A, B, C, D, E, G].sort()); // bawaan: tidak menyaring (paritas KDS2); Satpam (G) ikut tampil di tabel
+    expect(await nipTabel("semua")).toEqual([A, B, C, D, E, G].sort());
+    expect(await nipTabel("ringan")).toEqual([A, C, D, G].sort()); // 6, 9, 6, 10 (B=2 dan E=0 di bawah 3)
+    expect(await nipTabel("sedang")).toEqual([]);
+    expect(await nipTabel("berat")).toEqual([]);
+    expect(await nipTabel("semua", kodeX)).toEqual([A, B].sort());
+    expect(await nipTabel("ringan", kodeX)).toEqual([A]);
+    expect(await nipTabel(null, "TIDAK-ADA")).toEqual([A, B, C, D, E, G].sort()); // kode tak dikenal diabaikan
+
+    // kesamaan dengan Excel TK (dengan Satpam disertakan): pegawai yang sama pada kategori yang sama
+    const tk = await laporanTkTindakLanjut(prisma, 2026, FILTER, KATEGORI_TK.ringan.min, undefined, true, { maks: KATEGORI_TK.ringan.maks, nama: KATEGORI_TK.ringan.nama });
+    expect(tk.baris.map((b) => b.nip).sort()).toEqual(await nipTabel("ringan"));
+
+    // judul/nama berkas dan Excel biasa memuat filter
+    const lap = await laporanRekapTahunan(prisma, 2026, FILTER, { kategori: "ringan", unitIndukKode: kodeX });
+    expect(lap.namaFile).toBe(`Absensi Tahunan Aktif 2026 TK Ringan - ${indukX}`);
+    const { eksporRekapTahunan } = await import("@/lib/laporan/rekapTahunan");
+    expect((await eksporRekapTahunan(prisma, 2026, FILTER, {}, { kategori: "ringan", unitIndukKode: kodeX })).rows.map((r) => r[0])).toEqual([A]);
+    expect((await eksporRekapTahunan(prisma, 2026, FILTER, {}, { kategori: "berat" })).rows).toEqual([]);
+    expect((await eksporRekapTahunan(prisma, 2026, FILTER)).rows).toHaveLength(6);
+  });
+
   it("ringkasan per unit induk: penyebut = semua pegawai yang diperiksa, pembilang = yang memenuhi ambang", async () => {
     const lap = await laporanTkTindakLanjut(prisma, 2026, FILTER, 3);
     expect(lap.ringkasan).toEqual([
