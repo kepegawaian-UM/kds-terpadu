@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { APLIKASI_LAIN } from "@/lib/aplikasiLain";
+
 type NavItem = { href: string; label: string; exact?: boolean };
 
 // Urutan mengikuti alur kerja bulanan: masukkan data -> periksa -> laporan. Yang jarang dipakai ada di bawah.
@@ -157,7 +159,30 @@ export function Sidebar({
         ))}
       </nav>
 
-      <div className="px-3 pb-3">
+      <div className="space-y-2 px-3 pb-3">
+        {APLIKASI_LAIN.length > 0 && (
+          <details className="group rounded-2xl border border-sidebar-lighter text-sm text-sidebar-muted">
+            <summary className="flex cursor-pointer list-none items-center justify-between rounded-full px-3 py-2 transition-colors hover:bg-sidebar-lighter hover:text-white [&::-webkit-details-marker]:hidden">
+              <span>Aplikasi lain</span>
+              <span aria-hidden="true" className="transition-transform group-open:rotate-180">▾</span>
+            </summary>
+            <ul className="space-y-1 px-1 pb-2" aria-label="Aplikasi lain">
+              {APLIKASI_LAIN.map((app) => (
+                <li key={app.url}>
+                  <a
+                    href={app.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-2 rounded-full px-3 py-1.5 text-sm transition-colors hover:bg-sidebar-lighter hover:text-white"
+                  >
+                    <span className="truncate">{app.nama}</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
         <a
           href="/panduan/index.html"
           target="_blank"
