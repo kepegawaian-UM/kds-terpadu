@@ -1,6 +1,7 @@
 /**
  * Peringatan anomali pada tahap PERIKSA Upload Absensi (tambahan Terpadu, tidak ada di KDS2). Semua hanya peringatan: tidak pernah menolak baris atau mengubah hasil
  * impor. Aturan murni (deteksiAnomali) dipisah dari pembacaan database (muatKonteksAnomali) supaya mudah diuji dan bisa dipakai ulang untuk halaman anomali.
+ * Pegawai bershift (JENIS_SHIFT terisi) tidak diperiksa terhadap Σ HARI (melebihi hari kerja, komponen melebihi, TK sebulan penuh, hari kerja berbeda); aturan lain tetap berlaku.
  * Daftar ini sengaja terpisah dari catatan impor lama agar paritas importer dengan KDS2 tidak berubah.
  */
 import type { Prisma, PrismaClient } from "@prisma/client";
@@ -62,12 +63,14 @@ export function deteksiAnomali(valid: ReadonlyMap<string, Record<string, string>
     const total = n(v.TOTAL);
     const izin = IZIN.reduce((a, k) => a + n(v[k]), 0);
     const tugas = PENUGASAN.reduce((a, k) => a + n(v[k]), 0);
+    // Pegawai bershift (Satpam): hari kerja mengikuti jadwal shift, bukan hari kantor, sehingga aturan yang membandingkan dengan Σ HARI tidak berlaku
+    const bershift = adalahBershift(v.JENIS_SHIFT);
     const rincianIzin = IZIN.filter((k) => n(v[k]) > 0).map((k) => `${k} ${n(v[k])}`).join(", ");
 
     // ---- PENTING
-    const melebihi = sigma > 0 && masuk + izin > sigma + 1;
+    const melebihi = !bershift && sigma > 0 && masuk + izin > sigma + 1;
     if (melebihi) tambah("penting", "melebihi_hari_kerja", `Masuk nyata ${masuk} + tidak hadir ${izin} (${rincianIzin || "-"}) melebihi ${sigma} hari kerja`);
-    else if (sigma > 0) {
+    else if (!bershift && sigma > 0) {
       for (const k of [...IZIN, ...PENUGASAN]) if (n(v[k]) > sigma) tambah("penting", "komponen_melebihi_hari_kerja", `${k} ${n(v[k])} melebihi ${sigma} hari kerja`);
     }
     if (total > 0 && masuk === 0 && izin === 0 && tugas === 0) {
@@ -82,13 +85,13 @@ export function deteksiAnomali(valid: ReadonlyMap<string, Record<string, string>
 
     // ---- SEDANG
     if (sigma > 0 && masuk === 0 && total === 0 && izin === 0 && tugas === 0) tambah("sedang", "tanpa_keterangan", `Ada ${sigma} hari kerja, tetapi tidak ada masuk maupun keterangan apa pun`);
-    if (sigma > 0 && n(v.TK) >= sigma) tambah("sedang", "tk_sebulan_penuh", `TK ${n(v.TK)} dari ${sigma} hari kerja (sebulan penuh)`);
+    if (!bershift && sigma > 0 && n(v.TK) >= sigma) tambah("sedang", "tk_sebulan_penuh", `TK ${n(v.TK)} dari ${sigma} hari kerja (sebulan penuh)`);
     const sakitIni = n(v.S) + n(v.SD);
     const sakitKumulatif = sakitIni + (ctx.sakitBulanLain.get(nip) ?? 0);
     if (sakitIni > 0 && sakitKumulatif >= BATAS_SAKIT_SETAHUN) tambah("sedang", "sakit_kumulatif", `Sakit tahun ini mencapai ${sakitKumulatif} hari (bulan ini ${sakitIni})`);
 
     // ---- INFO
-    if (sigma > 0 && modus !== null && sigma !== modus && !adalahBershift(v.JENIS_SHIFT)) tambah("info", "hari_kerja_berbeda", `Hari kerja ${sigma}, berbeda dari yang lazim di berkas (${modus}) padahal bukan pegawai bershift`);
+    if (sigma > 0 && modus !== null && sigma !== modus && !bershift) tambah("info", "hari_kerja_berbeda", `Hari kerja ${sigma}, berbeda dari yang lazim di berkas (${modus}) padahal bukan pegawai bershift`);
   }
   return hasil.sort((a, b) => URUT[a.tingkat] - URUT[b.tingkat] || a.nomorBaris - b.nomorBaris);
 }

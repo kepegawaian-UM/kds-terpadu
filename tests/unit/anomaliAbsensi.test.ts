@@ -91,6 +91,18 @@ describe("deteksiAnomali", () => {
     expect(deteksiAnomali(valid, new Map(), ctx()).map((x) => `${x.nip}:${x.kode}`)).toEqual(["n:hari_kerja_berbeda"]);
   });
 
+  it("pegawai bershift tidak dibandingkan dengan Σ HARI (melebihi, komponen melebihi, TK sebulan penuh); aturan lain tetap berlaku; non-shift tetap ditandai", () => {
+    const hasil = (v: Record<string, string>) => deteksiAnomali(new Map([["1", { SIGMA_HARI: "21", ...v }]]), new Map([["1", 7]]), ctx()).map((a) => a.kode);
+    // kasus nyata: Satpam masuk 21 + sakit 2 pada 21 hari kerja
+    expect(hasil({ JUMLAH_MASUK_NYATA: "21", S: "2", TOTAL: "19", JENIS_SHIFT: "Satpam 3 Shift" })).toEqual([]);
+    expect(hasil({ JUMLAH_MASUK_NYATA: "21", S: "2", TOTAL: "19" })).toEqual(["melebihi_hari_kerja"]); // bukan shift: tetap ditandai
+    expect(hasil({ TK: "30", JENIS_SHIFT: "Satpam 2 Shift" })).toEqual([]); // komponen > Σ HARI dan TK sebulan penuh: tidak berlaku
+    expect(hasil({ TK: "30" })).toEqual(["melebihi_hari_kerja", "tk_sebulan_penuh"]); // non-shift: tetap ditandai
+    // aturan yang tidak bergantung pada Σ HARI tetap menyala untuk pegawai bershift
+    expect(hasil({ TOTAL: "21", JENIS_SHIFT: "Satpam 3 Shift" })).toEqual(["total_tanpa_komponen"]);
+    expect(hasil({ JUMLAH_MASUK_NYATA: "10", CTH: "19", JENIS_SHIFT: "Satpam 3 Shift" })).toEqual(["cuti_tahunan_kumulatif"]);
+  });
+
   it("urut: penting dulu, lalu sedang, lalu info; nilai non-angka dihitung 0", () => {
     const valid = new Map<string, Record<string, string>>([
       ["a", { SIGMA_HARI: "20" }], // sedang
