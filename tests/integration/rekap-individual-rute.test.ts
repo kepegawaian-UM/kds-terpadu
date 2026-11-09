@@ -129,6 +129,30 @@ describe.skipIf(!ada)("Rute Rekap Individual", () => {
     expect(await namaFileMassal(prisma, { ...berat, tahun: 2026 })).toBe("Absensi Pegawai Aktif TK Berat 2026");
   });
 
+  it("filter bulan massal: TK dan persentase dihitung pada bulan itu saja; batas bawah ikut (3 hari ke atas); bawaan 3 hari bila bulan dipilih; bulan tak valid = setahun; nama berkas memuat bulan", async () => {
+    const semua = { jenis: [], status: [], keaktifan: "semua" as const };
+    const cari = async (kueri: string) => {
+      const p = await bacaParamMassal(prisma, dariUrlSearchParams(new URLSearchParams(kueri)));
+      const r = rentangTkMassal(p);
+      return { p, k: await kandidatMassal(prisma, 2026, semua, r.min, p.unitInduk, r.maks, p.bulan) };
+    };
+    // Pegawai 1: TK Jan 4, Feb 3 (setahun 7); Pegawai 2: TK Jan 30. Hari kerja tiap bulan 20.
+    const jan = await cari("bulan=1");
+    expect(jan.p).toMatchObject({ bulan: 1, minTk: 3 }); // bawaan 3 bila bulan dipilih (bukan 20)
+    expect(jan.k.map((x) => [x.nama, x.tk, x.sigma, x.persen])).toEqual([["Pegawai 2", 30, 20, "150,0%"], ["Pegawai 1", 4, 20, "20,0%"]]);
+    expect((await cari("bulan=2")).k.map((x) => [x.nama, x.tk])).toEqual([["Pegawai 1", 3]]); // tepat 3 ikut
+    expect((await cari("bulan=2&min_tk=4")).k).toEqual([]);
+    expect((await cari("bulan=3")).k).toEqual([]); // tidak ada rekap Maret
+    expect((await cari("bulan=1&kategori=berat")).k.map((x) => x.nama)).toEqual(["Pegawai 2"]); // kategori ikut mengukur TK bulan itu
+    expect((await cari("bulan=1&min_tk=5")).k.map((x) => x.nama)).toEqual(["Pegawai 2"]);
+    // tanpa bulan: tetap setahun dan bawaan 20 (paritas KDS2)
+    const tahun = await cari("");
+    expect(tahun.p).toMatchObject({ bulan: null, minTk: 20 });
+    expect(tahun.k.map((x) => [x.nama, x.tk])).toEqual([["Pegawai 2", 30]]);
+    for (const salah of ["bulan=0", "bulan=13", "bulan=abc", "bulan="]) expect((await cari(salah)).p.bulan, salah).toBeNull();
+    expect(await namaFileMassal(prisma, { ...jan.p, tahun: 2026 })).toBe("Absensi Pegawai Aktif TK min 3 Januari 2026");
+  });
+
   it("kandidat massal: TK setahun >= batas,Akademisi Luar dan tanpa rekap tidak ikut, urut TK terbanyak", async () => {
     const k = await kandidatMassal(prisma, 2026, { jenis: [], status: [], keaktifan: "semua" }, 0);
     expect(k.map((x) => [x.nama, x.tk, x.sigma, x.persen])).toEqual([["Pegawai 2", 30, 20, "150,0%"], ["Pegawai 1", 7, 40, "17,5%"]]);

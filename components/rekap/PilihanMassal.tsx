@@ -4,11 +4,13 @@ import { useMemo, useState } from "react";
 
 import type { KandidatMassal } from "@/lib/laporan/rekapIndividual";
 
+const NAMA_BULAN = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
 /**
  * Daftar kandidat cetak/unduh massal dengan kotak centang. Tombol membuka halaman cetak (tab baru) atau mengunduh Excel lewat
  * alamat GET yang memuat NIP terpilih (maks 200). Filter (jenis/status/keaktifan/min TK/unit induk) ikut dibawa untuk nama berkas.
  */
-export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, status, unitInduk = "", kategori = "" }: { kandidat: KandidatMassal[]; maks: number; tahun: number; minTk: number; keaktifan: string; jenis: string[]; status: string[]; unitInduk?: string; kategori?: string }) {
+export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, status, unitInduk = "", kategori = "", bulan = null }: { kandidat: KandidatMassal[]; maks: number; tahun: number; minTk: number; keaktifan: string; jenis: string[]; status: string[]; unitInduk?: string; kategori?: string; bulan?: number | null }) {
   const [dipilih, setDipilih] = useState<Set<string>>(() => new Set(kandidat.slice(0, maks).map((k) => k.nip)));
   const n = dipilih.size;
   const terlalu = n > maks;
@@ -17,11 +19,12 @@ export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, 
     const q = new URLSearchParams({ tahun: String(tahun), min_tk: String(minTk), keaktifan });
     jenis.forEach((j) => q.append("jenis", j));
     status.forEach((s) => q.append("status", s));
+    if (bulan) q.set("bulan", String(bulan)); // TK dihitung pada bulan itu; dibawa untuk nama berkas
     if (kategori) q.set("kategori", kategori); // hanya untuk nama berkas
     if (unitInduk) q.set("unit_induk", unitInduk); // hanya untuk nama berkas; daftar NIP sudah menentukan isinya
     kandidat.filter((k) => dipilih.has(k.nip)).forEach((k) => q.append("nip", k.nip));
     return q.toString();
-  }, [dipilih, kandidat, tahun, minTk, keaktifan, jenis, status, unitInduk, kategori]);
+  }, [dipilih, kandidat, tahun, minTk, keaktifan, jenis, status, unitInduk, kategori, bulan]);
 
   const ubah = (nip: string, centang: boolean) =>
     setDipilih((s) => {
@@ -69,7 +72,7 @@ export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, 
                 <tr className="border-b text-left text-slate-500">
                   <th className="w-8 px-2 py-2"><input type="checkbox" aria-label="Pilih semua" checked={n === kandidat.length} onChange={(e) => semua(e.target.checked)} /></th>
                   <th className="px-2 py-2">Nama</th><th className="px-2 py-2">NIP</th><th className="px-2 py-2">Jenis</th><th className="px-2 py-2">Status</th><th className="px-2 py-2">Unit Kerja</th>
-                  <th className="px-2 py-2 text-center">TK</th><th className="px-2 py-2 text-center">% TK</th>
+                  <th className="px-2 py-2 text-center">{bulan ? `TK ${NAMA_BULAN[bulan]}` : "TK"}</th><th className="px-2 py-2 text-center">% TK</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,7 +87,7 @@ export function PilihanMassal({ kandidat, maks, tahun, minTk, keaktifan, jenis, 
             </table>
           </div>
           <p className="text-xs text-slate-500">
-            Diurutkan dari TK terbanyak. TK = tidak ada rekam presensi pada data sumber (belum tentu tidak hadir); periksa dulu sebelum dijadikan dasar tindak lanjut. Angka sudah memperhitungkan koreksi admin.
+            Diurutkan dari TK terbanyak{bulan ? ` (TK dan persentase dihitung pada ${NAMA_BULAN[bulan]} saja; dokumen cetak dan Excel tetap memuat rincian setahun)` : ""}. TK = tidak ada rekam presensi pada data sumber (belum tentu tidak hadir); periksa dulu sebelum dijadikan dasar tindak lanjut. Angka sudah memperhitungkan koreksi admin.
             {kandidat.length > maks && ` Lebih dari ${maks} pegawai: hanya ${maks} teratas yang tercentang otomatis.`}
           </p>
         </>

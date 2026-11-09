@@ -12,6 +12,7 @@ import { phpTrim } from "@/lib/impor/phpString";
 import { daftarStatusKepegawaian, jenisStatusDari, type Keaktifan, keaktifanDari, labelFileKeaktifan, nipNonaktif, urutanKodeStatus } from "./filter";
 import { buatNamaFile } from "./namaFile";
 import { KATEGORI_TK, kategoriDari, type KategoriTk } from "./kategoriTk";
+import { kueriRencanaKustom } from "./kueri";
 import { totalPerNip } from "./rekapTahunan";
 import { kondisiNominatif, urutkanTkTerbanyak } from "./rekapBulanan";
 import { bulanTahunSekarang, keInt, namaBulan } from "./periode";
@@ -191,8 +192,28 @@ export const MAKS_PEGAWAI_MASSAL = 200;
 
 export type KandidatMassal = { nip: string; nama: string; jenis: string | null; status: string | null; unit: string | null; tk: number; sigma: number; persen: string };
 
+/** TK dan Σ HARI satu bulan per NIP (awalan angka dipakai, selain angka 0; sama dengan totalPerNip tetapi untuk satu bulan). */
+async function totalBulanPerNip(db: Db, tahun: number, bulan: number, nips: string[]): Promise<Map<string, Record<string, string>>> {
+  const hasil = new Map<string, Record<string, string>>();
+  if (nips.length === 0) return hasil;
+  const rows = await kueriRencanaKustom<{ nip: string; kode: string; total: string }[]>(
+    db,
+    `SELECT r."nip" AS nip, d."komponenKode" AS kode,
+            SUM(COALESCE(NULLIF(substring(d."nilai" from '^[ ]*[-+]?[0-9]+'), '')::bigint, 0))::text AS total
+       FROM "rekap_kehadiran_detail" d
+       JOIN "rekap_kehadiran_bulanan" r ON r."id" = d."rekapKehadiranBulananId"
+      WHERE r."tahun" = $1 AND r."bulan" = $2 AND d."komponenKode" IN ('TK', 'SIGMA_HARI') AND r."nip" = ANY($3::text[])
+      GROUP BY r."nip", d."komponenKode"`,
+    tahun,
+    bulan,
+    nips,
+  );
+  for (const r of rows) hasil.set(r.nip, { ...(hasil.get(r.nip) ?? {}), [r.kode]: r.total });
+  return hasil;
+}
+
 /** Dosen/Tendik pada snapshot terakhir (MAX(id)) tahun itu dengan total TK setahun >= minTk, urut TK terbanyak. */
-export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: string[]; status: string[]; keaktifan: Keaktifan }, minTk: number, unitIndukKode = "", maksTk: number | null = null): Promise<KandidatMassal[]> {
+export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: string[]; status: string[]; keaktifan: Keaktifan }, minTk: number, unitIndukKode = "", maksTk: number | null = null, bulan: number | null = null): Promise<KandidatMassal[]> {
   const nonaktif = await nipNonaktif(db, tahun);
   const g = await db.nominatifBulanan.groupBy({ by: ["pegawaiNip"], where: { tahun }, _max: { id: true } });
   const ids = g.map((x) => x._max.id!).sort((a, b) => a - b);
@@ -206,7 +227,9 @@ export async function kandidatMassal(db: Db, tahun: number, filter: { jenis: str
   const pegawai = filter.keaktifan === "nonaktif" ? [...diurutId].sort((a, b) => (a.pegawaiNip < b.pegawaiNip ? -1 : a.pegawaiNip > b.pegawaiNip ? 1 : a.id - b.id)) : diurutId;
   if (pegawai.length === 0) return [];
 
-  const jumlah = await totalPerNip(db, tahun, pegawai.map((p) => p.pegawaiNip), ["TK", "SIGMA_HARI"]);
+  const nipPegawai = pegawai.map((p) => p.pegawaiNip);
+  // bulan dipilih: TK dan hari kerja bulan itu saja (tambahan Terpadu); tanpa bulan: total setahun seperti KDS2
+  const jumlah = bulan ? await totalBulanPerNip(db, tahun, bulan, nipPegawai) : await totalPerNip(db, tahun, nipPegawai, ["TK", "SIGMA_HARI"]);
   const peta = pegawai
     .map((p) => {
       const j = jumlah.get(p.pegawaiNip) ?? {};
@@ -266,7 +289,7 @@ export function tanggalCetakWib(sekarang = new Date()): string {
 }
 
 // ---------- parameter massal (halaman, cetak, Excel memakai aturan yang sama) ----------
-export type ParamMassal = { tahun: number; minTk: number; jenis: string[]; status: string[]; keaktifan: Keaktifan; nip: string[]; /** kode unit induk; "" = semua */ unitInduk: string; /** kategori TK (ringan/sedang/berat); bila ada, menggantikan minTk; null = pakai minTk */ kategori: Exclude<KategoriTk, "semua"> | null };
+export type ParamMassal = { tahun: number; minTk: number; jenis: string[]; status: string[]; keaktifan: Keaktifan; nip: string[]; /** bulan 1-12 bila TK dihitung pada satu bulan; null = setahun */ bulan: number | null; /** kode unit induk; "" = semua */ unitInduk: string; /** kategori TK (ringan/sedang/berat); bila ada, menggantikan minTk; null = pakai minTk */ kategori: Exclude<KategoriTk, "semua"> | null };
 
 /** Rentang TK yang berlaku: kategori (bila dipilih) atau batas minimal biasa. */
 export function rentangTkMassal(p: Pick<ParamMassal, "minTk" | "kategori">): { min: number; maks: number | null } {
@@ -288,20 +311,22 @@ export async function bacaParamMassal(db: Db, ambil: AmbilSemua, sekarang = new 
   const m = ambil("min_tk")[0];
   const daftarStatus = await daftarStatusKepegawaian(db);
   const { jenis, status } = jenisStatusDari({ jenis: ambil("jenis"), status: ambil("status") }, daftarStatus.map((s) => s.kode));
+  const bln = ambil("bulan")[0] === undefined ? NaN : keInt(ambil("bulan")[0]);
+  const bulanPilihan = bln >= 1 && bln <= 12 ? bln : null;
   const kat = kategoriDari(ambil("kategori")[0]);
   const kategori = kat && kat !== "semua" ? kat : null;
   const unitMentah = (ambil("unit_induk")[0] ?? "").trim();
   const unitInduk = unitMentah && (await db.unitInduk.findUnique({ where: { kode: unitMentah }, select: { kode: true } })) ? unitMentah : ""; // kode tak dikenal diabaikan
   return {
     tahun: tahunMentah >= 2020 && tahunMentah <= 2100 ? tahunMentah : tahunIni,
-    minTk: Math.max(0, Math.min(366, m === undefined ? 20 : keInt(m))),
-    jenis, status, keaktifan: keaktifanDari(ambil("keaktifan")[0]), nip: ambil("nip"), unitInduk, kategori,
+    minTk: Math.max(0, Math.min(366, m === undefined ? (bulanPilihan ? 3 : 20) : keInt(m))),
+    jenis, status, keaktifan: keaktifanDari(ambil("keaktifan")[0]), nip: ambil("nip"), unitInduk, kategori, bulan: bulanPilihan,
   };
 }
 
 export async function namaFileMassal(db: Db, p: ParamMassal): Promise<string> {
   const unit = p.unitInduk ? await db.unitInduk.findUnique({ where: { kode: p.unitInduk }, select: { nama: true } }) : null;
-  return buatNamaFile("Absensi Pegawai", p.jenis, p.status, `${p.kategori ? KATEGORI_TK[p.kategori].nama : `TK min ${p.minTk}`} ${p.tahun}${unit ? ` - ${unit.nama}` : ""}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
+  return buatNamaFile("Absensi Pegawai", p.jenis, p.status, `${p.kategori ? KATEGORI_TK[p.kategori].nama : `TK min ${p.minTk}`} ${p.bulan ? `${namaBulan(p.bulan)} ` : ""}${p.tahun}${unit ? ` - ${unit.nama}` : ""}`, await urutanKodeStatus(db), labelFileKeaktifan(p.keaktifan));
 }
 
 /** Pegawai terpilih untuk cetak/unduh massal (1 sampai 200 NIP digit; duplikat dibuang; NIP tanpa data dilewati). */

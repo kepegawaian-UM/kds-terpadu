@@ -4,6 +4,7 @@ import { KepalaHalaman } from "@/components/laporan/KepalaHalaman";
 import { BidangFilterRekap, BidangPeriode, FormLaporan } from "@/components/laporan/FormLaporan";
 import { PilihanMassal } from "@/components/rekap/PilihanMassal";
 import { prisma } from "@/lib/db";
+import { NAMA_BULAN } from "@/lib/laporan/periode";
 import { KATEGORI_TK } from "@/lib/laporan/kategoriTk";
 import { daftarStatusKepegawaian } from "@/lib/laporan/filter";
 import { tahunNominatif } from "@/lib/laporan/nominatif";
@@ -15,10 +16,11 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
   const sp = await searchParams;
   const p = await bacaParamMassal(prisma, dariRecord(sp));
   const rentang = rentangTkMassal(p);
+  const minTkEksplisit = dariRecord(sp)("min_tk")[0] !== undefined; // kolom dibiarkan kosong bila tidak diisi: bawaan 20 (setahun) atau 3 (satu bulan)
   const [daftarStatus, daftarTahun, kandidat, daftarUnitInduk] = await Promise.all([
     daftarStatusKepegawaian(prisma),
     tahunNominatif(prisma),
-    kandidatMassal(prisma, p.tahun, { jenis: p.jenis, status: p.status, keaktifan: p.keaktifan }, rentang.min, p.unitInduk, rentang.maks),
+    kandidatMassal(prisma, p.tahun, { jenis: p.jenis, status: p.status, keaktifan: p.keaktifan }, rentang.min, p.unitInduk, rentang.maks, p.bulan),
     prisma.unitInduk.findMany({ orderBy: { nama: "asc" }, select: { kode: true, nama: true } }),
   ]);
 
@@ -28,6 +30,17 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
         <FormLaporan>
         <BidangPeriode tahun={p.tahun} tahunTersedia={daftarTahun} />
         <BidangFilterRekap jenis={p.jenis} status={p.status} keaktifan={p.keaktifan} daftarStatus={daftarStatus} />
+        <div>
+          <label htmlFor="bulan" className="block text-xs font-medium text-slate-600">Hitung TK pada</label>
+          <select id="bulan" name="bulan" defaultValue={p.bulan ? String(p.bulan) : ""} className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm">
+            <option value="">Setahun penuh</option>
+            {NAMA_BULAN.slice(1).map((nama, i) => (
+              <option key={nama} value={i + 1}>
+                {nama} saja
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label htmlFor="unit_induk" className="block text-xs font-medium text-slate-600">Unit Induk</label>
           <select id="unit_induk" name="unit_induk" defaultValue={p.unitInduk} className="max-w-56 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm">
@@ -53,13 +66,13 @@ export default async function RekapIndividualMassalPage({ searchParams }: { sear
           </select>
         </div>
         <div>
-          <label htmlFor="min_tk" className="block text-xs font-medium text-slate-600">TK setahun minimal (hari){p.kategori ? " - tidak dipakai" : ""}</label>
-          <input id="min_tk" name="min_tk" type="number" min={0} max={366} defaultValue={p.minTk} className="w-28 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm" />
+          <label htmlFor="min_tk" className="block text-xs font-medium text-slate-600">{p.bulan ? "TK minimal di bulan itu (hari)" : "TK setahun minimal (hari)"}{p.kategori ? " - tidak dipakai" : ""}</label>
+          <input id="min_tk" name="min_tk" type="number" min={0} max={366} defaultValue={minTkEksplisit ? p.minTk : undefined} placeholder={String(p.minTk)} className="w-28 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm" />
         </div>
       </FormLaporan>
       </KepalaHalaman>
 
-      <PilihanMassal key={`${p.tahun}-${p.minTk}-${p.keaktifan}-${p.jenis.join()}-${p.status.join()}-${p.unitInduk}-${p.kategori ?? ""}`} kandidat={kandidat} maks={MAKS_PEGAWAI_MASSAL} tahun={p.tahun} minTk={p.minTk} keaktifan={p.keaktifan} jenis={p.jenis} status={p.status} unitInduk={p.unitInduk} kategori={p.kategori ?? ""} />
+      <PilihanMassal key={`${p.tahun}-${p.minTk}-${p.keaktifan}-${p.jenis.join()}-${p.status.join()}-${p.unitInduk}-${p.kategori ?? ""}-${p.bulan ?? ""}`} kandidat={kandidat} maks={MAKS_PEGAWAI_MASSAL} tahun={p.tahun} minTk={p.minTk} keaktifan={p.keaktifan} jenis={p.jenis} status={p.status} unitInduk={p.unitInduk} kategori={p.kategori ?? ""} bulan={p.bulan} />
 
       <p className="text-sm">
         <Link href={`/rekap-kehadiran/individual?tahun=${p.tahun}`} className="text-blue-700 underline">&larr; Absensi satu pegawai</Link>
