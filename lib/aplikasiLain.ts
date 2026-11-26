@@ -10,4 +10,6 @@ export const APLIKASI_LAIN: readonly AplikasiLain[] = [
   { nama: "KDS5 Pengkategori Hukuman Absensi", url: "https://kategori-hukuman-absensi-tendik.vercel.app/" },
   { nama: "KDS6 Tutor PJJ", url: "https://kds6-tutorpjj.vercel.app/" },
   { nama: "KDS7 Hierarki Jabatan", url: "https://kds7-hierarki-jabatan.vercel.app/" },
+  { nama: "KDS8 Pelacak Kasus", url: "https://kds8pelacakkasus.vercel.app/" },
+  { nama: "KDS9 Angka Kredit", url: "https://kds-9-angka-kredit.vercel.app/" },
 ];
